@@ -21,4 +21,4 @@ Command       | Description
 ```perkin```  | Copies current cell value if there is no copy; otherwise, pastes the copied value and resets the copy.
 ```mierda```  | Terminates program.
 
-**Note:** Not supported in Windows as of right now. Only tested in macOS and Linux.
+**Note:** C interpreter not supported in Windows as of right now. Only tested in macOS and Linux.
