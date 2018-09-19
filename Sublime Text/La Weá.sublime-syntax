@@ -1,0 +1,26 @@
+%YAML 1.2
+---
+name: La Weá
+file_extensions: [lw]
+scope: source.lw
+
+contexts:
+  main:
+    - include: comments
+    - include: loops
+    - match: '[abcdeghiklmnopqrtuwáéíóú\s]'
+      scope: keyword.other.lw 
+    - match: .
+      scope: invalid.illegal.lw
+
+  comments:
+    - match: '#'
+      scope: punctuation.definition.lw
+      push:
+        - meta_scope: comment.line.number-sign.lw
+        - match: '\n'
+          pop: true
+
+  loops:
+    - match: 'pichula|tula'
+      scope: keyword.control.lw 
