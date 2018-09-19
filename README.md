@@ -2,8 +2,8 @@
 
 La Weá is a programming language consisting of 16 commands represented by highly colloquial terms in Chilean Spanish. Commands must be separated; extra whitespaces and newlines are ignored; single-line comments are preceded by a ```#```.
 
- Command      | Description
-:------------:| -----------
+Command       | Description
+------------- | -----------
 ```maricón``` | Decrements current cell value by 1.
 ```maraco```  | Decrements current cell value by 2.
 ```weón```    | Increments current cell value by 1.
