@@ -112,7 +112,7 @@ bool validate_char(wchar_t);
  * @param commands the commands to run
  * @param commands_count the number of commands to run
  */
-void run_commands(command_t *, int);
+void run_commands(const command_t *, int);
 
 /**
  * A utility function to find the closest loop starting command.
@@ -121,7 +121,7 @@ void run_commands(command_t *, int);
  * @param i the index to start searching at
  * @return The index of the loop starting command or -1 if not found
  */
-int find_closest_loop_start(command_t *, int, int);
+int find_closest_loop_start(const command_t *, int, int);
 
 /**
  * A utility function to find the closest loop ending command.
@@ -130,7 +130,7 @@ int find_closest_loop_start(command_t *, int, int);
  * @param i the index to start searching at
  * @return The index of the loop ending command or -1 if not found
  */
-int find_closest_loop_end(command_t *, int, int);
+int find_closest_loop_end(const command_t *, int, int);
 
 /**
  * A utility function that prints an error message and exits the program abnormally.

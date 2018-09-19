@@ -292,7 +292,7 @@ bool validate_char(wchar_t wc) {
 	return false;
 }
 
-void run_commands(command_t *commands, int commands_count) {
+void run_commands(const command_t *commands, int commands_count) {
 	size_t cells_size = BUFSIZ * sizeof(wchar_t);
 	wchar_t *cells = (wchar_t *)calloc(BUFSIZ, sizeof(wchar_t));
 
@@ -443,7 +443,7 @@ void run_commands(command_t *commands, int commands_count) {
 	free(cells);
 }
 
-int find_closest_loop_start(command_t *commands, int commands_count, int i) {
+int find_closest_loop_start(const command_t *commands, int commands_count, int i) {
 	for (int j = i - 1, level = 1; j >= 0; j--) {
 		if (commands[j] == tula) {
 			level++;
@@ -459,7 +459,7 @@ int find_closest_loop_start(command_t *commands, int commands_count, int i) {
 	return -1;
 }
 
-int find_closest_loop_end(command_t *commands, int commands_count, int i) {
+int find_closest_loop_end(const command_t *commands, int commands_count, int i) {
 	for (int j = i + 1, level = 1; j < commands_count; j++) {
 		if (commands[j] == pichula) {
 			level++;
