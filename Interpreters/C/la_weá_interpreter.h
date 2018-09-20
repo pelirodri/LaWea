@@ -58,14 +58,14 @@ extern const int32_t command_names[16][8 * sizeof(int32_t)];
 extern const int32_t valid_chars[];
 
 /**
- * Keeps track of the count of loop starting commands.
+ * Keeps track of the length of loop starting commands.
  */
-extern int loop_starts_count;
+extern int loop_starts_length;
 
 /**
- * Keeps track of the count of loop ending commands.
+ * Keeps track of the length of loop ending commands.
  */
-extern int loop_ends_count;
+extern int loop_ends_length;
 
 /**
  * The starting point for interpreting the code.
@@ -86,13 +86,13 @@ int32_t *get_code(const char *, size_t *);
  * Checks the validity of the code and retrieves the commands.
  * @param code the code to parse
  * @param code_length the length of the code
- * @param commands_count a pointer to store the number of commands found
+ * @param commands_length a pointer to store the number of commands found
  * @return The commands found
  */
 command_t *parse_code(const int32_t *, size_t, int *);
 
 /**
- * Gets command_t from name and counts the loops.
+ * Gets command_t from name and lengths the loops.
  * @param cmd_name the name of the command
  * @param cmd_idx the index of the command
  * @param row the row the command was found at
@@ -111,14 +111,14 @@ bool validate_char(int32_t);
 /**
  * Runs the code by interpreting the commands.
  * @param commands the commands to run
- * @param commands_count the number of commands to run
+ * @param commands_length the number of commands to run
  */
 void run_commands(const command_t *, int);
 
 /**
  * A utility function to find the closest loop starting command.
  * @param commands the array of commands to search in
- * @param commands_count the number of commands in the array
+ * @param commands_length the number of commands in the array
  * @param i the index to start searching at
  * @return The index of the loop starting command or -1 if not found
  */
@@ -127,7 +127,7 @@ int find_closest_loop_start(const command_t *, int, int);
 /**
  * A utility function to find the closest loop ending command.
  * @param commands the array of commands to search in
- * @param commands_count the number of commands in the array
+ * @param commands_length the number of commands in the array
  * @param i the index to start searching at
  * @return The index of the loop ending command or -1 if not found
  */

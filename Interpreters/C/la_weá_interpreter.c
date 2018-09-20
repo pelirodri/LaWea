@@ -45,7 +45,7 @@ const int32_t command_names[16][8 * sizeof(int32_t)] = {
 
 const int32_t valid_chars[] = L"abcdeghiklmnopqrtuwáéíóú";
 
-int loop_starts_count = 0, loop_ends_count = 0;
+int loop_starts_length = 0, loop_ends_length = 0;
 
 int main(int argc, char **argv) {
 	setlocale(LC_CTYPE, "");
@@ -67,8 +67,8 @@ void interpret_la_weá(const char *file_path) {
 		exit_interpreter("Código no encontrado");
 	}
 
-	int commands_count = 0;
-	command_t *commands = parse_code(code, code_length, &commands_count);
+	int commands_length = 0;
+	command_t *commands = parse_code(code, code_length, &commands_length);
 
 	free(code);
 
@@ -76,7 +76,7 @@ void interpret_la_weá(const char *file_path) {
 		exit_interpreter("Comandos no encontrados");
 	}
 
-	run_commands(commands, commands_count);
+	run_commands(commands, commands_length);
 
 	free(commands);
 }
@@ -143,7 +143,7 @@ int32_t *get_code(const char *file_path, size_t *code_length) {
 	return code;
 }
 
-command_t *parse_code(const int32_t *code, size_t code_length, int *commands_count) {
+command_t *parse_code(const int32_t *code, size_t code_length, int *commands_length) {
 	size_t commands_size = (size_t)(code_length / 7) * sizeof(command_t);
 	command_t *commands = (command_t *)malloc(commands_size);
 
@@ -235,12 +235,12 @@ command_t *parse_code(const int32_t *code, size_t code_length, int *commands_cou
 		}
 	}
 
-	if (loop_starts_count != loop_ends_count) {
+	if (loop_starts_length != loop_ends_length) {
 		free(commands);
 		exit_interpreter("O te sobran pichulas o te faltan tulas");
 	}
 
-	*commands_count = i;
+	*commands_length = i;
 
 	return commands;
 }
@@ -254,18 +254,18 @@ command_t parse_command(const int32_t *cmd_name, int cmd_idx, long row, long col
 	for (int i = 0; i < cnl; i++) {
 		if (!wcscmp(cmd_name, command_names[i])) {
 			if (!wcscmp(cmd_name, L"pichula")) {
-				loop_starts_count++;				
+				loop_starts_length++;				
 			} else if (!wcscmp(cmd_name, L"tula")) {
-				if (loop_ends_count == loop_starts_count) {
+				if (loop_ends_length == loop_starts_length) {
 					char msg[74 + len1 + len2];
 					sprintf(msg, "Se encontró una tula sin su respectiva pichula en la línea: %ld, columna: %ld", row, column);
 
 					exit_interpreter(msg);
 				}
 
-				loop_ends_count++;
+				loop_ends_length++;
 			} else if (!wcscmp(cmd_name, L"pico")) {
-				if (loop_starts_count == loop_ends_count) {
+				if (loop_starts_length == loop_ends_length) {
 					char msg[52 + len1 + len2];
 					sprintf(msg, "No debiste meter ese pico en la línea: %ld, columna: %ld", row, column);
 
@@ -292,7 +292,7 @@ bool validate_char(int32_t wc) {
 	return false;
 }
 
-void run_commands(const command_t *commands, int commands_count) {
+void run_commands(const command_t *commands, int commands_length) {
 	size_t cells_size = 8 * sizeof(int32_t);
 	int32_t *cells = (int32_t *)calloc(8, sizeof(int32_t));
 
@@ -310,7 +310,7 @@ void run_commands(const command_t *commands, int commands_count) {
 	size_t wc_buf_size;
 	int32_t *wc_buf;
 
-	for (int i = 0; i < commands_count; i++) {
+	for (int i = 0; i < commands_length; i++) {
 		switch (commands[i]) {
 			case maricón:
 				(*cell)--;
@@ -355,18 +355,18 @@ void run_commands(const command_t *commands, int commands_count) {
 				break;
 			case pichula:
 				if (!*cell) {
-					i = find_closest_loop_end(commands, commands_count, i);
+					i = find_closest_loop_end(commands, commands_length, i);
 				}
 
 				break;
 			case tula:
 				if (*cell) {
-					i = find_closest_loop_start(commands, commands_count, i);
+					i = find_closest_loop_start(commands, commands_length, i);
 				}
 
 				break;
 			case pico:
-				i = find_closest_loop_end(commands, commands_count, i);
+				i = find_closest_loop_end(commands, commands_length, i);
 				break;
 			case ctm:
 				putwchar(*cell);
@@ -438,7 +438,7 @@ void run_commands(const command_t *commands, int commands_count) {
 	free(cells);
 }
 
-int find_closest_loop_start(const command_t *commands, int commands_count, int i) {
+int find_closest_loop_start(const command_t *commands, int commands_length, int i) {
 	for (int j = i - 1, level = 1; j >= 0; j--) {
 		if (commands[j] == tula) {
 			level++;
@@ -454,8 +454,8 @@ int find_closest_loop_start(const command_t *commands, int commands_count, int i
 	return -1;
 }
 
-int find_closest_loop_end(const command_t *commands, int commands_count, int i) {
-	for (int j = i + 1, level = 1; j < commands_count; j++) {
+int find_closest_loop_end(const command_t *commands, int commands_length, int i) {
+	for (int j = i + 1, level = 1; j < commands_length; j++) {
 		if (commands[j] == pichula) {
 			level++;
 		} else if (commands[j] == tula) {
