@@ -305,17 +305,12 @@ void run_commands(const command_t *commands, int commands_count) {
 
 	bool copy_set = false;
 
-	int last_loop_start = -1;
-	bool found_loop_end = false;
+	int32_t char_input;
 
-	int chuchas = 0, putas = 0;
+	size_t wc_buf_size;
+	int32_t *wc_buf;
 
 	for (int i = 0; i < commands_count; i++) {
-		int32_t char_input = L'\0';
-
-		size_t wc_buf_size;
-		int32_t *wc_buf;
-
 		switch (commands[i]) {
 			case maricón:
 				(*cell)--;
