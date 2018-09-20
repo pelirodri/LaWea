@@ -301,9 +301,9 @@ void run_commands(const command_t *commands, int commands_count) {
 	}
 
 	int32_t *cell = cells;
-	int32_t cell_value_copy;
 
 	bool copy_set = false;
+	int32_t cell_value_copy;
 
 	int32_t char_input;
 
