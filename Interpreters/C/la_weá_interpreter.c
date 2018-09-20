@@ -24,7 +24,7 @@
 #include <locale.h>
 #include <errno.h>
 
-const wchar_t command_names[16][8 * sizeof(wchar_t)] = { 
+const int32_t command_names[16][8 * sizeof(int32_t)] = { 
 	L"maricón",
 	L"maraco",
 	L"weón",
@@ -43,7 +43,7 @@ const wchar_t command_names[16][8 * sizeof(wchar_t)] = {
 	L"mierda"
 };
 
-const wchar_t valid_chars[] = L"abcdeghiklmnopqrtuwáéíóú";
+const int32_t valid_chars[] = L"abcdeghiklmnopqrtuwáéíóú";
 
 int loop_starts_count = 0, loop_ends_count = 0;
 
@@ -61,7 +61,7 @@ int main(int argc, char **argv) {
 
 void interpret_la_weá(const char *file_path) {
 	size_t code_length = 0;
-	wchar_t *code = get_code(file_path, &code_length);
+	int32_t *code = get_code(file_path, &code_length);
 
 	if (!code) {
 		exit_interpreter("Código no encontrado");
@@ -81,7 +81,7 @@ void interpret_la_weá(const char *file_path) {
 	free(commands);
 }
 
-wchar_t *get_code(const char *file_path, size_t *code_length) {
+int32_t *get_code(const char *file_path, size_t *code_length) {
 	const char *extension = strrchr(file_path, '.');
 
 	if (!extension || strcmp(extension + 1, "lw")) {
@@ -101,27 +101,27 @@ wchar_t *get_code(const char *file_path, size_t *code_length) {
 	}
 
 	fseek(fp, 0, SEEK_END);
-	size_t code_size = ((size_t)(ftell(fp) / 1.25) * sizeof(wchar_t)) + (2 * sizeof(wchar_t));
+	size_t code_size = ((size_t)(ftell(fp) / 1.25) * sizeof(int32_t)) + (2 * sizeof(int32_t));
 	fseek(fp, 0, SEEK_SET);
 
-	wchar_t *code = (wchar_t *)malloc(code_size);
+	int32_t *code = (int32_t *)malloc(code_size);
 
 	if (!code) {
 		fclose(fp);
 		exit_interpreter("");
 	}
 
-	wmemset(code, L'\0', code_size / sizeof(wchar_t));
+	wmemset(code, L'\0', code_size / sizeof(int32_t));
 
 	long i = 0;
 
-	wchar_t wc;
+	int32_t wc;
 
 	while (wc != WEOF) {
 		wc = fgetwc(fp);
 
-		if ((i * sizeof(wchar_t)) == (code_size - (2 * sizeof(wchar_t)))) {
-			wchar_t *tmp = (wchar_t *)realloc(code, (code_size *= 2));
+		if ((i * sizeof(int32_t)) == (code_size - (2 * sizeof(int32_t)))) {
+			int32_t *tmp = (int32_t *)realloc(code, (code_size *= 2));
 
 			if (!tmp) {
 				free(code);
@@ -143,7 +143,7 @@ wchar_t *get_code(const char *file_path, size_t *code_length) {
 	return code;
 }
 
-command_t *parse_code(const wchar_t *code, size_t code_length, int *commands_count) {
+command_t *parse_code(const int32_t *code, size_t code_length, int *commands_count) {
 	size_t commands_size = (size_t)(code_length / 7) * sizeof(command_t);
 	command_t *commands = (command_t *)malloc(commands_size);
 
@@ -151,7 +151,7 @@ command_t *parse_code(const wchar_t *code, size_t code_length, int *commands_cou
 		exit_interpreter("");
 	}
 
-	wchar_t cmd_name[8 * sizeof(wchar_t)] = {L'\0'};
+	int32_t cmd_name[8 * sizeof(int32_t)] = {L'\0'};
 
 	int i = 0, j = -1;
 	long row = 0, column = 0;
@@ -203,7 +203,7 @@ command_t *parse_code(const wchar_t *code, size_t code_length, int *commands_cou
 
 					int len3 = column ? snprintf(NULL, 0, "%ld", column) : 0;
 
-					char msg[59 + sizeof(wchar_t) + len1 + len3];
+					char msg[59 + sizeof(int32_t) + len1 + len3];
 					sprintf(msg, "'%lc' no es parte de La Weá, tonto qlo (línea: %ld, columna: %ld)", code[k], row, column);
 
 					exit_interpreter(msg);
@@ -245,7 +245,7 @@ command_t *parse_code(const wchar_t *code, size_t code_length, int *commands_cou
 	return commands;
 }
 
-command_t parse_command(const wchar_t *cmd_name, int cmd_idx, long row, long column) {
+command_t parse_command(const int32_t *cmd_name, int cmd_idx, long row, long column) {
 	size_t cnl = sizeof(command_names) / sizeof(*command_names);
 
 	int len1 = row ? snprintf(NULL, 0, "%ld", row) : 0;
@@ -280,7 +280,7 @@ command_t parse_command(const wchar_t *cmd_name, int cmd_idx, long row, long col
 	return -1;
 }
 
-bool validate_char(wchar_t wc) {
+bool validate_char(int32_t wc) {
 	size_t vcl = sizeof(valid_chars) / sizeof(*valid_chars);
 
 	for (int i = 0; i < vcl; i++) {
@@ -293,15 +293,15 @@ bool validate_char(wchar_t wc) {
 }
 
 void run_commands(const command_t *commands, int commands_count) {
-	size_t cells_size = BUFSIZ * sizeof(wchar_t);
-	wchar_t *cells = (wchar_t *)calloc(BUFSIZ, sizeof(wchar_t));
+	size_t cells_size = BUFSIZ * sizeof(int32_t);
+	int32_t *cells = (int32_t *)calloc(BUFSIZ, sizeof(int32_t));
 
 	if (!cells) {
 		exit_interpreter("");
 	}
 
-	wchar_t *cell = cells;
-	wchar_t cell_value_copy;
+	int32_t *cell = cells;
+	int32_t cell_value_copy;
 
 	bool copy_set = false;
 
@@ -311,10 +311,10 @@ void run_commands(const command_t *commands, int commands_count) {
 	int chuchas = 0, putas = 0;
 
 	for (int i = 0; i < commands_count; i++) {
-		wchar_t char_input = L'\0';
+		int32_t char_input = L'\0';
 
 		size_t wc_buf_size;
-		wchar_t *wc_buf;
+		int32_t *wc_buf;
 
 		switch (commands[i]) {
 			case maricón:
@@ -342,8 +342,8 @@ void run_commands(const command_t *commands, int commands_count) {
 
 				break;
 			case puta:
-				if (cell == cells + ((cells_size / sizeof(wchar_t) - 1))) {
-					wchar_t *tmp = (wchar_t *)realloc(cells, (cells_size *= 2));
+				if (cell == cells + ((cells_size / sizeof(int32_t) - 1))) {
+					int32_t *tmp = (int32_t *)realloc(cells, (cells_size *= 2));
 
 					if (!tmp) {
 						free(cells);
@@ -352,7 +352,7 @@ void run_commands(const command_t *commands, int commands_count) {
 
 					cells = tmp;
 
-					wmemset(cells, 0, cells_size / sizeof(wchar_t));
+					wmemset(cells, 0, cells_size / sizeof(int32_t));
 				}
 
 				cell++;
@@ -387,23 +387,23 @@ void run_commands(const command_t *commands, int commands_count) {
 				printf("%d", *cell);
 				break;
 			case brígido:
-				wc_buf_size = 13 * sizeof(wchar_t);
-				wc_buf = (wchar_t *)malloc(wc_buf_size);
+				wc_buf_size = 13 * sizeof(int32_t);
+				wc_buf = (int32_t *)malloc(wc_buf_size);
 
 				if (!wc_buf) {
 					free(cells);
 					exit_interpreter("");
 				}
 
-				wmemset(wc_buf, L'\0', wc_buf_size / sizeof(wchar_t));
+				wmemset(wc_buf, L'\0', wc_buf_size / sizeof(int32_t));
 
 				int j = 0;
 
-				wchar_t wc;
+				int32_t wc;
 
 				while ((wc = getwchar()) != L'\n') {
 					if (j == wc_buf_size - 1) {
-						wchar_t *tmp = (wchar_t *)realloc(wc_buf, (wc_buf_size *= 2));
+						int32_t *tmp = (int32_t *)realloc(wc_buf, (wc_buf_size *= 2));
 
 						if (!tmp) {
 							free(wc_buf);
@@ -418,7 +418,7 @@ void run_commands(const command_t *commands, int commands_count) {
 					wc_buf[j++] = wc;
 				}
 
-				*cell = (wchar_t)wcstol(wc_buf, NULL, 10);
+				*cell = (int32_t)wcstol(wc_buf, NULL, 10);
 
 				free(wc_buf);
 

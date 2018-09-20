@@ -21,8 +21,9 @@
 #define LA_WEÁ_INTERPRETER_H
 
 #include <stdio.h>
-#include <wchar.h>
+#include <stdint.h>
 #include <stdbool.h>
+#include <wchar.h>
 
 /**
  * All the valid commands.
@@ -49,12 +50,12 @@ typedef enum {
 /**
  * The names of all valid commands.
  */
-extern const wchar_t command_names[16][8 * sizeof(wchar_t)];
+extern const int32_t command_names[16][8 * sizeof(int32_t)];
 
 /**
  * All the characters a command may be composed of.
  */
-extern const wchar_t valid_chars[];
+extern const int32_t valid_chars[];
 
 /**
  * Keeps track of the count of loop starting commands.
@@ -79,7 +80,7 @@ void interpret_la_weá(const char *);
  * @param code_length a pointer to store the length of the code
  * @return The code as a wide char string
  */
-wchar_t *get_code(const char *, size_t *);
+int32_t *get_code(const char *, size_t *);
 
 /**
  * Checks the validity of the code and retrieves the commands.
@@ -88,7 +89,7 @@ wchar_t *get_code(const char *, size_t *);
  * @param commands_count a pointer to store the number of commands found
  * @return The commands found
  */
-command_t *parse_code(const wchar_t *, size_t, int *);
+command_t *parse_code(const int32_t *, size_t, int *);
 
 /**
  * Gets command_t from name and counts the loops.
@@ -98,14 +99,14 @@ command_t *parse_code(const wchar_t *, size_t, int *);
  * @param column the column the command was found at
  * @return The command if found
  */
-command_t parse_command(const wchar_t *, int, long, long);
+command_t parse_command(const int32_t *, int, long, long);
 
 /**
  * Checks if any command can contain the character.
  * @param wc the character to check
  * @return Whether the character was valid
  */
-bool validate_char(wchar_t);
+bool validate_char(int32_t);
 
 /**
  * Runs the code by interpreting the commands.
