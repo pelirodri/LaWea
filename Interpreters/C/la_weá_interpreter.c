@@ -293,8 +293,8 @@ bool validate_char(int32_t wc) {
 }
 
 void run_commands(const command_t *commands, int commands_count) {
-	size_t cells_size = BUFSIZ * sizeof(int32_t);
-	int32_t *cells = (int32_t *)calloc(BUFSIZ, sizeof(int32_t));
+	size_t cells_size = 8 * sizeof(int32_t);
+	int32_t *cells = (int32_t *)calloc(8, sizeof(int32_t));
 
 	if (!cells) {
 		exit_interpreter("");
