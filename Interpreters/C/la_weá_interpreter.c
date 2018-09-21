@@ -337,7 +337,7 @@ void run_commands(const command_t *commands, int commands_length) {
 
 				break;
 			case puta:
-				if (cell == cells + ((cells_size / sizeof(int32_t) - 1))) {
+				if (cell == cells + ((cells_size / sizeof(int32_t)) - 1)) {
 					int32_t *tmp = (int32_t *)realloc(cells, (cells_size *= 2));
 
 					if (!tmp) {
@@ -345,9 +345,12 @@ void run_commands(const command_t *commands, int commands_length) {
 						exit_interpreter("");
 					}
 
+					int cell_diff = cell - cells;
+
 					cells = tmp;
 
-					wmemset(cells, 0, cells_size / sizeof(int32_t));
+					cell = cells + cell_diff;
+					wmemset(cell + 1, 0, (cells_size / sizeof(int32_t)) / 2);
 				}
 
 				cell++;
