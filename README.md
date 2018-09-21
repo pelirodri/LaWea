@@ -21,6 +21,6 @@ Command       | Description
 ```perkin```  | Copies current cell value if there is no copy; otherwise, pastes the copied value and resets the copy.
 ```mierda```  | Terminates program.
 
-JavaScript based online interpreter: [https://laweainterpreter.firebaseapp.com]
+JavaScript based online interpreter: https://laweainterpreter.firebaseapp.com
 
 **Note:** C interpreter not supported in Windows as of right now. Only tested in macOS and Linux.
