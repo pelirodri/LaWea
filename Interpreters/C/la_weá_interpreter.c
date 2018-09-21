@@ -174,8 +174,8 @@ command_t *parse_code(const int32_t *code, size_t code_length, int *commands_len
 					free(commands);
 
 					char msg[68 + wcslen(cmd_name) + len1 + len2];
-					char sub_msg[] = "no es un comando válido, po, saco de weas";
-					sprintf(msg, "'%ls' %s (línea: %ld, columna: %ld)", cmd_name, sub_msg, row, column - (long)wcslen(cmd_name));
+					char sub_msg[] = " no es un comando válido, po, saco de weas (línea: ";
+					sprintf(msg, "'%ls'%s%ld, columna: %ld)", cmd_name, sub_msg, row, column - (long)wcslen(cmd_name));
 
 					exit_interpreter(msg);
 				}
@@ -213,8 +213,8 @@ command_t *parse_code(const int32_t *code, size_t code_length, int *commands_len
 					free(commands);
 
 					char msg[79 + len1 + len2];
-					char sub_msg[] = "Voh creís q yo soy weón, ctm? Te gustan largos, parece";
-					sprintf(msg, "%s (línea: %ld, columna: %ld)", sub_msg, row, column - (long)wcslen(cmd_name));
+					char sub_msg[] = "Voh creís q yo soy weón, ctm? Te gustan largos, parece (línea: ";
+					sprintf(msg, "%s%ld, columna: %ld)", sub_msg, row, column - (long)wcslen(cmd_name));
 
 					exit_interpreter(msg);
 				}
