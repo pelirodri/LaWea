@@ -116,22 +116,22 @@ bool validate_char(int32_t);
 void run_commands(const command_t *, int);
 
 /**
- * A utility function to find the closest loop starting command.
+ * A utility function to find the appropriate loop starting command.
  * @param commands the array of commands to search in
  * @param commands_length the number of commands in the array
  * @param i the index to start searching at
  * @return The index of the loop starting command or -1 if not found
  */
-int find_closest_loop_start(const command_t *, int, int);
+int find_loop_start(const command_t *, int, int);
 
 /**
- * A utility function to find the closest loop ending command.
+ * A utility function to find the appropriate loop ending command.
  * @param commands the array of commands to search in
  * @param commands_length the number of commands in the array
  * @param i the index to start searching at
  * @return The index of the loop ending command or -1 if not found
  */
-int find_closest_loop_end(const command_t *, int, int);
+int find_loop_end(const command_t *, int, int);
 
 /**
  * A utility function that prints an error message and exits the program abnormally.

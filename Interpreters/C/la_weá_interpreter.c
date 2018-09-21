@@ -355,18 +355,18 @@ void run_commands(const command_t *commands, int commands_length) {
 				break;
 			case pichula:
 				if (!*cell) {
-					i = find_closest_loop_end(commands, commands_length, i);
+					i = find_loop_end(commands, commands_length, i);
 				}
 
 				break;
 			case tula:
 				if (*cell) {
-					i = find_closest_loop_start(commands, commands_length, i);
+					i = find_loop_start(commands, commands_length, i);
 				}
 
 				break;
 			case pico:
-				i = find_closest_loop_end(commands, commands_length, i);
+				i = find_loop_end(commands, commands_length, i);
 				break;
 			case ctm:
 				putwchar(*cell);
@@ -438,7 +438,7 @@ void run_commands(const command_t *commands, int commands_length) {
 	free(cells);
 }
 
-int find_closest_loop_start(const command_t *commands, int commands_length, int i) {
+int find_loop_start(const command_t *commands, int commands_length, int i) {
 	for (int j = i - 1, level = 1; j >= 0; j--) {
 		if (commands[j] == tula) {
 			level++;
@@ -454,7 +454,7 @@ int find_closest_loop_start(const command_t *commands, int commands_length, int 
 	return -1;
 }
 
-int find_closest_loop_end(const command_t *commands, int commands_length, int i) {
+int find_loop_end(const command_t *commands, int commands_length, int i) {
 	for (int j = i + 1, level = 1; j < commands_length; j++) {
 		if (commands[j] == pichula) {
 			level++;
