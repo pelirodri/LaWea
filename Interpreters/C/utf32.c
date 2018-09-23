@@ -1,0 +1,165 @@
+//
+// Copyright © 2018 Rodrigo Pelissier. All rights reserved.
+//
+// This file is part of La Weá Interpreter (C)
+//
+// La Weá Interpreter (C) is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program. If not, see <http://www.gnu.org/licenses/>.
+//
+
+#include "utf32.h"
+
+size_t utf8_byte_utf8_code_point_length(uint_least8_t utf8_byte) {
+	if ((utf8_byte & 0x80) == 0x0) {
+		return 1;
+	} else if ((utf8_byte & 0xE0) == 0xC0) {
+		return 2;
+	} else if ((utf8_byte & 0xF0) == 0xE0) {
+		return 3;
+	} else {
+		return 4;
+	}
+}
+
+size_t utf32_char_utf8_code_point_length(uint_least32_t utf32_char) {
+	if (utf32_char <= 0x7F) {
+		return 1;
+	} else if (utf32_char <= 0x7FF) {
+		return 2;
+	} else if (utf32_char <= 0xFFFF) {
+		return 3;
+	} else {
+		return 4;
+	}
+}
+
+size_t utf8_strlen(const uint_least8_t *utf8_str) {
+	size_t str_length = 0, i = 0;
+
+	while (utf8_str[i]) {
+		i += utf8_byte_utf8_code_point_length(utf8_str[i]);
+		str_length++;
+	}
+
+	return str_length;
+}
+
+size_t utf32_strlen(const uint_least32_t *utf32_str) {
+	size_t str_length = 0;
+
+	for (int i = 0; utf32_str[i]; i++) {
+		str_length++;
+	}
+
+	return str_length;
+}
+
+size_t utf32_str_utf8_strlen(const uint_least32_t *utf32_str) {
+	size_t str_length = 0;
+
+	for (int i = 0; utf32_str[i]; i++) {
+		str_length += utf32_char_utf8_code_point_length(utf32_str[i]);
+	}
+
+	return str_length;
+}
+
+int utf32_strcmp(const uint_least32_t *utf32_str1, const uint_least32_t *utf32_str2) {
+	while (*utf32_str1) {
+		if (*utf32_str1 != *utf32_str2) {
+			break;
+		}
+
+		utf32_str1++;
+		utf32_str2++;
+	}
+
+	return (int)(*utf32_str1 - *utf32_str2);
+}
+
+uint_least32_t *utf8_to_utf32(const uint_least8_t *utf8_str) {
+	uint_least32_t *utf32_str = (uint_least32_t *)malloc((utf8_strlen(utf8_str) + 1) * sizeof(uint_least32_t));
+
+	if (!utf32_str) {
+		return NULL;
+	}
+
+	size_t i = 0, j = 0;
+
+	while (utf8_str[i]) {
+		size_t code_point_length = utf8_byte_utf8_code_point_length(utf8_str[i]);
+
+		switch (code_point_length) {
+			case 1:
+				utf32_str[j++] = utf8_str[i];
+				break;
+			case 2:
+				utf32_str[j++] = ((utf8_str[i] ^ 0xC0) << 6) | (utf8_str[i + 1] ^ 0x80);
+				break;
+			case 3:
+				utf32_str[j++] = ((utf8_str[i] ^ 0xE0) << 12) | ((utf8_str[i + 1] ^ 0x80) << 6) | (utf8_str[i + 2] ^ 0x80);
+				break;
+			case 4:
+				utf32_str[j++] = ((utf8_str[i] ^ 0xF0) << 16) | ((utf8_str[i + 1] ^ 0x80) << 12) | ((utf8_str[i + 2] ^ 0x80) << 6) | (utf8_str[i + 3] ^ 0x80);
+				break;
+		}
+
+		i += code_point_length;
+	}
+
+	utf32_str[j] = U'\0';
+
+	return utf32_str;
+}
+
+uint_least8_t *utf32_to_utf8(const uint_least32_t *utf32_str) {
+	uint_least8_t *utf8_str = (uint_least8_t *)malloc((utf32_str_utf8_strlen(utf32_str) + 1) * sizeof(uint_least8_t));
+
+	if (!utf8_str) {
+		return NULL;
+	}
+
+	size_t i = 0, j = 0;
+
+	for (int i = 0; utf32_str[i]; i++) {
+		size_t code_point_length = utf32_char_utf8_code_point_length(utf32_str[i]);
+
+		switch (code_point_length) {
+			case 1:
+				utf8_str[j++] = utf32_str[i];
+				break;
+			case 2:
+				utf8_str[j++] = 0xC0 | (utf32_str[i] >> 6);
+				utf8_str[j++] = 0x80 | utf32_str[i];
+
+				break;
+			case 3:
+				utf8_str[j++] = 0xE0 | (utf32_str[i] >> 12);
+				utf8_str[j++] = 0x80 | (utf32_str[i] >> 6);
+				utf8_str[j++] = 0x80 | utf32_str[i];
+
+				break;
+			case 4:
+				utf8_str[j++] = 0xF0 | (utf32_str[i] >> 18);
+				utf8_str[j++] = 0x80 | (utf32_str[i] >> 12);
+				utf8_str[j++] = 0x80 | (utf32_str[i] >> 6);
+				utf8_str[j++] = 0x80 | utf32_str[i];
+
+				break;
+		}
+	}
+
+	utf8_str[j] = '\0';
+
+	return utf8_str;
+}

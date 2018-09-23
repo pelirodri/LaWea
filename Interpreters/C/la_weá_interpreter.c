@@ -18,32 +18,34 @@
 //
 
 #include "la_weá_interpreter.h"
+#include "utf32.h"
 
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <locale.h>
 #include <errno.h>
 
-const int32_t command_names[16][8 * sizeof(int32_t)] = { 
-	L"maricón",
-	L"maraco",
-	L"weón",
-	L"aweonao",
-	L"maraca",
-	L"chucha",
-	L"puta",
-	L"pichula",
-	L"tula",
-	L"pico",
-	L"ctm",
-	L"quéweá",
-	L"chúpala",
-	L"brígido",
-	L"perkin",
-	L"mierda"
+const uint_least32_t command_names[16][8 * sizeof(uint_least32_t)] = { 
+	U"maricón",
+	U"maraco",
+	U"weón",
+	U"aweonao",
+	U"maraca",
+	U"chucha",
+	U"puta",
+	U"pichula",
+	U"tula",
+	U"pico",
+	U"ctm",
+	U"quéweá",
+	U"chúpala",
+	U"brígido",
+	U"perkin",
+	U"mierda"
 };
 
-const int32_t valid_chars[] = L"abcdeghiklmnopqrtuwáéíóú";
+const uint_least32_t valid_chars[] = U"abcdeghiklmnopqrtuwáéíóú";
 
 int loop_starts_length = 0, loop_ends_length = 0;
 
@@ -61,10 +63,10 @@ int main(int argc, char **argv) {
 
 void interpret_la_weá(const char *file_path) {
 	size_t code_length = 0;
-	int32_t *code = get_code(file_path, &code_length);
+	uint_least32_t *code = get_code(file_path, &code_length);
 
 	if (!code) {
-		exit_interpreter("Código no encontrado");
+		exit_interpreter("");
 	}
 
 	int commands_length = 0;
@@ -81,7 +83,7 @@ void interpret_la_weá(const char *file_path) {
 	free(commands);
 }
 
-int32_t *get_code(const char *file_path, size_t *code_length) {
+uint_least32_t *get_code(const char *file_path, size_t *code_length) {
 	const char *extension = strrchr(file_path, '.');
 
 	if (!extension || strcmp(extension + 1, "lw")) {
@@ -101,49 +103,25 @@ int32_t *get_code(const char *file_path, size_t *code_length) {
 	}
 
 	fseek(fp, 0, SEEK_END);
-	size_t code_size = ((size_t)(ftell(fp) / 1.25) * sizeof(int32_t)) + (2 * sizeof(int32_t));
+	size_t utf8_code_length = (size_t)ftell(fp);
 	fseek(fp, 0, SEEK_SET);
 
-	int32_t *code = (int32_t *)malloc(code_size);
+	char *utf8_code = (char *)calloc(utf8_code_length + 1, sizeof(char));
 
-	if (!code) {
+	if (!utf8_code) {
 		fclose(fp);
 		exit_interpreter("");
 	}
 
-	wmemset(code, L'\0', code_size / sizeof(int32_t));
-
-	long i = 0;
-
-	int32_t wc;
-
-	while (wc != WEOF) {
-		wc = fgetwc(fp);
-
-		if ((i * sizeof(int32_t)) == (code_size - (2 * sizeof(int32_t)))) {
-			int32_t *tmp = (int32_t *)realloc(code, (code_size *= 2));
-
-			if (!tmp) {
-				free(code);
-				fclose(fp);
-
-				exit_interpreter("");
-			}
-
-			code = tmp;
-		}
-
-		code[i++] = wc;	
-	}
-
+	fread(utf8_code, sizeof(char), utf8_code_length + 1, fp);
 	fclose(fp);
 
-	*code_length = i;
+	*code_length = utf8_strlen((uint_least8_t *)utf8_code);
 
-	return code;
+	return utf8_to_utf32((uint_least8_t *)utf8_code);
 }
 
-command_t *parse_code(const int32_t *code, size_t code_length, int *commands_length) {
+command_t *parse_code(const uint_least32_t *code, size_t code_length, int *commands_length) {
 	size_t commands_size = (size_t)(code_length / 7) * sizeof(command_t);
 	command_t *commands = (command_t *)malloc(commands_size);
 
@@ -151,31 +129,31 @@ command_t *parse_code(const int32_t *code, size_t code_length, int *commands_len
 		exit_interpreter("");
 	}
 
-	int32_t cmd_name[8 * sizeof(int32_t)] = {L'\0'};
+	uint_least32_t cmd_name[8 * sizeof(uint_least32_t)] = {'\0'};
 
 	int i = 0, j = -1;
 	long row = 0, column = 0;
 
 	bool is_comment = false;
 
-	for (long k = 0; k < code_length; k++) {
-		if (code[k] == L'#') {
+	for (long k = 0; k <= code_length; k++) {
+		if (code[k] == U'#') {
 			is_comment = true;
 		}
 
 		int len1 = row ? snprintf(NULL, 0, "%ld", row) : 0;
-		int len2 = column ? snprintf(NULL, 0, "%ld", column - (long)wcslen(cmd_name)) : 0;
+		int len2 = column ? snprintf(NULL, 0, "%ld", column - (long)utf32_strlen(cmd_name)) : 0;
 
-		if (code[k] == L' ' || code[k] == L'\n' || code[k] == L'\t' || code[k] == WEOF || code[k] == L'#') {
+		if (code[k] == U' ' || code[k] == U'\n' || code[k] == U'\t' || code[k] == U'\0' || code[k] == U'#') {
 			if (j > -1) {		
-				command_t cmd = parse_command(cmd_name, i, row, column - (long)wcslen(cmd_name));
+				command_t cmd = parse_command(cmd_name, i, row, column - (long)utf32_strlen(cmd_name));
 
 				if ((int)cmd == -1) {
 					free(commands);
 
-					char msg[68 + wcslen(cmd_name) + len1 + len2];
+					char msg[68 + (int)utf32_strlen(cmd_name) + len1 + len2];
 					char sub_msg[] = " no es un comando válido, po, saco de weas (línea: ";
-					sprintf(msg, "'%ls'%s%ld, columna: %ld)", cmd_name, sub_msg, row, column - (long)wcslen(cmd_name));
+					sprintf(msg, "'%s'%s%ld, columna: %ld)", utf32_to_utf8(cmd_name), sub_msg, row, column - (long)utf32_strlen(cmd_name));
 
 					exit_interpreter(msg);
 				}
@@ -193,7 +171,7 @@ command_t *parse_code(const int32_t *code, size_t code_length, int *commands_len
 
 				commands[i++] = (command_t)cmd;
 
-				wmemset(cmd_name, L'\0', 7);
+				memset(cmd_name, U'\0', 7 * sizeof(uint_least32_t));
 				j = -1;
 			}
 		} else {
@@ -203,8 +181,8 @@ command_t *parse_code(const int32_t *code, size_t code_length, int *commands_len
 
 					int len3 = column ? snprintf(NULL, 0, "%ld", column) : 0;
 
-					char msg[59 + sizeof(int32_t) + len1 + len3];
-					sprintf(msg, "'%lc' no es parte de La Weá, tonto qlo (línea: %ld, columna: %ld)", code[k], row, column);
+					char msg[59 + sizeof(uint_least32_t) + len1 + len3];
+					sprintf(msg, "'%c' no es parte de La Weá, tonto qlo (línea: %ld, columna: %ld)", code[k], row, column);
 
 					exit_interpreter(msg);
 				}
@@ -214,7 +192,7 @@ command_t *parse_code(const int32_t *code, size_t code_length, int *commands_len
 
 					char msg[79 + len1 + len2];
 					char sub_msg[] = "Voh creís q yo soy weón, ctm? Te gustan largos, parece (línea: ";
-					sprintf(msg, "%s%ld, columna: %ld)", sub_msg, row, column - (long)wcslen(cmd_name));
+					sprintf(msg, "%s%ld, columna: %ld)", sub_msg, row, column - (long)utf32_strlen(cmd_name));
 
 					exit_interpreter(msg);
 				}
@@ -245,17 +223,17 @@ command_t *parse_code(const int32_t *code, size_t code_length, int *commands_len
 	return commands;
 }
 
-command_t parse_command(const int32_t *cmd_name, int cmd_idx, long row, long column) {
-	size_t cnl = sizeof(command_names) / sizeof(*command_names);
+command_t parse_command(const uint_least32_t *cmd_name, int cmd_idx, long row, long column) {
+	size_t command_names_length = sizeof(command_names) / sizeof(*command_names);
 
 	int len1 = row ? snprintf(NULL, 0, "%ld", row) : 0;
 	int len2 = column ? snprintf(NULL, 0, "%ld", column) : 0;
 
-	for (int i = 0; i < cnl; i++) {
-		if (!wcscmp(cmd_name, command_names[i])) {
-			if (!wcscmp(cmd_name, L"pichula")) {
+	for (int i = 0; i < command_names_length; i++) {
+		if (!utf32_strcmp(cmd_name, command_names[i])) {
+			if (!utf32_strcmp(cmd_name, U"pichula")) {
 				loop_starts_length++;				
-			} else if (!wcscmp(cmd_name, L"tula")) {
+			} else if (!utf32_strcmp(cmd_name, U"tula")) {
 				if (loop_ends_length == loop_starts_length) {
 					char msg[74 + len1 + len2];
 					sprintf(msg, "Se encontró una tula sin su respectiva pichula en la línea: %ld, columna: %ld", row, column);
@@ -264,7 +242,7 @@ command_t parse_command(const int32_t *cmd_name, int cmd_idx, long row, long col
 				}
 
 				loop_ends_length++;
-			} else if (!wcscmp(cmd_name, L"pico")) {
+			} else if (!utf32_strcmp(cmd_name, U"pico")) {
 				if (loop_starts_length == loop_ends_length) {
 					char msg[52 + len1 + len2];
 					sprintf(msg, "No debiste meter ese pico en la línea: %ld, columna: %ld", row, column);
@@ -280,11 +258,11 @@ command_t parse_command(const int32_t *cmd_name, int cmd_idx, long row, long col
 	return -1;
 }
 
-bool validate_char(int32_t wc) {
-	size_t vcl = sizeof(valid_chars) / sizeof(*valid_chars);
+bool validate_char(uint_least32_t c) {
+	size_t valid_chars_length = sizeof(valid_chars) / sizeof(*valid_chars);
 
-	for (int i = 0; i < vcl; i++) {
-		if (wc == valid_chars[i]) {
+	for (int i = 0; i < valid_chars_length; i++) {
+		if (c == valid_chars[i]) {
 			return true;
 		}
 	}
@@ -293,22 +271,22 @@ bool validate_char(int32_t wc) {
 }
 
 void run_commands(const command_t *commands, int commands_length) {
-	size_t cells_size = 8 * sizeof(int32_t);
-	int32_t *cells = (int32_t *)calloc(8, sizeof(int32_t));
+	size_t cells_size = 8 * sizeof(uint_least32_t);
+	uint_least32_t *cells = (uint_least32_t *)calloc(8, sizeof(uint_least32_t));
 
 	if (!cells) {
 		exit_interpreter("");
 	}
 
-	int32_t *cell = cells;
+	uint_least32_t *cell = cells;
 
 	bool copy_set = false;
-	int32_t cell_value_copy;
+	uint_least32_t cell_value_copy;
 
-	int32_t char_input;
+	uint_least32_t char_input;
 
-	size_t wc_buf_size;
-	int32_t *wc_buf;
+	size_t char_buf_size;
+	char *char_buf;
 
 	for (int i = 0; i < commands_length; i++) {
 		switch (commands[i]) {
@@ -337,20 +315,20 @@ void run_commands(const command_t *commands, int commands_length) {
 
 				break;
 			case puta:
-				if (cell == cells + ((cells_size / sizeof(int32_t)) - 1)) {
-					int32_t *tmp = (int32_t *)realloc(cells, (cells_size *= 2));
+				if (cell == cells + ((cells_size / sizeof(uint_least32_t)) - 1)) {
+					uint_least32_t *tmp = (uint_least32_t *)realloc(cells, (cells_size *= 2));
 
 					if (!tmp) {
 						free(cells);
 						exit_interpreter("");
 					}
 
-					int cell_diff = cell - cells;
+					ptrdiff_t cell_diff = cell - cells;
 
 					cells = tmp;
 
 					cell = cells + cell_diff;
-					wmemset(cell + 1, 0, (cells_size / sizeof(int32_t)) / 2);
+					memset(cell + 1, 0, cells_size / 2);
 				}
 
 				cell++;
@@ -372,11 +350,11 @@ void run_commands(const command_t *commands, int commands_length) {
 				i = find_loop_end(commands, commands_length, i);
 				break;
 			case ctm:
-				putwchar(*cell);
+				putchar(*cell);
 				break;
 			case quéweá:
-				char_input = getwchar();
-				while (getwchar() != L'\n') {}
+				char_input = getchar();
+				while (getchar() != L'\n') {}
 
 				*cell = char_input;
 
@@ -385,40 +363,37 @@ void run_commands(const command_t *commands, int commands_length) {
 				printf("%d", *cell);
 				break;
 			case brígido:
-				wc_buf_size = 13 * sizeof(int32_t);
-				wc_buf = (int32_t *)malloc(wc_buf_size);
+				char_buf_size = 13 * sizeof(char);
+				char_buf = (char *)calloc(13, sizeof(char));
 
-				if (!wc_buf) {
+				if (!char_buf) {
 					free(cells);
 					exit_interpreter("");
 				}
 
-				wmemset(wc_buf, L'\0', wc_buf_size / sizeof(int32_t));
+				int c, j = 0;
 
-				int j = 0;
-
-				int32_t wc;
-
-				while ((wc = getwchar()) != L'\n') {
-					if (j == wc_buf_size - 1) {
-						int32_t *tmp = (int32_t *)realloc(wc_buf, (wc_buf_size *= 2));
+				while ((c = getchar()) != '\n') {
+					if (j == char_buf_size - 1) {
+						char *tmp = (char *)realloc(char_buf, (char_buf_size *= 2));
 
 						if (!tmp) {
-							free(wc_buf);
+							free(char_buf);
 							free(cells);
 
 							exit_interpreter("");
 						}
 
-						wc_buf = tmp;
+						char_buf = tmp;
+						memset(char_buf + (j + 1), 0, char_buf_size / 2);
 					}
 
-					wc_buf[j++] = wc;
+					char_buf[j++] = c;
 				}
 
-				*cell = (int32_t)wcstol(wc_buf, NULL, 10);
+				*cell = (uint_least32_t)strtol(char_buf, NULL, 10);
 
-				free(wc_buf);
+				free(char_buf);
 
 				break;
 			case perkin:
@@ -434,6 +409,7 @@ void run_commands(const command_t *commands, int commands_length) {
 			case mierda:
 				free(cells);
 				exit(EXIT_SUCCESS);
+
 				break;
 		}
 	}
