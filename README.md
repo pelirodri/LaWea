@@ -23,4 +23,4 @@ Command       | Description
 
 JavaScript based online interpreter: https://laweainterpreter.firebaseapp.com/
 
-**Note:** C interpreter has been successfully tested in macOS, Linux and Windows.
+**Note:** C interpreter has been successfully tested in macOS, Linux and Windows. Must be compiled with Clang.
