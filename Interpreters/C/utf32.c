@@ -87,7 +87,56 @@ int utf32_strcmp(const uint_least32_t *utf32_str1, const uint_least32_t *utf32_s
 	return (int)(*utf32_str1 - *utf32_str2);
 }
 
-uint_least32_t *utf8_to_utf32(const uint_least8_t *utf8_str) {
+uint_least32_t utf8_char_to_utf32(const uint_least8_t *utf8_char) {
+	switch (utf8_byte_utf8_code_point_length(utf8_char[0])) {
+		case 1:
+			return utf8_char[0];
+		case 2:
+			return ((utf8_char[0] ^ 0xC0) << 6) | (utf8_char[1] ^ 0x80);
+		case 3:
+			return ((utf8_char[0] ^ 0xE0) << 12) | ((utf8_char[1] ^ 0x80) << 6) | (utf8_char[2] ^ 0x80);
+		case 4:
+			return ((utf8_char[0] ^ 0xF0) << 16) | ((utf8_char[1] ^ 0x80) << 12) | ((utf8_char[2] ^ 0x80) << 6) | (utf8_char[3] ^ 0x80);
+		default:
+			return U'\0';
+	}
+}
+
+uint_least8_t *utf32_char_to_utf8(uint_least32_t utf32_char) {
+	size_t code_point_length = utf32_char_utf8_code_point_length(utf32_char), j = 0;
+
+	uint_least8_t *utf8_char = (uint_least8_t *)malloc((code_point_length + 1) * sizeof(uint_least8_t));
+
+	switch (code_point_length) {
+		case 1:
+			utf8_char[j++] = utf32_char;
+			break;
+		case 2:
+			utf8_char[j++] = 0xC0 | (utf32_char >> 6);
+			utf8_char[j++] = 0x80 | (utf32_char & 0x3F);
+
+			break;
+		case 3:
+			utf8_char[j++] = 0xE0 | (utf32_char >> 12);
+			utf8_char[j++] = 0x80 | ((utf32_char >> 6) & 0x3F);
+			utf8_char[j++] = 0x80 | (utf32_char & 0x3F);
+
+			break;
+		case 4:
+			utf8_char[j++] = 0xF0 | (utf32_char >> 18);
+			utf8_char[j++] = 0x80 | ((utf32_char >> 12) & 0x3F);
+			utf8_char[j++] = 0x80 | ((utf32_char >> 6) & 0x3F);
+			utf8_char[j++] = 0x80 | (utf32_char & 0x3F);
+
+			break;
+	}
+
+	utf8_char[j] = '\0';
+
+	return utf8_char;
+}
+
+uint_least32_t *utf8_str_to_utf32(const uint_least8_t *utf8_str) {
 	uint_least32_t *utf32_str = (uint_least32_t *)malloc((utf8_strlen(utf8_str) + 1) * sizeof(uint_least32_t));
 
 	if (!utf32_str) {
@@ -97,24 +146,8 @@ uint_least32_t *utf8_to_utf32(const uint_least8_t *utf8_str) {
 	size_t i = 0, j = 0;
 
 	while (utf8_str[i]) {
-		size_t code_point_length = utf8_byte_utf8_code_point_length(utf8_str[i]);
-
-		switch (code_point_length) {
-			case 1:
-				utf32_str[j++] = utf8_str[i];
-				break;
-			case 2:
-				utf32_str[j++] = ((utf8_str[i] ^ 0xC0) << 6) | (utf8_str[i + 1] ^ 0x80);
-				break;
-			case 3:
-				utf32_str[j++] = ((utf8_str[i] ^ 0xE0) << 12) | ((utf8_str[i + 1] ^ 0x80) << 6) | (utf8_str[i + 2] ^ 0x80);
-				break;
-			case 4:
-				utf32_str[j++] = ((utf8_str[i] ^ 0xF0) << 16) | ((utf8_str[i + 1] ^ 0x80) << 12) | ((utf8_str[i + 2] ^ 0x80) << 6) | (utf8_str[i + 3] ^ 0x80);
-				break;
-		}
-
-		i += code_point_length;
+		utf32_str[j++] = utf8_char_to_utf32(utf8_str + i);
+		i += utf8_byte_utf8_code_point_length(utf8_str[i]);
 	}
 
 	utf32_str[j] = U'\0';
@@ -122,7 +155,7 @@ uint_least32_t *utf8_to_utf32(const uint_least8_t *utf8_str) {
 	return utf32_str;
 }
 
-uint_least8_t *utf32_to_utf8(const uint_least32_t *utf32_str) {
+uint_least8_t *utf32_str_to_utf8(const uint_least32_t *utf32_str) {
 	uint_least8_t *utf8_str = (uint_least8_t *)malloc((utf32_str_utf8_strlen(utf32_str) + 1) * sizeof(uint_least8_t));
 
 	if (!utf8_str) {
@@ -132,31 +165,33 @@ uint_least8_t *utf32_to_utf8(const uint_least32_t *utf32_str) {
 	size_t i = 0, j = 0;
 
 	for (int i = 0; utf32_str[i]; i++) {
-		size_t code_point_length = utf32_char_utf8_code_point_length(utf32_str[i]);
+		uint_least8_t *utf8_char = utf32_char_to_utf8(utf32_str[i]);
 
-		switch (code_point_length) {
+		switch (utf32_char_utf8_code_point_length(utf32_str[i])) {
 			case 1:
-				utf8_str[j++] = utf32_str[i];
+				utf8_str[j++] = utf8_char[0];
 				break;
 			case 2:
-				utf8_str[j++] = 0xC0 | (utf32_str[i] >> 6);
-				utf8_str[j++] = 0x80 | utf32_str[i];
+				utf8_str[j++] = utf8_char[0];
+				utf8_str[j++] = utf8_char[1];
 
 				break;
 			case 3:
-				utf8_str[j++] = 0xE0 | (utf32_str[i] >> 12);
-				utf8_str[j++] = 0x80 | (utf32_str[i] >> 6);
-				utf8_str[j++] = 0x80 | utf32_str[i];
+				utf8_str[j++] = utf8_char[0];
+				utf8_str[j++] = utf8_char[1];
+				utf8_str[j++] = utf8_char[2];
 
 				break;
 			case 4:
-				utf8_str[j++] = 0xF0 | (utf32_str[i] >> 18);
-				utf8_str[j++] = 0x80 | (utf32_str[i] >> 12);
-				utf8_str[j++] = 0x80 | (utf32_str[i] >> 6);
-				utf8_str[j++] = 0x80 | utf32_str[i];
+				utf8_str[j++] = utf8_char[0];
+				utf8_str[j++] = utf8_char[1];
+				utf8_str[j++] = utf8_char[2];
+				utf8_str[j++] = utf8_char[3];
 
 				break;
 		}
+
+		free(utf8_char);
 	}
 
 	utf8_str[j] = '\0';

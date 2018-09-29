@@ -29,5 +29,7 @@ size_t utf32_str_utf8_strlen(const uint_least32_t *utf32_str);
 
 int utf32_strcmp(const uint_least32_t *utf32_str1, const uint_least32_t *utf32_str2);
 
-uint_least32_t *utf8_to_utf32(const uint_least8_t *utf8_str);
-uint_least8_t *utf32_to_utf8(const uint_least32_t *utf32_str);
+uint_least32_t utf8_char_to_utf32(const uint_least8_t *utf8_char);
+uint_least8_t *utf32_char_to_utf8(uint_least32_t utf32_char);
+uint_least32_t *utf8_str_to_utf32(const uint_least8_t *utf8_str);
+uint_least8_t *utf32_str_to_utf8(const uint_least32_t *utf32_str);
