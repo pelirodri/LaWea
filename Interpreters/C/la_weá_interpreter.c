@@ -25,6 +25,15 @@
 #include <string.h>
 #include <locale.h>
 #include <errno.h>
+#include <fcntl.h>
+
+
+#if defined(__unix__) || (defined(__APPLE__) && defined(__MACH__)) || defined(__CYGWIN__)
+	#include <unistd.h>
+#elif defined(_WIN64) || defined (_WIN32)
+	#include <windows.h>
+	#include <io.h>
+#endif
 
 const uint_least32_t command_names[16][8 * sizeof(uint_least32_t)] = { 
 	U"maricón",
@@ -61,6 +70,22 @@ int main(int argc, char **argv) {
 	return 0;
 }
 
+static void file_not_found_exit() {
+	char msg[26] = {'\0'};
+
+	if (errno == ENOENT) {
+		char src[] = "No existe la weá, po, wn";
+
+		#if !defined(_WIN64) && !defined(_WIN32)
+			strcpy(msg, src);
+		#else
+			strcpy_s(msg, 26, src);
+		#endif
+	}
+
+	exit_interpreter(msg);
+}
+
 void interpret_la_weá(const char *file_path) {
 	size_t code_length = 0;
 	uint_least32_t *code = get_code(file_path, &code_length);
@@ -90,31 +115,65 @@ uint_least32_t *get_code(const char *file_path, size_t *code_length) {
 		exit_interpreter("El archivo qlo tiene q tener la extensión .lw");
 	}
 
-	FILE *fp = fopen(file_path, "r");
+	size_t utf8_code_length;
 
-	if (!fp) {
-		char msg[26];
+	int fd;
+	FILE *fp;
 
-		if (errno == ENOENT) {
-			strcpy(msg, "No existe la weá, po, wn");
+	#if defined(__unix__) || (defined(__APPLE__) && defined(__MACH__)) || defined(__CYGWIN__) || defined(_WIN64) || defined(_WIN32)
+		#if !defined(_WIN64) && !defined(_WIN32)
+			fd = open(file_path, O_RDONLY);
+		#else
+			errno = _sopen_s(&fd, file_path, _O_RDONLY, _SH_DENYWR, 0);
+		#endif
+
+		if (fd == -1) {
+			file_not_found_exit();
 		}
 
-		exit_interpreter(msg);
-	}
+		#if !defined(_WIN64) && !defined(_WIN32)
+			utf8_code_length = lseek(fd, 0, SEEK_END);
+			lseek(fd, 0, SEEK_SET);
+		#else
+			utf8_code_length = _lseek(fd, 0, SEEK_END);
+			_lseek(fd, 0, SEEK_SET);
+		#endif
+	#else
+		fp = fopen(file_path, "r");
 
-	fseek(fp, 0, SEEK_END);
-	size_t utf8_code_length = (size_t)ftell(fp);
-	fseek(fp, 0, SEEK_SET);
+		if (!fp) {
+			file_not_found_exit();
+		}
+
+		fseek(fp, 0, SEEK_END);
+		utf8_code_length = (size_t)ftell(fp);
+		fseek(fp, 0, SEEK_SET);
+	#endif
 
 	char *utf8_code = (char *)calloc(utf8_code_length + 1, sizeof(char));
 
 	if (!utf8_code) {
-		fclose(fp);
+		#if defined(__unix__) || (defined(__APPLE__) && defined(__MACH__)) || defined(__CYGWIN__)
+			close(fd);
+		#elif defined(_WIN64) || defined(_WIN32)
+			_close(fd);
+		#else
+			fclose(fp);
+		#endif
+
 		exit_interpreter("");
 	}
 
-	fread(utf8_code, sizeof(char), utf8_code_length + 1, fp);
-	fclose(fp);
+	#if defined(__unix__) || (defined(__APPLE__) && defined(__MACH__)) || defined(__CYGWIN__)
+		read(fd, utf8_code, utf8_code_length);
+		close(fd);
+	#elif defined(_WIN64) || defined(_WIN32)
+		_read(fd, utf8_code, utf8_code_length);
+		_close(fd);
+	#else
+		fread(utf8_code, sizeof(char), utf8_code_length + 1, fp);
+		fclose(fp);
+	#endif
 
 	*code_length = utf8_strlen((uint_least8_t *)utf8_code);
 
@@ -461,6 +520,16 @@ int find_loop_end(const command_t *commands, int commands_length, int i) {
 }
 
 void exit_interpreter(const char *err_msg) {
-	fprintf(stderr, "%s\n", strlen(err_msg) ? err_msg : "Error interno");
+	#if !defined (_WIN64) && !defined(_WIN32)
+		fprintf(stderr, "%s\n", strlen(err_msg) ? err_msg : "Error interno");
+	#else
+		wchar_t wbuf[(utf8_strlen((const uint_least8_t *)err_msg) + 1) * sizeof(wchar_t)];
+		int utf16_str_length = MultiByteToWideChar(CP_UTF8, 0, err_msg, strlen(err_msg), wbuf, sizeof(wbuf));
+
+		wbuf[utf16_str_length] = L'\n';
+
+		WriteConsoleW(GetStdHandle(STD_OUTPUT_HANDLE), wbuf, utf16_str_length + 1, NULL, NULL);
+	#endif
+
 	exit(EXIT_FAILURE);
 }
