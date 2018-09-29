@@ -154,9 +154,13 @@ command_t *parse_code(const uint_least32_t *code, size_t code_length, int *comma
 				if ((int)cmd == -1) {
 					free(commands);
 
+					uint_least8_t *utf8_cmd_name = utf32_str_to_utf8(cmd_name);
+
 					char msg[68 + (int)utf32_strlen(cmd_name) + len1 + len2];
 					char sub_msg[] = " no es un comando válido, po, saco de weas (línea: ";
-					sprintf(msg, "'%s'%s%ld, columna: %ld)", utf32_str_to_utf8(cmd_name), sub_msg, row, column - (long)utf32_strlen(cmd_name));
+					sprintf(msg, "'%s'%s%ld, columna: %ld)", utf8_cmd_name, sub_msg, row, column - (long)utf32_strlen(cmd_name));
+
+					free(utf8_cmd_name);
 
 					exit_interpreter(msg);
 				}
@@ -184,8 +188,12 @@ command_t *parse_code(const uint_least32_t *code, size_t code_length, int *comma
 
 					int len3 = column ? snprintf(NULL, 0, "%ld", column) : 0;
 
+					uint_least8_t *utf8_char = utf32_char_to_utf8(code[k]);
+
 					char msg[59 + sizeof(uint_least32_t) + len1 + len3];
-					sprintf(msg, "'%s' no es parte de La Weá, tonto qlo (línea: %ld, columna: %ld)", utf32_char_to_utf8(code[k]), row, column);
+					sprintf(msg, "'%s' no es parte de La Weá, tonto qlo (línea: %ld, columna: %ld)", utf8_char, row, column);
+
+					free(utf8_char);
 
 					exit_interpreter(msg);
 				}
