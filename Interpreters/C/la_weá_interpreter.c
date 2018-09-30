@@ -221,7 +221,7 @@ command_t *parse_code(const uint_least32_t *code, size_t code_length, int *comma
 
                     char msg[68 + (int)utf32_strlen(cmd_name) + len1 + len2];
                     char sub_msg[] = " no es un comando válido, po, saco de weas (línea: ";
-                    sprintf(msg, "'%s'%s%ld, cola: %ld)", utf8_cmd_name, sub_msg, row, col - (long)utf32_strlen(cmd_name));
+                    sprintf(msg, "'%s'%s%ld, columna: %ld)", utf8_cmd_name, sub_msg, row, col - (long)utf32_strlen(cmd_name));
 
                     free(utf8_cmd_name);
 
@@ -254,7 +254,7 @@ command_t *parse_code(const uint_least32_t *code, size_t code_length, int *comma
                     uint_least8_t *utf8_char = utf32_char_to_utf8(code[k]);
 
                     char msg[59 + sizeof(uint_least32_t) + len1 + len3];
-                    sprintf(msg, "'%s' no es parte de La Weá, tonto qlo (línea: %ld, cola: %ld)", utf8_char, row, col);
+                    sprintf(msg, "'%s' no es parte de La Weá, tonto qlo (línea: %ld, columna: %ld)", utf8_char, row, col);
 
                     free(utf8_char);
 
@@ -266,7 +266,7 @@ command_t *parse_code(const uint_least32_t *code, size_t code_length, int *comma
 
                     char msg[79 + len1 + len2];
                     char sub_msg[] = "Voh creís q yo soy weón, ctm? Te gustan largos, parece (línea: ";
-                    sprintf(msg, "%s%ld, cola: %ld)", sub_msg, row, col - (long)utf32_strlen(cmd_name));
+                    sprintf(msg, "%s%ld, columna: %ld)", sub_msg, row, col - (long)utf32_strlen(cmd_name));
 
                     exit_interpreter(msg);
                 }
@@ -310,7 +310,7 @@ command_t parse_command(const uint_least32_t *cmd_name, int cmd_idx, long row, l
             } else if (!utf32_strcmp(cmd_name, U"tula")) {
                 if (loop_ends_length == loop_starts_length) {
                     char msg[74 + len1 + len2];
-                    sprintf(msg, "Se encontró una tula sin su respectiva pichula en la línea: %ld, cola: %ld", row, col);
+                    sprintf(msg, "Se encontró una tula sin su respectiva pichula en la línea: %ld, columna: %ld", row, col);
 
                     exit_interpreter(msg);
                 }
@@ -319,7 +319,7 @@ command_t parse_command(const uint_least32_t *cmd_name, int cmd_idx, long row, l
             } else if (!utf32_strcmp(cmd_name, U"pico")) {
                 if (loop_starts_length == loop_ends_length) {
                     char msg[52 + len1 + len2];
-                    sprintf(msg, "No debiste meter ese pico en la línea: %ld, cola: %ld", row, col);
+                    sprintf(msg, "No debiste meter ese pico en la línea: %ld, columna: %ld", row, col);
 
                     exit_interpreter(msg);
                 }
