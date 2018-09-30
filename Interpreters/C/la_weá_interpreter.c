@@ -18,7 +18,7 @@
 //
 
 #include "la_weá_interpreter.h"
-#include "utf32.h"
+#include "utf8_utf32.h"
 
 #include <stdio.h>
 #include <stdlib.h>

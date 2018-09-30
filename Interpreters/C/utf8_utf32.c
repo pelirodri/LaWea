@@ -17,7 +17,7 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 //
 
-#include "utf32.h"
+#include "utf8_utf32.h"
 
 size_t utf8_byte_utf8_code_point_length(uint_least8_t utf8_byte) {
 	if ((utf8_byte & 0x80) == 0x0) {
