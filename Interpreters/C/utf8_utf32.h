@@ -17,6 +17,9 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 //
 
+#ifndef UTF8_UTF32_H
+#define UTF8_UTF32_H
+
 #include <stdlib.h>
 #include <stdint.h>
 
@@ -33,3 +36,5 @@ uint_least32_t utf8_char_to_utf32(const uint_least8_t *utf8_char);
 uint_least8_t *utf32_char_to_utf8(uint_least32_t utf32_char);
 uint_least32_t *utf8_str_to_utf32(const uint_least8_t *utf8_str);
 uint_least8_t *utf32_str_to_utf8(const uint_least32_t *utf32_str);
+
+#endif
