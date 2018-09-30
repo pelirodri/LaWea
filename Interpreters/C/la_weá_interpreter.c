@@ -239,7 +239,7 @@ command_t *parse_code(const uint_least32_t *code, size_t code_length, int *comma
                     commands = tmp;
                 }
 
-                commands[i++] = (command_t)cmd;
+                commands[i++] = cmd;
 
                 memset(cmd_name, U'\0', 7 * sizeof(uint_least32_t));
                 j = -1;
