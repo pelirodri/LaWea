@@ -445,7 +445,7 @@ void run_commands(const command_t *commands, int commands_length) {
                     memset(utf8_char_input, '\0', 4);
 
                     if (fgets((char *)utf8_char_input, 4, stdin)[strlen((const char *)utf8_char_input) - 1] != '\n') {
-                        while ((getchar()) != '\n') {}
+                        while (getchar() != '\n') {}
                     }
 
                     *cur_cell = utf8_strlen(utf8_char_input) >= 2 ? utf8_str_to_utf32(utf8_char_input)[0] : U'\0';
@@ -456,7 +456,7 @@ void run_commands(const command_t *commands, int commands_length) {
                     ReadConsoleW(GetStdHandle(STD_INPUT_HANDLE), utf16_char_input, 3, &r, NULL);
 
                     if (utf16_char_input[wcslen(utf16_char_input) - 1] != '\n') {
-                        while ((getchar()) != '\n') {}
+                        while (getchar() != '\n') {}
                     }
 
                     *cur_cell = r == 3 ? (uint_least32_t)utf16_char_input[0] : U'\0';
