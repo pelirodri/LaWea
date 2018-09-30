@@ -527,16 +527,20 @@ int find_loop_end(const command_t *commands, int commands_length, int i) {
 }
 
 void exit_interpreter(const char *err_msg) {
-	#if !defined (_WIN64) && !defined(_WIN32)
-		fprintf(stderr, "%s\n", strlen(err_msg) ? err_msg : "Error interno");
-	#else
-		wchar_t wbuf[(utf8_strlen((const uint_least8_t *)err_msg) + 1) * sizeof(wchar_t)];
+	if (!strlen(err_msg)) {
+		fprintf(stderr, "Error interno\n");
+	} else {
+		#if !defined (_WIN64) && !defined(_WIN32)
+			fprintf(stderr, "%s\n", err_msg);
+		#else
+			wchar_t wbuf[(utf8_strlen((const uint_least8_t *)err_msg) + 1) * sizeof(wchar_t)];
 
-		int utf16_str_length = MultiByteToWideChar(CP_UTF8, 0, err_msg, strlen(err_msg), wbuf, sizeof(wbuf));
-		wbuf[utf16_str_length] = L'\n';
+			int utf16_str_length = MultiByteToWideChar(CP_UTF8, 0, err_msg, strlen(err_msg), wbuf, sizeof(wbuf));
+			wbuf[utf16_str_length] = L'\n';
 
-		WriteConsoleW(GetStdHandle(STD_OUTPUT_HANDLE), wbuf, utf16_str_length + 1, NULL, NULL);
-	#endif
+			WriteConsoleW(GetStdHandle(STD_ERROR_HANDLE), wbuf, utf16_str_length + 1, NULL, NULL);
+		#endif
+	}
 
 	exit(EXIT_FAILURE);
 }
