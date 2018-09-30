@@ -26,7 +26,6 @@
 #include <locale.h>
 #include <errno.h>
 
-
 #if defined(__unix__) || (defined(__APPLE__) && defined(__MACH__)) || defined(__CYGWIN__) || defined(_WIN64) || (_WIN32)
 	#include <fcntl.h>
 
