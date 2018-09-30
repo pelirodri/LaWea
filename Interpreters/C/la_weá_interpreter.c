@@ -355,8 +355,11 @@ void run_commands(const command_t *commands, int commands_length) {
     bool copy_set = false;
     uint_least32_t cell_value_copy;
 
-    uint_least8_t utf8_char_input[4];
-    wchar_t utf16_char_input[3];
+    #if !defined(_WIN64) && !defined(_WIN32)
+    	uint_least8_t utf8_char_input[4];
+    #else
+    	wchar_t utf16_char_input[3];
+    #endif
 
     size_t char_buf_size;
     char *char_buf;
@@ -433,7 +436,7 @@ void run_commands(const command_t *commands, int commands_length) {
 
                 break;
             case quéweá:
-                #if !defined(_WIN64) || !defined(_WIN32)
+                #if !defined(_WIN64) && !defined(_WIN32)
                     memset(utf8_char_input, '\0', 4);
 
                     if (fgets((char *)utf8_char_input, 4, stdin)[strlen((const char *)utf8_char_input) - 1] != '\n') {
