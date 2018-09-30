@@ -82,6 +82,11 @@ void interpret_la_weá(const char *file_path) {
         exit_interpreter("Código no encontrado");
     }
 
+    if (!utf32_strlen(code)) {
+    	free(code);
+    	return;
+    }
+
     int commands_length = 0;
     command_t *commands = parse_code(code, code_length, &commands_length);
 
@@ -138,41 +143,37 @@ uint_least32_t *get_code(const char *file_path, size_t *code_length) {
         fseek(fp, 0, SEEK_SET);
     #endif
 
-    if (utf8_code_length) {
-	    char *utf8_code = (char *)calloc(utf8_code_length + 1, sizeof(char));
+    char *utf8_code = (char *)calloc(utf8_code_length + 1, sizeof(char));
 
-	    if (!utf8_code) {
-	        #if defined(__unix__) || (defined(__APPLE__) && defined(__MACH__)) || defined(__CYGWIN__)
-	            close(fd);
-	        #elif defined(_WIN64) || defined(_WIN32)
-	            _close(fd);
-	        #else
-	            fclose(fp);
-	        #endif
+    if (!utf8_code) {
+        #if defined(__unix__) || (defined(__APPLE__) && defined(__MACH__)) || defined(__CYGWIN__)
+            close(fd);
+        #elif defined(_WIN64) || defined(_WIN32)
+            _close(fd);
+        #else
+            fclose(fp);
+        #endif
 
-	        exit_interpreter("");
-	    }
+        exit_interpreter("");
+    }
 
-	    #if defined(__unix__) || (defined(__APPLE__) && defined(__MACH__)) || defined(__CYGWIN__)
-	        read(fd, utf8_code, utf8_code_length);
-	        close(fd);
-	    #elif defined(_WIN64) || defined(_WIN32)
-	        _read(fd, utf8_code, utf8_code_length);
-	        _close(fd);
-	    #else
-	        fread(utf8_code, sizeof(char), utf8_code_length + 1, fp);
-	        fclose(fp);
-	    #endif
+    #if defined(__unix__) || (defined(__APPLE__) && defined(__MACH__)) || defined(__CYGWIN__)
+        read(fd, utf8_code, utf8_code_length);
+        close(fd);
+    #elif defined(_WIN64) || defined(_WIN32)
+        _read(fd, utf8_code, utf8_code_length);
+        _close(fd);
+    #else
+        fread(utf8_code, sizeof(char), utf8_code_length + 1, fp);
+        fclose(fp);
+    #endif
 
-	    *code_length = utf8_strlen((uint_least8_t *)utf8_code);
+    *code_length = utf8_strlen((uint_least8_t *)utf8_code);
 
-	    uint_least32_t *utf32_code = utf8_str_to_utf32((uint_least8_t *)utf8_code);
-	    free(utf8_code);
+    uint_least32_t *utf32_code = utf8_str_to_utf32((uint_least8_t *)utf8_code);
+    free(utf8_code);
 
-	    return utf32_code;
-	}
-
-	return NULL;
+    return utf32_code;
 }
 
 void file_not_found_exit() {
