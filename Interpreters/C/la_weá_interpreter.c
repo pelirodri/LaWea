@@ -275,13 +275,11 @@ command_t *parse_code(const uint_least32_t *code, size_t code_length, int *comma
             }
         }
 
-        if (code[k] == U'\n') {
+        if (code[k] == Ur'\n') {
             row++;
             col = 0;
 
-            if (is_comment) {
-                is_comment = false;
-            }
+            is_comment = false;
         } else {
             col++;
         }
