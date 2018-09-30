@@ -23,4 +23,4 @@ Command       | Description
 
 JavaScript based online interpreter: https://laweainterpreter.firebaseapp.com/
 
-**Note:** Must be compiled with Clang.
+**Note:** C interpreter must be compiled with Clang.
