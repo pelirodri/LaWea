@@ -170,7 +170,7 @@ uint_least32_t *get_code(const char *file_path, size_t *code_length) {
 }
 
 void file_not_found_exit() {
-	char msg[26] = {'\0'};
+	char msg[26];
 
 	if (errno == ENOENT) {
 		char src[] = "No existe la weá, po, wn";
