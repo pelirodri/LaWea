@@ -23,6 +23,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
 #include <locale.h>
 #include <errno.h>
 
@@ -209,7 +210,7 @@ command_t *parse_code(const uint_least32_t *code, size_t code_length, int *comma
         int len1 = row ? snprintf(NULL, 0, "%ld", row) : 0;
         int len2 = column ? snprintf(NULL, 0, "%ld", column - (long)utf32_strlen(cmd_name)) : 0;
 
-        if (code[k] == U' ' || code[k] == U'\n' || code[k] == U'\t' || code[k] == U'\0' || code[k] == U'#') {
+        if (isspace(code[k]) || code[k] == U'#' || code[k] == U'\0') {
             if (j != -1) {      
                 command_t cmd = parse_command(cmd_name, i, row, column - (long)utf32_strlen(cmd_name));
 
