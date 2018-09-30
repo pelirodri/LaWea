@@ -198,7 +198,7 @@ command_t *parse_code(const uint_least32_t *code, size_t code_length, int *comma
     uint_least32_t cmd_name[8 * sizeof(uint_least32_t)] = {'\0'};
 
     int i = 0, j = -1;
-    long row = 0, column = 0;
+    long row = 0, col = 0;
 
     bool is_comment = false;
 
@@ -208,11 +208,11 @@ command_t *parse_code(const uint_least32_t *code, size_t code_length, int *comma
         }
 
         int len1 = row ? snprintf(NULL, 0, "%ld", row) : 0;
-        int len2 = column ? snprintf(NULL, 0, "%ld", column - (long)utf32_strlen(cmd_name)) : 0;
+        int len2 = col ? snprintf(NULL, 0, "%ld", col - (long)utf32_strlen(cmd_name)) : 0;
 
         if (isspace(code[k]) || code[k] == U'#' || code[k] == U'\0') {
             if (j != -1) {      
-                command_t cmd = parse_command(cmd_name, i, row, column - (long)utf32_strlen(cmd_name));
+                command_t cmd = parse_command(cmd_name, i, row, col - (long)utf32_strlen(cmd_name));
 
                 if ((int)cmd == -1) {
                     free(commands);
@@ -221,7 +221,7 @@ command_t *parse_code(const uint_least32_t *code, size_t code_length, int *comma
 
                     char msg[68 + (int)utf32_strlen(cmd_name) + len1 + len2];
                     char sub_msg[] = " no es un comando válido, po, saco de weas (línea: ";
-                    sprintf(msg, "'%s'%s%ld, columna: %ld)", utf8_cmd_name, sub_msg, row, column - (long)utf32_strlen(cmd_name));
+                    sprintf(msg, "'%s'%s%ld, cola: %ld)", utf8_cmd_name, sub_msg, row, col - (long)utf32_strlen(cmd_name));
 
                     free(utf8_cmd_name);
 
@@ -249,12 +249,12 @@ command_t *parse_code(const uint_least32_t *code, size_t code_length, int *comma
                 if (!validate_char(code[k])) {
                     free(commands);
 
-                    int len3 = column ? snprintf(NULL, 0, "%ld", column) : 0;
+                    int len3 = col ? snprintf(NULL, 0, "%ld", col) : 0;
 
                     uint_least8_t *utf8_char = utf32_char_to_utf8(code[k]);
 
                     char msg[59 + sizeof(uint_least32_t) + len1 + len3];
-                    sprintf(msg, "'%s' no es parte de La Weá, tonto qlo (línea: %ld, columna: %ld)", utf8_char, row, column);
+                    sprintf(msg, "'%s' no es parte de La Weá, tonto qlo (línea: %ld, cola: %ld)", utf8_char, row, col);
 
                     free(utf8_char);
 
@@ -266,7 +266,7 @@ command_t *parse_code(const uint_least32_t *code, size_t code_length, int *comma
 
                     char msg[79 + len1 + len2];
                     char sub_msg[] = "Voh creís q yo soy weón, ctm? Te gustan largos, parece (línea: ";
-                    sprintf(msg, "%s%ld, columna: %ld)", sub_msg, row, column - (long)utf32_strlen(cmd_name));
+                    sprintf(msg, "%s%ld, cola: %ld)", sub_msg, row, col - (long)utf32_strlen(cmd_name));
 
                     exit_interpreter(msg);
                 }
@@ -277,13 +277,13 @@ command_t *parse_code(const uint_least32_t *code, size_t code_length, int *comma
 
         if (code[k] == L'\n') {
             row++;
-            column = 0;
+            col = 0;
 
             if (is_comment) {
                 is_comment = false;
             }
         } else {
-            column++;
+            col++;
         }
     }
 
@@ -297,11 +297,11 @@ command_t *parse_code(const uint_least32_t *code, size_t code_length, int *comma
     return commands;
 }
 
-command_t parse_command(const uint_least32_t *cmd_name, int cmd_idx, long row, long column) {
+command_t parse_command(const uint_least32_t *cmd_name, int cmd_idx, long row, long col) {
     size_t command_names_length = sizeof(command_names) / sizeof(*command_names);
 
     int len1 = row ? snprintf(NULL, 0, "%ld", row) : 0;
-    int len2 = column ? snprintf(NULL, 0, "%ld", column) : 0;
+    int len2 = col ? snprintf(NULL, 0, "%ld", col) : 0;
 
     for (int i = 0; i < command_names_length; i++) {
         if (!utf32_strcmp(cmd_name, command_names[i])) {
@@ -310,7 +310,7 @@ command_t parse_command(const uint_least32_t *cmd_name, int cmd_idx, long row, l
             } else if (!utf32_strcmp(cmd_name, U"tula")) {
                 if (loop_ends_length == loop_starts_length) {
                     char msg[74 + len1 + len2];
-                    sprintf(msg, "Se encontró una tula sin su respectiva pichula en la línea: %ld, columna: %ld", row, column);
+                    sprintf(msg, "Se encontró una tula sin su respectiva pichula en la línea: %ld, cola: %ld", row, col);
 
                     exit_interpreter(msg);
                 }
@@ -319,7 +319,7 @@ command_t parse_command(const uint_least32_t *cmd_name, int cmd_idx, long row, l
             } else if (!utf32_strcmp(cmd_name, U"pico")) {
                 if (loop_starts_length == loop_ends_length) {
                     char msg[52 + len1 + len2];
-                    sprintf(msg, "No debiste meter ese pico en la línea: %ld, columna: %ld", row, column);
+                    sprintf(msg, "No debiste meter ese pico en la línea: %ld, cola: %ld", row, col);
 
                     exit_interpreter(msg);
                 }
