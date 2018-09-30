@@ -420,7 +420,12 @@ void run_commands(const command_t *commands, int commands_length) {
 				i = find_loop_end(commands, commands_length, i);
 				break;
 			case ctm:
-				putchar(*cell);
+				#if !defined(_WIN64) && !defined(_WIN32)
+					printf("%s", utf32_char_to_utf8(*cell));
+				#else
+					putchar(*cell);
+				#endif
+
 				break;
 			case quéweá:
 				char_input = getchar();
@@ -524,8 +529,8 @@ void exit_interpreter(const char *err_msg) {
 		fprintf(stderr, "%s\n", strlen(err_msg) ? err_msg : "Error interno");
 	#else
 		wchar_t wbuf[(utf8_strlen((const uint_least8_t *)err_msg) + 1) * sizeof(wchar_t)];
-		int utf16_str_length = MultiByteToWideChar(CP_UTF8, 0, err_msg, strlen(err_msg), wbuf, sizeof(wbuf));
 
+		int utf16_str_length = MultiByteToWideChar(CP_UTF8, 0, err_msg, strlen(err_msg), wbuf, sizeof(wbuf));
 		wbuf[utf16_str_length] = L'\n';
 
 		WriteConsoleW(GetStdHandle(STD_OUTPUT_HANDLE), wbuf, utf16_str_length + 1, NULL, NULL);
