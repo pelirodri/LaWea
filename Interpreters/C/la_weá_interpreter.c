@@ -275,7 +275,7 @@ command_t *parse_code(const uint_least32_t *code, size_t code_length, int *comma
             }
         }
 
-        if (code[k] == L'\n') {
+        if (code[k] == U'\n') {
             row++;
             col = 0;
 
