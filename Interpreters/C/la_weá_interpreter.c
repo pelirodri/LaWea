@@ -25,14 +25,17 @@
 #include <string.h>
 #include <locale.h>
 #include <errno.h>
-#include <fcntl.h>
 
 
-#if defined(__unix__) || (defined(__APPLE__) && defined(__MACH__)) || defined(__CYGWIN__)
-	#include <unistd.h>
-#elif defined(_WIN64) || defined (_WIN32)
-	#include <windows.h>
-	#include <io.h>
+#if defined(__unix__) || (defined(__APPLE__) && defined(__MACH__)) || defined(__CYGWIN__) || defined(_WIN64) || (_WIN32)
+	#include <fcntl.h>
+
+	#if !defined(_WIN64) && !defined(_WIN32)
+		#include <unistd.h>
+	#else
+		#include <windows.h>
+		#include <io.h>
+	#endif
 #endif
 
 const uint_least32_t command_names[16][8 * sizeof(uint_least32_t)] = { 
