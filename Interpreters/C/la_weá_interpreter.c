@@ -72,22 +72,6 @@ int main(int argc, char **argv) {
 	return 0;
 }
 
-static void file_not_found_exit() {
-	char msg[26] = {'\0'};
-
-	if (errno == ENOENT) {
-		char src[] = "No existe la weá, po, wn";
-
-		#if !defined(_WIN64) && !defined(_WIN32)
-			strcpy(msg, src);
-		#else
-			strcpy_s(msg, 26, src);
-		#endif
-	}
-
-	exit_interpreter(msg);
-}
-
 void interpret_la_weá(const char *file_path) {
 	size_t code_length = 0;
 	uint_least32_t *code = get_code(file_path, &code_length);
@@ -183,6 +167,22 @@ uint_least32_t *get_code(const char *file_path, size_t *code_length) {
 	free(utf8_code);
 
 	return utf32_code;
+}
+
+void file_not_found_exit() {
+	char msg[26] = {'\0'};
+
+	if (errno == ENOENT) {
+		char src[] = "No existe la weá, po, wn";
+
+		#if !defined(_WIN64) && !defined(_WIN32)
+			strcpy(msg, src);
+		#else
+			strcpy_s(msg, 26, src);
+		#endif
+	}
+
+	exit_interpreter(msg);
 }
 
 command_t *parse_code(const uint_least32_t *code, size_t code_length, int *commands_length) {

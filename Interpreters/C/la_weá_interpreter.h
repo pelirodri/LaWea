@@ -82,6 +82,11 @@ void interpret_la_weá(const char *);
 uint_least32_t *get_code(const char *, size_t *);
 
 /**
+ * A utility function that prints a message and exits the program for when the code file cannot be found.
+ */
+void file_not_found_exit();
+
+/**
  * Checks the validity of the code and retrieves the commands.
  * @param code the code to parse
  * @param code_length the length of the code
