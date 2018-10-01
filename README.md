@@ -1,6 +1,6 @@
 # La Weá
 
-**La Weá** is a Turing-complete esoteric programming language consisting of 16 commands, each represented by a highly colloquial term in Chilean Spanish. Commands must be separated; extra whitespaces are ignored; single-line comments are preceded by a ```#```.
+**La Weá** is a Turing-complete esoteric programming language consisting of 16 commands, each represented by a highly colloquial term in Chilean Spanish. Commands must be separated; extra whitespaces and newlines are ignored; single-line comments are preceded by a ```#```.
 
 Command       | Description
 ------------- | -----------
