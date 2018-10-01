@@ -23,4 +23,4 @@ Command       | Description
 
 JavaScript based online interpreter: https://laweainterpreter.firebaseapp.com/
 
-**Note:** C/C++ Interpreters must be compiled with Clang. Could not get C++ interpreter to compile on Windows.
+**Note:** C/C++ interpreters must be compiled with Clang. Could not get C++ interpreter to compile on Windows.
