@@ -3,7 +3,7 @@
 //
 // This file is part of La Weá Interpreter (C++)
 //
-// La Weá Interpreter (C) is free software: you can redistribute it and/or modify
+// La Weá Interpreter (C++) is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
@@ -268,7 +268,7 @@ void la_weá_interpreter::run_commands(const std::vector<command_t> &commands) {
 				} catch (...) {
 					*cur_cell = 0;
 				}
-				
+
 				*cur_cell = (char32_t)strtol(char_input.c_str(), NULL, 10);
 
 				break;
