@@ -114,13 +114,12 @@ std::vector<la_weá_interpreter::command_t> la_weá_interpreter::parse_code(cons
 
 				if (static_cast<int>(cmd) == -1) {
 					std::string row_str = std::to_string(row), col_str = std::to_string(col - cmd_name.length());
-					std::string sub_msg = u8"no es un comando válido, po, saco de weas (línea: ";
+					std::string sub_msg = u8" no es un comando válido, po, saco de weas (línea: ";
 
-					exit_interpreter(cvt.to_bytes(cmd_name) + sub_msg + row_str + u8", columna: " + col_str);
+					exit_interpreter(cvt.to_bytes(cmd_name) + sub_msg + row_str + u8", columna: " + col_str + u8")");
 				}
 
 				commands.push_back(cmd);
-
 				cmd_name = U"";
 			}
 		} else {
@@ -179,7 +178,7 @@ la_weá_interpreter::command_t la_weá_interpreter::parse_command(const std::u32
 			} else if (cmd_name == U"pico") {
 				if (loop_starts_length == loop_ends_length) {
 					std::string row_str = std::to_string(row), col_str = std::to_string(col);
-					exit_interpreter(u8"No debiste meter ese pico e la línea: " + row_str + u8", columna: " + col_str);
+					exit_interpreter(u8"No debiste meter ese pico en la línea: " + row_str + u8", columna: " + col_str);
 				}
 			}
 
