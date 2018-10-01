@@ -103,12 +103,12 @@ std::vector<la_weá_interpreter::command_t> la_weá_interpreter::parse_code(cons
 	long row = 0, col = 0;
 	bool is_comment = false;
 
-	for (long j = 0; j <= code.length(); j++) {
-		if (code[j] == U'#') {
+	for (long i = 0; i <= code.length(); i++) {
+		if (code[i] == U'#') {
 			is_comment = true;
 		}
 
-		if (j == code.length() || isspace(code[j]) || code[j] == U'#') {
+		if (i == code.length() || isspace(code[i]) || code[i] == U'#') {
 			if (cmd_name.length()) {
 				command_t cmd = parse_command(cmd_name, commands.size() - 1, row, col - cmd_name.length());
 
@@ -125,8 +125,8 @@ std::vector<la_weá_interpreter::command_t> la_weá_interpreter::parse_code(cons
 			}
 		} else {
 			if (!is_comment) {
-				if (valid_chars.find(code[j]) == std::string::npos) {
-					std::string utf8_char = cvt.to_bytes(std::u32string (1, code[j]));
+				if (valid_chars.find(code[i]) == std::string::npos) {
+					std::string utf8_char = cvt.to_bytes(std::u32string (1, code[i]));
 
 					std::string row_str = std::to_string(row), col_str = std::to_string(col);
 					std::string sub_msg = u8" no es parte de La Weá, tonto qlo (línea: ";
@@ -141,11 +141,11 @@ std::vector<la_weá_interpreter::command_t> la_weá_interpreter::parse_code(cons
 					exit_interpreter(sub_msg + row_str + u8", columna: " + col_str + u8")");
 				}
 
-				cmd_name += code[j];
+				cmd_name += code[i];
 			}
 		}
 
-		if (code[j] == U'\n') {
+		if (code[i] == U'\n') {
 			row++;
 			col = 0;
 
