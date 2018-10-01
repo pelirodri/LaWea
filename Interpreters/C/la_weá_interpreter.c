@@ -63,7 +63,7 @@ const uint_least32_t valid_chars[] = U"abcdeghiklmnopqrtuwáéíóú";
 int loop_starts_length = 0, loop_ends_length = 0;
 
 int main(int argc, char **argv) {
-    setlocale(LC_CTYPE, "");
+    setlocale(LC_CTYPE, "en_US.UTF-8");
 
     if (argc != 2) {
         exit_interpreter("Tenís q pasar un argumento, con la ruta del archivo con el código, po, aweonao qlo");
@@ -79,7 +79,7 @@ void interpret_la_weá(const char *file_path) {
     uint_least32_t *code = get_code(file_path, &code_length);
 
     if (!code) {
-        exit_interpreter("Código no encontrado");
+        exit_interpreter("");
     }
 
     if (!utf32_strlen(code)) {
@@ -93,7 +93,7 @@ void interpret_la_weá(const char *file_path) {
     free(code);
 
     if (!commands) {
-        exit_interpreter("Comandos no encontrados");
+        exit_interpreter("");
     }
 
     run_commands(commands, commands_length);
