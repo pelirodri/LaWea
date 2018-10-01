@@ -104,7 +104,7 @@ std::vector<la_weá_interpreter::command_t> la_weá_interpreter::parse_code(cons
 	bool is_comment = false;
 
 	for (long i = 0; i <= code.length(); i++) {
-		if (code[i] == U'#') {
+		if (i < code.length() && code[i] == U'#') {
 			is_comment = true;
 		}
 
