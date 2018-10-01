@@ -47,7 +47,7 @@ typedef enum {
 } command_t;
 
 /**
- * The names of all valid commands.
+ * The names of all the valid commands.
  */
 extern const uint_least32_t command_names[16][8 * sizeof(uint_least32_t)];
 
@@ -77,7 +77,7 @@ void interpret_la_weá(const char *);
  * A utility function that retrieves the code.
  * @param file_path the path to the file with the code
  * @param code_length a pointer to store the length of the code
- * @return The code as a wide char string
+ * @return The code, encoded in UTF-32
  */
 uint_least32_t *get_code(const char *, size_t *);
 
@@ -100,7 +100,7 @@ command_t *parse_code(const uint_least32_t *, size_t, int *);
  * @param cmd_name the name of the command
  * @param cmd_idx the index of the command
  * @param row the row the command was found at
- * @param column the column the command was found at
+ * @param col the column the command was found at
  * @return The command if found
  */
 command_t parse_command(const uint_least32_t *, int, long, long);
