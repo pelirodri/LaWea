@@ -208,7 +208,7 @@ command_t *parse_code(const uint_least32_t *code, size_t code_length, int *comma
     bool is_comment = false;
 
     for (long k = 0; k <= code_length; k++) {
-        if (k < code_length && code[k] == U'#') {
+        if (code[k] == U'#') {
             is_comment = true;
         }
 
