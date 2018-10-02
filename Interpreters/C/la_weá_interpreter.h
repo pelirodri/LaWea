@@ -24,109 +24,67 @@
 #include <stddef.h>
 #include <stdbool.h>
 
-/**
- * All the valid commands.
- */
+/// All the valid commands.
 typedef enum {
-	/**
-	 Decrements current cell value by 1.
-	 */
+	/// Decrements current cell value by 1.
 	maricón,
 
-	/**
-	 Decrements current cell value by 2.
-	 */
+	/// Decrements current cell value by 2.
 	maraco,
 
-	/**
-	 Increments current cell value by 1.
-	 */
+	/// Increments current cell value by 1.
 	weón,
 
-	/**
-	 Increments current cell value by 2.
-	 */
+	/// Increments current cell value by 2.
 	aweonao,
 
-	/**
-	 Sets current cell value to 0.
-	 */
+	/// Sets current cell value to 0.
 	maraca,
 
-	/**
-	 Moves back one cell.
-	 */
+	/// Moves back one cell.
 	chucha,
 
-	/**
-	 Moves forward one cell.
-	 */
+	/// Moves forward one cell.
 	puta,
 
-	/**
-	 If current cell value is 0, moves the instruction pointer after the matching tula command.
-	 */
+	/// If current cell value is 0, moves the instruction pointer after the matching tula command.
 	pichula,
 
-	/**
-	 If current cell value is not 0, moves the instruction pointer after the matching pichula command.
-	 */
+	/// If current cell value is not 0, moves the instruction pointer after the matching pichula command.
 	tula,
 
-	/**
-	 Moves the instruction pointer after the closest tula command, regardless of the current cell value.
-	 */
+	/// Moves the instruction pointer after the closest tula command, regardless of the current cell value.
 	pico,
 
-	/**
-	 Prints current cell value to STDOUT as an ASCII character.
-	 */
+	/// Prints current cell value to STDOUT as an ASCII character.
 	ctm,
 
-	/**
-	 Reads ASCII character from STDIN and stores it in the current cell.
-	 */
+	/// Reads ASCII character from STDIN and stores it in the current cell.
 	quéweá,
 
-	/**
-	 Prints current cell value to STDIN as an integer.
-	 */
+	/// Prints current cell value to STDIN as an integer.
 	chúpala,
 
-	/**
-	 Reads integer from STDIN and stores it in the current cell.
-	 */
+	/// Reads integer from STDIN and stores it in the current cell.
 	brígido,
 
-	/**
-	 Copies current cell value if there is no copy; otherwise, pastes the copied value and resets the copy.
-	 */
+	/// Copies current cell value if there is no copy; otherwise, pastes the copied value and resets the copy.
 	perkin,
 
-	/**
-	 Terminates program.
-	 */
+	/// Terminates program.
 	mierda
 } command_t;
 
-/**
- * The names of all the valid commands.
- */
+/// The names of all the valid commands.
 extern const uint_least32_t command_names[16][8 * sizeof(uint_least32_t)];
 
-/**
- * All the characters a command may be composed of.
- */
+/// All the characters a command may be composed of.
 extern const uint_least32_t valid_chars[];
 
-/**
- * Keeps track of the length of loop starting commands.
- */
+/// Keeps track of the length of loop starting commands.
 extern int loop_starts_length;
 
-/**
- * Keeps track of the length of loop ending commands.
- */
+/// Keeps track of the length of loop ending commands.
 extern int loop_ends_length;
 
 /**
@@ -134,7 +92,7 @@ extern int loop_ends_length;
  * @param file_path the path to the file with the code
  * @note The file must have the .lw extension.
  */
-void interpret_la_weá(const char *);
+void interpret_la_weá(const char *file_path);
 
 /**
  * A utility function that retrieves the code.
@@ -142,11 +100,9 @@ void interpret_la_weá(const char *);
  * @param code_length a pointer to store the length of the code
  * @return The code, encoded in UTF-32
  */
-uint_least32_t *get_code(const char *, size_t *);
+uint_least32_t *get_code(const char *file_path, size_t *code_length);
 
-/**
- * A utility function that prints a message and exits the program for when the code file cannot be found.
- */
+/// A utility function that prints a message and exits the program for when the code file cannot be found.
 void file_not_found_exit();
 
 /**
@@ -156,7 +112,7 @@ void file_not_found_exit();
  * @param commands_length a pointer to store the number of commands found
  * @return The commands found
  */
-command_t *get_commands(const uint_least32_t *, size_t, int *);
+command_t *get_commands(const uint_least32_t *code, size_t code_length, int *commands_length);
 
 /**
  * Gets command_t from name and performs some validation.
@@ -166,21 +122,21 @@ command_t *get_commands(const uint_least32_t *, size_t, int *);
  * @param col the column the command was found at
  * @return The command or -1 if not found
  */
-command_t get_command(const uint_least32_t *, int, long, long);
+command_t get_command(const uint_least32_t *cmd_name, int cmd_idx, long row, long col);
 
 /**
  * Checks if any command can contain the character.
  * @param c the character to check
  * @return Whether the character was valid
  */
-bool validate_char(uint_least32_t);
+bool validate_char(uint_least32_t c);
 
 /**
  * Runs the code by interpreting the commands.
  * @param commands the commands to run
  * @param commands_length the number of commands to run
  */
-void run_commands(const command_t *, int);
+void run_commands(const command_t *commands, int commands_length);
 
 /**
  * A utility function to find the appropriate loop starting command.
@@ -189,7 +145,7 @@ void run_commands(const command_t *, int);
  * @param i the index to start searching at
  * @return The index of the loop starting command or -1 if not found
  */
-int find_loop_start(const command_t *, int, int);
+int find_loop_start(const command_t *commands, int commands_length, int i);
 
 /**
  * A utility function to find the appropriate loop ending command.
@@ -198,7 +154,7 @@ int find_loop_start(const command_t *, int, int);
  * @param i the index to start searching at
  * @return The index of the loop ending command or -1 if not found
  */
-int find_loop_end(const command_t *, int, int);
+int find_loop_end(const command_t *commands, int commands_length, int i);
 
 /**
  * A utility function that prints an error message and exits the program abnormally.
