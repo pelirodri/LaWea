@@ -28,21 +28,84 @@
  * All the valid commands.
  */
 typedef enum {
+	/**
+	 Decrements current cell value by 1.
+	 */
 	maricón,
+
+	/**
+	 Decrements current cell value by 2.
+	 */
 	maraco,
+
+	/**
+	 Increments current cell value by 1.
+	 */
 	weón,
+
+	/**
+	 Increments current cell value by 2.
+	 */
 	aweonao,
+
+	/**
+	 Sets current cell value to 0.
+	 */
 	maraca,
+
+	/**
+	 Moves back one cell.
+	 */
 	chucha,
+
+	/**
+	 Moves forward one cell.
+	 */
 	puta,
+
+	/**
+	 If current cell value is 0, moves the instruction pointer after the matching tula command.
+	 */
 	pichula,
+
+	/**
+	 If current cell value is not 0, moves the instruction pointer after the matching pichula command.
+	 */
 	tula,
+
+	/**
+	 Moves the instruction pointer after the closest tula command, regardless of the current cell value.
+	 */
 	pico,
+
+	/**
+	 Prints current cell value to STDOUT as an ASCII character.
+	 */
 	ctm,
+
+	/**
+	 Reads ASCII character from STDIN and stores it in the current cell.
+	 */
 	quéweá,
+
+	/**
+	 Prints current cell value to STDIN as an integer.
+	 */
 	chúpala,
+
+	/**
+	 Reads integer from STDIN and stores it in the current cell.
+	 */
 	brígido,
+
+	/**
+	 Copies current cell value if there is no copy; otherwise, pastes the copied value and resets the copy.
+	 */
 	perkin,
+
+	/**
+	 Terminates program.
+	 */
 	mierda
 } command_t;
 
@@ -93,7 +156,7 @@ void file_not_found_exit();
  * @param commands_length a pointer to store the number of commands found
  * @return The commands found
  */
-command_t *parse_code(const uint_least32_t *, size_t, int *);
+command_t *get_commands(const uint_least32_t *, size_t, int *);
 
 /**
  * Gets command_t from name and performs some validation.
@@ -103,7 +166,7 @@ command_t *parse_code(const uint_least32_t *, size_t, int *);
  * @param col the column the command was found at
  * @return The command or -1 if not found
  */
-command_t parse_command_name(const uint_least32_t *, int, long, long);
+command_t get_command(const uint_least32_t *, int, long, long);
 
 /**
  * Checks if any command can contain the character.

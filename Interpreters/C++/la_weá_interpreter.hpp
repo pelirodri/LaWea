@@ -50,8 +50,8 @@ class la_weá_interpreter {
 		void interpret(const char *);
 
 		std::u32string get_code(const char *);
-		std::vector<command_t> parse_code(const std::u32string &);
-		command_t parse_command_name(const std::u32string &, int, long, long);
+		std::vector<command_t> get_commands(const std::u32string &);
+		command_t get_command(const std::u32string &, int, long, long);
 		void run_commands(const std::vector<command_t> &);
 		int find_loop_start(const std::vector<command_t> &, int);
 		int find_loop_end(const std::vector<command_t> &, int);

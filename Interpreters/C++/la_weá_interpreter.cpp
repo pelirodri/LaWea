@@ -67,7 +67,7 @@ void la_weá_interpreter::interpret(const char *file_path) {
 		return;
 	}
 
-	run_commands(parse_code(code));
+	run_commands(get_commands(code));
 }
 
 std::u32string la_weá_interpreter::get_code(const char *file_path) {
@@ -93,7 +93,7 @@ std::u32string la_weá_interpreter::get_code(const char *file_path) {
 	return cvt.from_bytes(code);
 }
 
-std::vector<la_weá_interpreter::command_t> la_weá_interpreter::parse_code(const std::u32string &code) {
+std::vector<la_weá_interpreter::command_t> la_weá_interpreter::get_commands(const std::u32string &code) {
 	loop_starts_length = loop_ends_length = 0;
 
 	std::vector<command_t> commands;
@@ -109,7 +109,7 @@ std::vector<la_weá_interpreter::command_t> la_weá_interpreter::parse_code(cons
 
 		if (i == code.length() || isspace(code[i]) || code[i] == U'#') {
 			if (cmd_name.length()) {
-				command_t cmd = parse_command_name(cmd_name, commands.size() - 1, row, col - cmd_name.length());
+				command_t cmd = get_command(cmd_name, commands.size() - 1, row, col - cmd_name.length());
 
 				if (static_cast<int>(cmd) == -1) {
 					std::string row_str = std::to_string(row), col_str = std::to_string(col - cmd_name.length());
@@ -160,7 +160,7 @@ std::vector<la_weá_interpreter::command_t> la_weá_interpreter::parse_code(cons
 	return commands; 
 }
 
-la_weá_interpreter::command_t la_weá_interpreter::parse_command_name(const std::u32string &cmd_name, int cmd_idx, long row, long col) {
+la_weá_interpreter::command_t la_weá_interpreter::get_command(const std::u32string &cmd_name, int cmd_idx, long row, long col) {
 	for (int i = 0; i < command_names.size(); i++) {
 		if (cmd_name == command_names[i]) {
 			if (cmd_name == U"pichula") {

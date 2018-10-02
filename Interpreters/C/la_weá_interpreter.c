@@ -88,7 +88,7 @@ void interpret_la_weá(const char *file_path) {
     }
 
     int commands_length = 0;
-    command_t *commands = parse_code(code, code_length, &commands_length);
+    command_t *commands = get_commands(code, code_length, &commands_length);
 
     free(code);
 
@@ -192,7 +192,7 @@ void file_not_found_exit() {
     exit_interpreter(msg);
 }
 
-command_t *parse_code(const uint_least32_t *code, size_t code_length, int *commands_length) {
+command_t *get_commands(const uint_least32_t *code, size_t code_length, int *commands_length) {
     size_t commands_size = (size_t)(code_length / 7) * sizeof(command_t);
     command_t *commands = (command_t *)malloc(commands_size);
 
@@ -217,7 +217,7 @@ command_t *parse_code(const uint_least32_t *code, size_t code_length, int *comma
 
         if (isspace(code[k]) || code[k] == U'#' || code[k] == U'\0') {
             if (j != -1) {      
-                command_t cmd = parse_command_name(cmd_name, i, row, col - (long)utf32_strlen(cmd_name));
+                command_t cmd = get_command(cmd_name, i, row, col - (long)utf32_strlen(cmd_name));
 
                 if ((int)cmd == -1) {
                     free(commands);
@@ -300,7 +300,7 @@ command_t *parse_code(const uint_least32_t *code, size_t code_length, int *comma
     return commands;
 }
 
-command_t parse_command_name(const uint_least32_t *cmd_name, int cmd_idx, long row, long col) {
+command_t get_command(const uint_least32_t *cmd_name, int cmd_idx, long row, long col) {
     size_t command_names_length = sizeof(command_names) / sizeof(*command_names);
 
     int len1 = row ? snprintf(NULL, 0, "%ld", row) : 0;
