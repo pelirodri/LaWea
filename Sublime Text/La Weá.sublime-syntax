@@ -14,12 +14,8 @@ contexts:
       scope: invalid.illegal.lw
 
   comments:
-    - match: '#'
-      scope: punctuation.definition.lw
-      push:
-        - meta_scope: comment.line.number-sign.lw
-        - match: '\n'
-          pop: true
+    - match: '#.*'
+      scope: comment.line.lw
 
   loops:
     - match: 'pichula|tula'
