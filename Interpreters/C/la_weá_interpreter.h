@@ -101,7 +101,7 @@ command_t *parse_code(const uint_least32_t *, size_t, int *);
  * @param cmd_idx the index of the command
  * @param row the row the command was found at
  * @param col the column the command was found at
- * @return The command if found
+ * @return The command or -1 if not found
  */
 command_t parse_command_name(const uint_least32_t *, int, long, long);
 
