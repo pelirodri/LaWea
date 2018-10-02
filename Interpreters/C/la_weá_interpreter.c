@@ -62,18 +62,6 @@ const uint_least32_t valid_chars[] = U"abcdeghiklmnopqrtuwáéíóú";
 
 int loop_starts_length = 0, loop_ends_length = 0;
 
-int main(int argc, char **argv) {
-    setlocale(LC_CTYPE, "en_US.UTF-8");
-
-    if (argc != 2) {
-        exit_interpreter("Tenís q pasar un argumento, con la ruta del archivo con el código, po, aweonao qlo");
-    }
-
-    interpret_la_weá(argv[1]);
-
-    return 0;
-}
-
 void interpret_la_weá(const char *file_path) {
     size_t code_length = 0;
     uint_least32_t *code = get_code(file_path, &code_length);

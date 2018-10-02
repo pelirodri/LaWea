@@ -23,6 +23,8 @@
 #include <fstream>
 #include <codecvt>
 
+static std::wstring_convert<std::codecvt_utf8<char32_t>, char32_t> cvt;
+
 const std::vector<std::u32string> la_weá_interpreter::command_names = {
 	U"maricón",
 	U"maraco",
@@ -43,22 +45,6 @@ const std::vector<std::u32string> la_weá_interpreter::command_names = {
 };
 
 const std::u32string la_weá_interpreter::valid_chars = U"abcdeghiklmnopqrtuwáéíóú";
-
-static std::wstring_convert<std::codecvt_utf8<char32_t>, char32_t> cvt;
-
-int main(int argc, char **argv) {
-	std::locale::global(std::locale(""));
-
-	la_weá_interpreter interpreter;
-
-	if (argc != 2) {
-		interpreter.exit_interpreter(u8"Tenís q pasar un argumento, con la ruta del archivo con el código, po, aweonao qlo");
-	}
-
-	interpreter.interpret(argv[1]);
-
-	return 0;
-}
 
 void la_weá_interpreter::interpret(const char *file_path) {
 	std::u32string code = get_code(file_path);
