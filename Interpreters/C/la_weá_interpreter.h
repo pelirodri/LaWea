@@ -103,7 +103,7 @@ command_t *parse_code(const uint_least32_t *, size_t, int *);
  * @param col the column the command was found at
  * @return The command if found
  */
-command_t parse_command(const uint_least32_t *, int, long, long);
+command_t parse_command_name(const uint_least32_t *, int, long, long);
 
 /**
  * Checks if any command can contain the character.
