@@ -101,7 +101,7 @@ std::vector<la_weá_interpreter::command_t> la_weá_interpreter::get_commands(co
 					std::string row_str = std::to_string(row), col_str = std::to_string(col - cmd_name.length());
 					std::string sub_msg = u8" no es un comando válido, po, saco de weas (línea: ";
 
-					exit_interpreter(cvt.to_bytes(cmd_name) + sub_msg + row_str + u8", columna: " + col_str + u8")");
+					exit_interpreter("'" + cvt.to_bytes(cmd_name) + "'" + sub_msg + row_str + u8", columna: " + col_str + u8")");
 				}
 
 				commands.push_back(cmd);
@@ -115,7 +115,7 @@ std::vector<la_weá_interpreter::command_t> la_weá_interpreter::get_commands(co
 					std::string row_str = std::to_string(row), col_str = std::to_string(col);
 					std::string sub_msg = u8" no es parte de La Weá, tonto qlo (línea: ";
 
-					exit_interpreter(utf8_char + sub_msg + row_str + u8", columna: " + col_str + u8")");
+					exit_interpreter("'" + utf8_char + "'" + sub_msg + row_str + u8", columna: " + col_str + u8")");
 				}
 
 				if (cmd_name.length() == 7) {
