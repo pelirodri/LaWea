@@ -67,7 +67,7 @@ extern int loop_starts_length;
 extern int loop_ends_length;
 
 /**
- * The starting point for interpreting the code.
+ * The entry point for interpreting the code.
  * @param file_path the path to the file with the code
  * @note The file must have the .lw extension.
  */
