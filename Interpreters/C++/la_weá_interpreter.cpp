@@ -289,14 +289,14 @@ void la_weá_interpreter::run_commands(const std::vector<command_t> &commands) {
 }
 
 int la_weá_interpreter::find_loop_start(const std::vector<command_t> &commands, int i) {
-	for (int j = i - 1, level = 1; j >= 0; j--) {
+	for (int j = i - 1, loop_level = 1; j >= 0; j--) {
 		if (commands[j] == tula) {
-			level++;
+			loop_level++;
 		} else if (commands[j] == pichula) {
-			level--;
+			loop_level--;
 		}
 
-		if (!level) {
+		if (!loop_level) {
 			return j;
 		}
 	}
@@ -305,14 +305,14 @@ int la_weá_interpreter::find_loop_start(const std::vector<command_t> &commands,
 }
 
 int la_weá_interpreter::find_loop_end(const std::vector<command_t> &commands, int i) {
-	for (int j = i + 1, level = 1; j < commands.size(); j++) {
+	for (int j = i + 1, loop_level = 1; j < commands.size(); j++) {
 		if (commands[j] == pichula) {
-			level++;
+			loop_level++;
 		} else if (commands[j] == tula) {
-			level--;
+			loop_level--;
 		}
 
-		if (!level) {
+		if (!loop_level) {
 			return j;
 		}
 	}

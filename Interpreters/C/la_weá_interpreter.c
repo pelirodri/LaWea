@@ -522,14 +522,14 @@ void run_commands(const command_t *commands, int commands_length) {
 }
 
 int find_loop_start(const command_t *commands, int commands_length, int i) {
-    for (int j = i - 1, level = 1; j >= 0; j--) {
+    for (int j = i - 1, loop_level = 1; j >= 0; j--) {
         if (commands[j] == tula) {
-            level++;
+            loop_level++;
         } else if (commands[j] == pichula) {
-            level--;
+            loop_level--;
         }
 
-        if (!level) {
+        if (!loop_level) {
             return j;
         }
     }
@@ -538,14 +538,14 @@ int find_loop_start(const command_t *commands, int commands_length, int i) {
 }
 
 int find_loop_end(const command_t *commands, int commands_length, int i) {
-    for (int j = i + 1, level = 1; j < commands_length; j++) {
+    for (int j = i + 1, loop_level = 1; j < commands_length; j++) {
         if (commands[j] == pichula) {
-            level++;
+            loop_level++;
         } else if (commands[j] == tula) {
-            level--;
+            loop_level--;
         }
 
-        if (!level) {
+        if (!loop_level) {
             return j;
         }
     }
