@@ -67,8 +67,7 @@ void la_weá_interpreter::interpret(const char *file_path) {
 		return;
 	}
 
-	std::vector<command_t> commands = parse_code(code);
-	run_commands(commands);
+	run_commands(parse_code(code));
 }
 
 std::u32string la_weá_interpreter::get_code(const char *file_path) {
