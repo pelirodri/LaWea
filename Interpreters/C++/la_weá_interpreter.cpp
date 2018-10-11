@@ -176,7 +176,7 @@ la_weá_interpreter::command_t la_weá_interpreter::get_command(const std::u32st
 
 void la_weá_interpreter::run_commands(const std::vector<command_t> &commands) {
 	std::vector<char32_t> cells (8);
-	std::vector<char32_t>::iterator cur_cell = cells.begin();
+	int cur_cell = 0;
 
 	bool copy_set = false;
 	char32_t cell_value_copy;
@@ -186,22 +186,22 @@ void la_weá_interpreter::run_commands(const std::vector<command_t> &commands) {
 	for (int i = 0; i < commands.size(); i++) {
 		switch (commands[i]) {
 			case maricón:
-				(*cur_cell)--;
+				cells[cur_cell]--;
 				break;
 			case maraco:
-				*cur_cell -= 2;
+				cells[cur_cell] -= 2;
 				break;
 			case weón:
-				(*cur_cell)++;
+				cells[cur_cell]++;
 				break;
 			case aweonao:
-				*cur_cell += 2;
+				cells[cur_cell] += 2;
 				break;
 			case maraca:
-				*cur_cell = 0;
+				cells[cur_cell] = 0;
 				break;
 			case chucha:
-				if (cur_cell == cells.begin()) {
+				if (cur_cell == 0) {
 					exit_interpreter(u8"Te saliste pa la izquierda, aweonao");
 				}
 
@@ -209,23 +209,21 @@ void la_weá_interpreter::run_commands(const std::vector<command_t> &commands) {
 
 				break;
 			case puta:
-				if (cur_cell == cells.end() - 1) {
-					int cell_diff = cur_cell - cells.begin();
+				if (cur_cell == cells.size() - 1) {
 					cells.resize(cells.capacity() * 2);
-					cur_cell = cells.begin() + cell_diff;
 				}
 
 				++cur_cell;
 
 				break;
 			case pichula:
-				if (!*cur_cell) {
+				if (!cells[cur_cell]) {
 					i = find_loop_end(commands, i);
 				}
 
 				break;
 			case tula:
-				if (*cur_cell) {
+				if (cells[cur_cell]) {
 					i = find_loop_start(commands, i);
 				}
 
@@ -234,34 +232,32 @@ void la_weá_interpreter::run_commands(const std::vector<command_t> &commands) {
 				i = find_loop_end(commands, i);
 				break;
 			case ctm:
-				std::cout << cvt.to_bytes(std::u32string (1, *cur_cell));
+				std::cout << cvt.to_bytes(std::u32string (1, cells[cur_cell]));
 				break;
 			case quéweá:
 				std::getline(std::cin, (char_input = u8""));
-				*cur_cell = char_input.length() ? cvt.from_bytes(char_input)[0] : U'\0';
+				cells[cur_cell] = char_input.length() ? cvt.from_bytes(char_input)[0] : U'\0';
 
 				break;
 			case chúpala:
-				std::cout << *cur_cell;
+				std::cout << cells[cur_cell];
 				break;
 			case brígido:
 				std::getline(std::cin, (char_input = u8""));
 
 				try {
-					*cur_cell = std::stoi(char_input);
+					cells[cur_cell] = std::stoi(char_input);
 				} catch (...) {
-					*cur_cell = 0;
+					cells[cur_cell] = 0;
 				}
-
-				*cur_cell = (char32_t)strtol(char_input.c_str(), NULL, 10);
 
 				break;
 			case perkin:
 				if (copy_set) {
-					*cur_cell = cell_value_copy;
+					cells[cur_cell] = cell_value_copy;
 					copy_set = false;
 				} else {
-					cell_value_copy = *cur_cell;
+					cell_value_copy = cells[cur_cell];
 					copy_set = true;
 				}
 

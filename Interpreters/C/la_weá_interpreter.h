@@ -20,8 +20,8 @@
 #ifndef LA_WEÁ_INTERPRETER_H
 #define LA_WEÁ_INTERPRETER_H
 
+#include <stdio.h>
 #include <stdint.h>
-#include <stddef.h>
 #include <stdbool.h>
 
 /// All the valid commands.

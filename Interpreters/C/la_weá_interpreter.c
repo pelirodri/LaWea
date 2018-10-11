@@ -20,7 +20,6 @@
 #include "la_weá_interpreter.h"
 #include "utf8_utf32.h"
 
-#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
@@ -343,7 +342,7 @@ void run_commands(const command_t *commands, int commands_length) {
         exit_interpreter("");
     }
 
-    uint_least32_t *cur_cell = cells;
+    int cur_cell = 0;
 
     bool copy_set = false;
     uint_least32_t cell_value_copy;
@@ -362,22 +361,22 @@ void run_commands(const command_t *commands, int commands_length) {
     for (int j = 0; j < commands_length; j++) {
         switch (commands[j]) {
             case maricón:
-                (*cur_cell)--;
+                cells[cur_cell]--;
                 break;
             case maraco:
-                *cur_cell -= 2;
+                cells[cur_cell] -= 2;
                 break;
             case weón:
-                (*cur_cell)++;
+                cells[cur_cell]++;
                 break;
             case aweonao:
-                *cur_cell += 2;
+                cells[cur_cell] += 2;
                 break;
             case maraca:
-                *cur_cell = 0;
+                cells[cur_cell] = 0;
                 break;
             case chucha:
-                if (cur_cell == cells) {
+                if (cur_cell == 0) {
                     free(cells);
                     exit_interpreter("Te saliste pa la izquierda, aweonao");
                 }
@@ -386,7 +385,7 @@ void run_commands(const command_t *commands, int commands_length) {
 
                 break;
             case puta:
-                if (cur_cell == cells + ((cells_size / sizeof(uint_least32_t)) - 1)) {
+                if (cur_cell == (cells_size / sizeof(uint_least32_t)) - 1) {
                     uint_least32_t *tmp = (uint_least32_t *)realloc(cells, (cells_size *= 2));
 
                     if (!tmp) {
@@ -394,25 +393,21 @@ void run_commands(const command_t *commands, int commands_length) {
                         exit_interpreter("");
                     }
 
-                    ptrdiff_t cell_diff = cur_cell - cells;
-
                     cells = tmp;
-
-                    cur_cell = cells + cell_diff;
-                    memset(cur_cell + 1, 0, cells_size / 2);
+                    memset(cells + (cur_cell + 1), 0, cells_size / 2);
                 }
 
                 cur_cell++;
 
                 break;
             case pichula:
-                if (!*cur_cell) {
+                if (!cells[cur_cell]) {
                     j = find_loop_end(commands, commands_length, j);
                 }
 
                 break;
             case tula:
-                if (*cur_cell) {
+                if (cells[cur_cell]) {
                     j = find_loop_start(commands, commands_length, j);
                 }
 
@@ -422,9 +417,9 @@ void run_commands(const command_t *commands, int commands_length) {
                 break;
             case ctm:
                 #if !defined(_WIN64) && !defined(_WIN32)
-                    printf("%s", utf32_char_to_utf8(*cur_cell));
+                    printf("%s", utf32_char_to_utf8(cells[cur_cell]));
                 #else
-                    putchar(*cur_cell);
+                    putchar(cells[cur_cell]);
                 #endif
 
                 break;
@@ -436,7 +431,7 @@ void run_commands(const command_t *commands, int commands_length) {
                         while (getchar() != '\n') {}
                     }
 
-                    *cur_cell = utf8_strlen(utf8_char_input) >= 2 ? utf8_str_to_utf32(utf8_char_input)[0] : U'\0';
+                    cells[cur_cell] = utf8_strlen(utf8_char_input) >= 2 ? utf8_str_to_utf32(utf8_char_input)[0] : U'\0';
                 #else
                     wmemset(utf16_char_input, L'\0', 3);
 
@@ -447,12 +442,12 @@ void run_commands(const command_t *commands, int commands_length) {
                         while (getchar() != '\n') {}
                     }
 
-                    *cur_cell = r == 3 ? (uint_least32_t)utf16_char_input[0] : U'\0';
+                    cells[cur_cell] = r == 3 ? (uint_least32_t)utf16_char_input[0] : U'\0';
                 #endif
                 
                 break;
             case chúpala:
-                printf("%d", *cur_cell);
+                printf("%d", cells[cur_cell]);
                 break;
             case brígido:
                 char_buf_size = 13 * sizeof(char);
@@ -483,17 +478,17 @@ void run_commands(const command_t *commands, int commands_length) {
                     char_buf[i++] = c;
                 }
 
-                *cur_cell = (uint_least32_t)strtol(char_buf, NULL, 10);
+                cells[cur_cell] = (uint_least32_t)strtol(char_buf, NULL, 10);
 
                 free(char_buf);
 
                 break;
             case perkin:
                 if (copy_set) {
-                    *cur_cell = cell_value_copy;
+                    cells[cur_cell] = cell_value_copy;
                     copy_set = false;
                 } else {
-                    cell_value_copy = *cur_cell;
+                    cell_value_copy = cells[cur_cell];
                     copy_set = true;
                 }
 
