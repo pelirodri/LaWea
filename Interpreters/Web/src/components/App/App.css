@@ -1,0 +1,46 @@
+body {
+	background: #272822 !important;
+}
+
+#output, #input {
+	background: #272822;
+}
+
+#output {
+	resize: none !important;
+}
+
+*:focus, *:active {
+	outline: none !important;
+	box-shadow: none !important;
+}
+
+@media (max-width: 575px) {
+	label, #code-container, #output, #input {
+		width: 95%;
+	}
+}
+
+@media (min-width: 576px) {
+	label, #code-container, #output, #input {
+		width: 90%;
+	}
+}
+
+@media (min-width: 768px) {
+	label, #code-container, #output, #input {
+		width: 85%;
+	}
+}
+
+@media (min-width: 992px) {
+	label, #code-container, #output, #input {
+		width: 80%;
+	}
+}
+
+@media (min-width: 1200px) {
+	label, #code-container, #output, #input {
+		width: 75%;
+	}
+}
