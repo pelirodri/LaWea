@@ -1,27 +1,27 @@
 <template>
 	<div>
-		<div class="row">
-			<div class="col">
+		<b-row>
+			<b-col>
 				<div class="d-flex flex-column align-items-start">
 					<label class="mx-auto text-light" for="code-container">Code:</label>
 					<div id="code-container" class="border border-light rounded mx-auto"></div>
 				</div>
-			</div>
-		</div>
+			</b-col>
+		</b-row>
 		
-		<div class="row mt-3">
-			<div class="col">
-				<button class="btn btn-light float-right" :disabled="isRunButtonDisabled" @click="run()">
+		<b-row class="mt-3">
+			<b-col>
+				<b-button class="float-right" variant="light" :disabled="isRunButtonDisabled" @click="run">
 					Run
-				</button>
-			</div>
+				</b-button>
+			</b-col>
 
-			<div class="col">
-				<button class="btn btn-light" :disabled="isStopButtonDisabled" @click="stop()">
+			<b-col>
+				<b-button variant="light" :disabled="isStopButtonDisabled" @click="stop">
 					Stop
-				</button>
-			</div>
-		</div>
+				</b-button>
+			</b-col>
+		</b-row>
 	</div>
 </template>
 

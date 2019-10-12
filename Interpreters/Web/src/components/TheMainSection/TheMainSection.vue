@@ -3,7 +3,7 @@
 		<TheCodeEditor
 			:isStopButtonDisabled="isStopButtonDisabled"
 			@runButtonClicked="interpretLaWeá($event)"
-			@stopButtonClicked="stopRunningCommands()"
+			@stopButtonClicked="stopRunningCommands"
 		/>
 
 		<TheOutputManager :output="output" />

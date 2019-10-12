@@ -1,9 +1,9 @@
 <template>
-	<div class="container-fluid">
+	<b-container fluid>
 		<TheHeaderSection />
 		<TheMainSection />
 		<TheFooterSection />
-	</div>
+	</b-container>
 </template>
 
 <script lang="ts" src="./App.ts"></script>

@@ -1,13 +1,14 @@
 <template>
 	<div class="mt-4">
-		<div class="row">
-			<div class="col">
+		<b-row>
+			<b-col>
 				<div class="d-flex flex-column align-items-start">
 					<label class="mx-auto text-light" for="input">Input:</label>
 
-					<input 
+					<b-form-input 
 						id="input"
 						class="border border-light rounded mx-auto text-light"
+						size="sm"
 						autocorrect="off"
 						autocapitalize="none"
 						ref="input"
@@ -15,20 +16,21 @@
 						:disabled="isInputDisabled"
 					/>
 				</div>
-			</div>
-		</div>
+			</b-col>
+		</b-row>
 				
-		<div class="row mt-3">
-			<div class="col">
-				<button 
-					class="btn btn-light d-block mx-auto"
+		<b-row class="mt-3">
+			<b-col>
+				<b-button 
+					class="d-block mx-auto"
+					variant="light"
 					:disabled="isInputDisabled"
 					@click="$emit('enterButtonClicked')"
 				>
 					Enter
-				</button>
-			</div>
-		</div>
+				</b-button>
+			</b-col>
+		</b-row>
 	</div>
 </template>
 

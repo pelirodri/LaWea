@@ -15,7 +15,7 @@ export default class CodeEditor extends Vue {
 	private editor!: CodeMirror.Editor;
 
 	run(): void {
-		this.$emit("runButtonClicked", this.editor.getValue());
+		this.$emit("runButtonClicked", this.editor.getValue(""));
 	}
 
 	stop(): void {

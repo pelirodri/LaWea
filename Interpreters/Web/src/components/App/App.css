@@ -6,10 +6,6 @@ body {
 	background: #272822;
 }
 
-#output {
-	resize: none !important;
-}
-
 *:focus, *:active {
 	outline: none !important;
 	box-shadow: none !important;

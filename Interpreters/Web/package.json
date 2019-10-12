@@ -8,9 +8,8 @@
   },
   "dependencies": {
     "bootstrap": "^4.3.1",
+    "bootstrap-vue": "^2.0.4",
     "codemirror": "^5.48.4",
-    "jquery": "^3.4.1",
-    "popper.js": "^1.15.0",
     "vue": "^2.6.10",
     "vue-class-component": "^7.0.2",
     "vue-property-decorator": "^8.1.0"
@@ -18,7 +17,6 @@
   "devDependencies": {
     "@types/bootstrap": "^4.3.1",
     "@types/codemirror": "0.0.76",
-    "@types/jquery": "^3.3.31",
     "@vue/cli-plugin-typescript": "^3.11.0",
     "@vue/cli-service": "^3.11.0",
     "typescript": "^3.4.3",
