@@ -8,18 +8,22 @@ import "codemirror/addon/mode/simple.js";
 
 @Component
 export default class CodeEditor extends Vue {
-	@Prop({ default: true }) readonly isStopButtonDisabled!: boolean;
+	@Prop({ default: true }) private readonly isStopButtonDisabled!: boolean;
 
-	private isRunButtonDisabled = true;
+	private code = "";
 
 	private editor!: CodeMirror.Editor;
 
 	run(): void {
-		this.$emit("runButtonClicked", this.editor.getValue(""));
+		this.$emit("runButtonClicked", this.code);
 	}
 
 	stop(): void {
 		this.$emit("stopButtonClicked");
+	}
+
+	clear(): void {
+		this.editor.setValue("");
 	}
 
 	mounted(): void {
@@ -43,7 +47,7 @@ export default class CodeEditor extends Vue {
 		});
 
 		this.editor.on("change", () => {
-			this.isRunButtonDisabled = this.editor.getValue().length == 0;
+			this.code = this.editor.getValue("");
 		});
 
 		const pageFontSize = getComputedStyle(document.documentElement).fontSize;

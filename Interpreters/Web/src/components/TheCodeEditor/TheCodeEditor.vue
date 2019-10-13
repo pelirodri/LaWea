@@ -11,15 +11,19 @@
 		
 		<b-row class="mt-3">
 			<b-col>
-				<b-button class="float-right" variant="light" :disabled="isRunButtonDisabled" @click="run">
-					Run
-				</b-button>
-			</b-col>
+				<div class="d-flex justify-content-center">
+					<b-button variant="light" :disabled="!code.length" @click="run">
+						Run
+					</b-button>
 
-			<b-col>
-				<b-button variant="light" :disabled="isStopButtonDisabled" @click="stop">
-					Stop
-				</b-button>
+					<b-button class="mx-3" variant="light" :disabled="isStopButtonDisabled" @click="stop">
+						Stop
+					</b-button>
+
+					<b-button variant="light" :disabled="!code.length" @click="clear">
+						Clear
+					</b-button>
+				</div>
 			</b-col>
 		</b-row>
 	</div>

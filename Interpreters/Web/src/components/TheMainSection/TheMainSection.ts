@@ -19,11 +19,13 @@ import Module from "./run_commands";
 	}
 })
 export default class TheMainSection extends Vue implements LaWeáInterpreter {
-	output = "";
-	input = "";
-	isStopButtonDisabled = true;
-	isInputDisabled = true;
-	errorMessage = "";
+	private output = "";
+	private input = "";
+
+	private isStopButtonDisabled = true;
+	private isInputDisabled = true;
+	
+	private errorMessage = "";
 
 	private commands!: Command[];
 
