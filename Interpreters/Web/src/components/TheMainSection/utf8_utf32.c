@@ -33,7 +33,7 @@ size_t utf8_byte_utf8_code_point_len(uint_least8_t utf8_byte) {
 	}
 }
 
-size_t utf32_char_utf8_code_point_len(char32_t utf32_char) {
+size_t utf32_char_utf8_code_point_len(uint_least32_t utf32_char) {
 	if (utf32_char <= 0x7F) {
 		return 1;
 	} else if (utf32_char <= 0x7FF) {
@@ -57,7 +57,7 @@ size_t utf8_strlen(const uint_least8_t *utf8_str) {
 	return str_len;
 }
 
-size_t utf32_strlen(const char32_t *utf32_str) {
+size_t utf32_strlen(const uint_least32_t *utf32_str) {
 	size_t str_len = 0;
 
 	for (int i = 0; utf32_str[i]; i++) {
@@ -67,7 +67,7 @@ size_t utf32_strlen(const char32_t *utf32_str) {
 	return str_len;
 }
 
-size_t utf32_str_utf8_strlen(const char32_t *utf32_str) {
+size_t utf32_str_utf8_strlen(const uint_least32_t *utf32_str) {
 	size_t str_len = 0;
 
 	for (int i = 0; utf32_str[i]; i++) {
@@ -77,7 +77,7 @@ size_t utf32_str_utf8_strlen(const char32_t *utf32_str) {
 	return str_len;
 }
 
-int utf32_strcmp(const char32_t *utf32_str1, const char32_t *utf32_str2) {
+int utf32_strcmp(const uint_least32_t *utf32_str1, const uint_least32_t *utf32_str2) {
 	while (*utf32_str1) {
 		if (*utf32_str1 != *utf32_str2) {
 			break;
@@ -90,7 +90,7 @@ int utf32_strcmp(const char32_t *utf32_str1, const char32_t *utf32_str2) {
 	return (int)(*utf32_str1 - *utf32_str2);
 }
 
-char32_t utf8_char_to_utf32(const uint_least8_t *utf8_char) {
+uint_least32_t utf8_char_to_utf32(const uint_least8_t *utf8_char) {
 	switch (utf8_byte_utf8_code_point_len(utf8_char[0])) {
 		case 1:
 			return utf8_char[0]; 
@@ -99,8 +99,8 @@ char32_t utf8_char_to_utf32(const uint_least8_t *utf8_char) {
 		case 3:
 			return ((utf8_char[0] ^ 0xE0) << 12) | ((utf8_char[1] ^ 0x80) << 6) | (utf8_char[2] ^ 0x80);
 		case 4: {
-			char32_t first_half = ((utf8_char[0] ^ 0xF0) << 18) | ((utf8_char[1] ^ 0x80) << 12);
-			char32_t second_half = ((utf8_char[2] ^ 0x80) << 6) | (utf8_char[3] ^ 0x80);
+			uint_least32_t first_half = ((utf8_char[0] ^ 0xF0) << 18) | ((utf8_char[1] ^ 0x80) << 12);
+			uint_least32_t second_half = ((utf8_char[2] ^ 0x80) << 6) | (utf8_char[3] ^ 0x80);
 			
 			return first_half | second_half;
 		}
@@ -109,9 +109,13 @@ char32_t utf8_char_to_utf32(const uint_least8_t *utf8_char) {
 	}
 }
 
-uint_least8_t *utf32_char_to_utf8(char32_t utf32_char) {
+uint_least8_t *utf32_char_to_utf8(uint_least32_t utf32_char) {
 	size_t code_point_len = utf32_char_utf8_code_point_len(utf32_char);
 	uint_least8_t *utf8_char = (uint_least8_t *)malloc((code_point_len + 1) * sizeof(uint_least8_t));
+
+	if (!utf8_char) {
+		return NULL;
+	}
 
 	int j = 0;
 
@@ -144,8 +148,8 @@ uint_least8_t *utf32_char_to_utf8(char32_t utf32_char) {
 	return utf8_char;
 }
 
-char32_t *utf8_str_to_utf32(const uint_least8_t *utf8_str) {
-	char32_t *utf32_str = (char32_t *)malloc((utf8_strlen(utf8_str) + 1) * sizeof(char32_t));
+uint_least32_t *utf8_str_to_utf32(const uint_least8_t *utf8_str) {
+	uint_least32_t *utf32_str = (uint_least32_t *)malloc((utf8_strlen(utf8_str) + 1) * sizeof(uint_least32_t));
 
 	if (!utf32_str) {
 		return NULL;
@@ -163,7 +167,7 @@ char32_t *utf8_str_to_utf32(const uint_least8_t *utf8_str) {
 	return utf32_str;
 }
 
-uint_least8_t *utf32_str_to_utf8(const char32_t *utf32_str) {
+uint_least8_t *utf32_str_to_utf8(const uint_least32_t *utf32_str) {
 	uint_least8_t *utf8_str = (uint_least8_t *)malloc((utf32_str_utf8_strlen(utf32_str) + 1) * sizeof(uint_least8_t));
 
 	if (!utf8_str) {

@@ -12,7 +12,7 @@
 		<b-row class="mt-3">
 			<b-col>
 				<div class="d-flex justify-content-center">
-					<b-button variant="light" :disabled="!code.length" @click="run">
+					<b-button variant="light" @click="run">
 						Run
 					</b-button>
 

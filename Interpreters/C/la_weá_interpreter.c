@@ -69,33 +69,18 @@ static int find_loop_start(const command_t *, int);
 static int find_loop_end(const command_t *, int, int);
 
 void interpret_la_weá(const char *file_path) {
-    size_t code_len = 0;
-    uint_least32_t *code = get_code(file_path, &code_len);
-
-    if (!code) {
-        exit_interpreter("");
-    }
-
-    if (!utf32_strlen(code)) {
-        free(code);
-        return;
-    }
+    uint_least32_t *code = get_code(file_path);
 
     int commands_count = 0;
-    command_t *commands = get_commands(code, code_len, &commands_count);
+    command_t *commands = get_commands(code, &commands_count);
 
     free(code);
 
-    if (!commands) {
-        exit_interpreter("");
-    }
-
     run_commands(commands, commands_count);
-
     free(commands);
 }
 
-uint_least32_t *get_code(const char *file_path, size_t *code_len) {
+uint_least32_t *get_code(const char *file_path) {
     const char *extension = strrchr(file_path, '.');
 
     if (!extension || strcmp(extension + 1, "lw")) {
@@ -162,15 +147,19 @@ uint_least32_t *get_code(const char *file_path, size_t *code_len) {
         fclose(fp);
     #endif
 
-    *code_len = utf8_strlen((uint_least8_t *)utf8_code);
-
     uint_least32_t *utf32_code = utf8_str_to_utf32((uint_least8_t *)utf8_code);
     free(utf8_code);
+
+    if (!utf32_code) {
+        exit_interpreter("");
+    }
 
     return utf32_code;
 }
 
-command_t *get_commands(const uint_least32_t *code, size_t code_len, int *commands_count) {
+command_t *get_commands(const uint_least32_t *code, int *commands_count) {
+    size_t code_len = utf32_strlen(code);
+
     size_t commands_size = (size_t)(code_len / 7) * sizeof(command_t);
     command_t *commands = (command_t *)malloc(commands_size);
 
@@ -201,6 +190,10 @@ command_t *get_commands(const uint_least32_t *code, size_t code_len, int *comman
                     char msg[68 + (int)utf32_strlen(cmd_name) + (int)(log10(line) + 1) + col_len];
 
                     uint_least8_t *utf8_cmd_name = utf32_str_to_utf8(cmd_name);
+
+                    if (!utf8_cmd_name) {
+                        exit_interpreter("");
+                    }
 
                     sprintf(
                         msg,
@@ -239,6 +232,10 @@ command_t *get_commands(const uint_least32_t *code, size_t code_len, int *comman
                     char msg[59 + sizeof(uint_least32_t) + (int)(log10(line) + 1) + (int)(log10(col) + 1)];
 
                     uint_least8_t *utf8_char = utf32_char_to_utf8(code[k]);
+
+                    if (!utf8_char) {
+                        exit_interpreter("");
+                    }
 
                     sprintf(
                         msg,
@@ -380,8 +377,13 @@ void run_commands(const command_t *commands, int commands_count) {
                 #if !defined(_WIN64)
                     if (cells[cur_cell] >= 0x0 && cells[cur_cell] <= 0x10FFFF) {
                         uint_least8_t *utf8_output = utf32_char_to_utf8(cells[cur_cell]);
-                        printf("%s", strdup((const char *)utf8_output));
 
+                        if (!utf8_output) {
+                            free(cells);
+                            exit_interpreter("");
+                        }
+
+                        printf("%s", strdup((const char *)utf8_output));
                         free(utf8_output);
                     } else {
                         putchar(cells[cur_cell]);
@@ -401,8 +403,13 @@ void run_commands(const command_t *commands, int commands_count) {
                     } else {
                         if (utf8_strlen(utf8_char_input) == 2) {
                             uint_least32_t *utf32_char_input = utf8_str_to_utf32(utf8_char_input);
-                            cells[cur_cell] = utf32_char_input[0];
 
+                            if (!utf32_char_input) {
+                                free(cells);
+                                exit_interpreter("");
+                            }
+
+                            cells[cur_cell] = utf32_char_input[0];
                             free(utf32_char_input);
                         } else {
                             cells[cur_cell] = U'\0';

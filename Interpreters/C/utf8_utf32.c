@@ -113,6 +113,10 @@ uint_least8_t *utf32_char_to_utf8(uint_least32_t utf32_char) {
 	size_t code_point_len = utf32_char_utf8_code_point_len(utf32_char);
 	uint_least8_t *utf8_char = (uint_least8_t *)malloc((code_point_len + 1) * sizeof(uint_least8_t));
 
+	if (!utf8_char) {
+		return NULL;
+	}
+
 	int j = 0;
 
 	switch (code_point_len) {

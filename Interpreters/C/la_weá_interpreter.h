@@ -85,19 +85,17 @@ void interpret_la_weá(const char *file_path);
 /**
  * A utility function that retrieves the code.
  * @param file_path the path to the file with the code
- * @param code_len a pointer to store the length of the code
  * @return The code, encoded in UTF-32
  */
-uint_least32_t *get_code(const char *file_path, size_t *code_len);
+uint_least32_t *get_code(const char *file_path);
 
 /**
  * Checks the validity of the code and retrieves the commands.
  * @param code the code to parse
- * @param code_len the length of the code
  * @param commands_count a pointer to store the number of commands found
  * @return The commands found
  */
-command_t *get_commands(const uint_least32_t *code, size_t code_len, int *commands_count);
+command_t *get_commands(const uint_least32_t *code, int *commands_count);
 
 /**
  * Runs the code by interpreting the commands.

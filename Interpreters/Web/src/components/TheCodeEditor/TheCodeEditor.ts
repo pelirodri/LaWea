@@ -47,7 +47,7 @@ export default class CodeEditor extends Vue {
 		});
 
 		this.editor.on("change", () => {
-			this.code = this.editor.getValue("");
+			this.code = this.editor.getValue();
 		});
 
 		const pageFontSize = getComputedStyle(document.documentElement).fontSize;

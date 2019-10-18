@@ -51,13 +51,7 @@ const std::vector<std::u32string> la_weá_interpreter::command_names = {
 };
 
 void la_weá_interpreter::interpret(const char *file_path) {
-	std::u32string code = get_code(file_path);
-
-	if (!code.length()) {
-		return;
-	}
-
-	run_commands(get_commands(code));
+	run_commands(get_commands(get_code(file_path)));
 }
 
 std::u32string la_weá_interpreter::get_code(const char *file_path) {

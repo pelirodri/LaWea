@@ -90,8 +90,6 @@ open class LaWeáInterpreter {
         
         do {
             let code = try String(contentsOfFile: filePath)
-            
-            guard !code.isEmpty else { return }
             runCommands(getCommands(from: code))
         } catch {
             if (error as NSError).code == NSFileReadNoSuchFileError {
