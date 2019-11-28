@@ -12,12 +12,16 @@
 		<b-row class="mt-3">
 			<b-col>
 				<div class="d-flex justify-content-center">
-					<b-button variant="light" @click="run">
+					<b-button class="mr-3" variant="light" @click="run">
 						Run
 					</b-button>
 
-					<b-button class="mx-3" variant="light" :disabled="isStopButtonDisabled" @click="stop">
+					<b-button class="mr-3" variant="light" :disabled="isStopButtonDisabled" @click="stop">
 						Stop
+					</b-button>
+
+					<b-button class="mr-3" variant="light" :disabled="code.length == 0" @click="copy">
+						Copy
 					</b-button>
 
 					<b-button variant="light" :disabled="!code.length" @click="clear">

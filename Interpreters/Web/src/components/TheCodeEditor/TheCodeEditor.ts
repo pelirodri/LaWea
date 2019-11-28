@@ -22,6 +22,29 @@ export default class CodeEditor extends Vue {
 		this.$emit("stopButtonClicked");
 	}
 
+	copy(): void {
+		if (navigator.clipboard) {
+			navigator.clipboard.writeText(this.code);
+		} else {
+			const textArea = document.createElement("textarea");
+			textArea.value = this.code;
+
+			document.body.appendChild(textArea);
+
+			textArea.select();
+			document.execCommand("copy");
+
+			document.body.removeChild(textArea);
+		}
+
+		this.$bvToast.toast("Code was copied", {
+			title: "Info",
+			autoHideDelay: 1000,
+			noHoverPause: true,
+			variant: "info"
+		});
+	}
+
 	clear(): void {
 		this.editor.setValue("");
 	}
@@ -50,7 +73,7 @@ export default class CodeEditor extends Vue {
 			this.code = this.editor.getValue();
 		});
 
-		const pageFontSize = getComputedStyle(document.documentElement).fontSize;
-		(document.querySelector(".CodeMirror") as HTMLElement).style.fontSize = pageFontSize;
+		const documentFontSize = getComputedStyle(document.documentElement).fontSize;
+		(document.querySelector(".CodeMirror") as HTMLElement).style.fontSize = documentFontSize;
 	}
 }
