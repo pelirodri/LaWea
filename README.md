@@ -21,6 +21,6 @@ Command       | Description
 ```perkin```  | Copies current cell value if there is no copy; otherwise, pastes the copied value and resets the copy.
 ```mierda```  | Terminates program.
 
-WebAssembly-based online interpreter: https://laweainterpreter.firebaseapp.com
+WebAssembly-based online interpreter: https://laweainterpreter.com
 
 **Note:** C/C++ interpreters must be compiled with Clang.
