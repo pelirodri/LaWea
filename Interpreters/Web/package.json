@@ -15,7 +15,6 @@
 	"vue-property-decorator": "^8.1.0"
   },
   "devDependencies": {
-	"@types/bootstrap": "^4.3.1",
 	"@types/codemirror": "0.0.76",
 	"@vue/cli-plugin-typescript": "^3.11.0",
 	"@vue/cli-service": "^3.11.0",

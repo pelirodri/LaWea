@@ -14,6 +14,7 @@
 						ref="input"
 						v-model="syncedInput"
 						:disabled="isInputDisabled"
+						@keyup.enter="$emit('enterButtonClicked')"
 					/>
 				</div>
 			</b-col>
