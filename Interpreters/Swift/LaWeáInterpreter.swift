@@ -84,16 +84,12 @@ open class LaWeáInterpreter {
      - Note: The file must have the .lw extension.
      */
     open func interpret(filePath: String) {
-        if !filePath.hasSuffix(".lw") {
-            exitInterpreter(errorMessage: "El archivo qlo tiene q tener la extensión .lw")
-        }
-        
         do {
             let code = try String(contentsOfFile: filePath)
             runCommands(getCommands(from: code))
         } catch {
             if (error as NSError).code == NSFileReadNoSuchFileError {
-                exitInterpreter(errorMessage: "No existe la weá, po, wn")
+                exitInterpreter(with: "No existe la weá, po, wn")
             }
         }
     }
@@ -135,7 +131,7 @@ open class LaWeáInterpreter {
                         let subMessage = " no es un comando válido, po, saco de weas (línea: "
                         
                         exitInterpreter(
-                            errorMessage: "'\(commandName)'\(subMessage)\(line), columna: \(col - commandName.count))"
+                            with: "'\(commandName)'\(subMessage)\(line), columna: \(col - commandName.count))"
                         )
                     }
                     
@@ -146,12 +142,12 @@ open class LaWeáInterpreter {
                 if !isComment {
                     if !"abcdeghiklmnopqrtuwáéíóú".contains(char) {
                         let subMessage = "' no es parte de La Weá, tonto qlo (línea: "
-                        exitInterpreter(errorMessage: "'\(char!)\(subMessage)\(line), columna: \(col))")
+                        exitInterpreter(with: "'\(char!)\(subMessage)\(line), columna: \(col))")
                     }
                     
                     if commandName.count == 7 {
                         let subMessage = "Voh creís q yo soy weón, ctm? Te gustan largos, parece (línea: "
-                        exitInterpreter(errorMessage: "\(subMessage)\(line), columna: \(col - commandName.count))")
+                        exitInterpreter(with: "\(subMessage)\(line), columna: \(col - commandName.count))")
                     }
                     
                     commandName.append(char)
@@ -169,7 +165,7 @@ open class LaWeáInterpreter {
         }
         
         if loopStartsCount != loopEndsCount {
-            exitInterpreter(errorMessage: "O te sobran pichulas o te faltan tulas")
+            exitInterpreter(with: "O te sobran pichulas o te faltan tulas")
         }
         
         return commands
@@ -205,7 +201,7 @@ open class LaWeáInterpreter {
                 cells[currentCell] = 0
             case .chucha:
                 if currentCell == 0 {
-                    exitInterpreter(errorMessage: "Te saliste pa la izquierda, aweonao")
+                    exitInterpreter(with: "Te saliste pa la izquierda, aweonao")
                 }
                 
                 currentCell -= 1
@@ -264,9 +260,9 @@ open class LaWeáInterpreter {
     /**
      A utility function that prints an error message and exits the program abnormally.
      
-     - Parameter errorMessage: The error message to print.
+     - Parameter with: The error message to print.
      */
-    open func exitInterpreter(errorMessage: String) {
+    open func exitInterpreter(with errorMessage: String) {
         print("\u{001b}[1;31m\(errorMessage.count > 0 ? errorMessage : "Error interno")\u{001b}[0m")
         exit(EXIT_FAILURE)
     }
@@ -279,13 +275,13 @@ open class LaWeáInterpreter {
                 } else if command == .tula {
                     if loopEndsCount == loopStartsCount {
                         let subMessage = "Se encontró una tula sin su respectiva pichula en la línea: "
-                        exitInterpreter(errorMessage: "\(subMessage)\(line), columna: \(col)")
+                        exitInterpreter(with: "\(subMessage)\(line), columna: \(col)")
                     }
                     
                     loopEndsCount += 1
                 } else if command == .pico {
                     if loopStartsCount == loopEndsCount {
-                        exitInterpreter(errorMessage: "No debiste meter ese pico en la línea: \(line), columna: \(col)")
+                        exitInterpreter(with: "No debiste meter ese pico en la línea: \(line), columna: \(col)")
                     }
                 }
                 
