@@ -1,5 +1,5 @@
 //
-// Copyright © 2018 Rodrigo Pelissier. All rights reserved.
+// Copyright © 2020 Rodrigo Pelissier. All rights reserved.
 //
 // This file is part of La Weá Interpreter (C)
 //
@@ -81,12 +81,6 @@ void interpret_la_weá(const char *file_path) {
 }
 
 uint_least32_t *get_code(const char *file_path) {
-    const char *extension = strrchr(file_path, '.');
-
-    if (!extension || strcmp(extension + 1, "lw")) {
-        exit_interpreter("El archivo qlo tiene q tener la extensión .lw");
-    }
-
     size_t utf8_code_len;
 
     int fd;

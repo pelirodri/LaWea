@@ -1,5 +1,5 @@
 //
-// Copyright © 2018 Rodrigo Pelissier. All rights reserved.
+// Copyright © 2020 Rodrigo Pelissier. All rights reserved.
 //
 // This file is part of La Weá Interpreter (C++)
 //
@@ -55,12 +55,6 @@ void la_weá_interpreter::interpret(const char *file_path) {
 }
 
 std::u32string la_weá_interpreter::get_code(const char *file_path) {
-	const char *extension = strrchr(file_path, '.');
-
-	if (!extension || strcmp(extension + 1, "lw")) {
-		exit_interpreter(u8"El archivo qlo tiene q tener la extensión .lw");
-	}
-
 	std::ifstream is (file_path);
 
 	if (!is) {

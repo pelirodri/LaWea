@@ -1,5 +1,5 @@
 //
-// Copyright © 2018 Rodrigo Pelissier. All rights reserved.
+// Copyright © 2020 Rodrigo Pelissier. All rights reserved.
 //
 // This file is part of La Weá Interpreter (C)
 //
@@ -20,6 +20,7 @@
 #include "la_weá_interpreter.h"
 
 #include <locale.h>
+#include <string.h>
 
 int main(int argc, char **argv) {
 	#if !defined(__LP64__) && !defined(_WIN64)
@@ -29,7 +30,9 @@ int main(int argc, char **argv) {
     setlocale(LC_CTYPE, "");
 
     if (argc != 2) {
-        exit_interpreter("Tenís q pasar un argumento, con la ruta del archivo con el código, po, aweonao qlo");
+        exit_interpreter("Tenís q pasar la ruta del archivo con el código, po, aweonao qlo");
+    } else if (!strstr(argv[1], ".lw")) {
+    	exit_interpreter("El archivo qlo tiene q tener la extensión .lw");
     }
 
     interpret_la_weá(argv[1]);

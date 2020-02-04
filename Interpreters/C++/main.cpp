@@ -1,5 +1,5 @@
 //
-// Copyright © 2018 Rodrigo Pelissier. All rights reserved.
+// Copyright © 2020 Rodrigo Pelissier. All rights reserved.
 //
 // This file is part of La Weá Interpreter (C++)
 //
@@ -20,6 +20,7 @@
 #include "la_weá_interpreter.hpp"
 
 #include <locale>
+#include <cstring>
 
 int main(int argc, char **argv) {
 	la_weá_interpreter interpreter;
@@ -31,9 +32,9 @@ int main(int argc, char **argv) {
 	std::locale::global(std::locale(""));
 
 	if (argc != 2) {
-		interpreter.exit_interpreter(
-			u8"Tenís q pasar un argumento, con la ruta del archivo con el código, po, aweonao qlo"
-		);
+		interpreter.exit_interpreter(u8"Tenís q pasar la ruta del archivo con el código, po, aweonao qlo");
+	} else if (!strstr(argv[1], ".lw")) {
+		interpreter.exit_interpreter(u8"El archivo qlo tiene q tener la extensión .lw");
 	}
 
 	interpreter.interpret(argv[1]);

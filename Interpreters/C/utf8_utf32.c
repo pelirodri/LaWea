@@ -1,5 +1,5 @@
 //
-// Copyright © 2018 Rodrigo Pelissier. All rights reserved.
+// Copyright © 2020 Rodrigo Pelissier. All rights reserved.
 //
 // This file is part of La Weá Interpreter (C)
 //
