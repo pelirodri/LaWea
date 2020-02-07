@@ -31,6 +31,7 @@ size_t utf32_strlen(const uint_least32_t *);
 size_t utf32_str_utf8_strlen(const uint_least32_t *);
 
 int utf32_strcmp(const uint_least32_t *, const uint_least32_t *);
+uint_least32_t *utf32_strchr(const uint_least32_t *, uint_least32_t);
 
 uint_least32_t utf8_char_to_utf32(const uint_least8_t *);
 uint_least8_t *utf32_char_to_utf8(uint_least32_t);

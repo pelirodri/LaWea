@@ -90,6 +90,16 @@ int utf32_strcmp(const uint_least32_t *utf32_str1, const uint_least32_t *utf32_s
 	return (int)(*utf32_str1 - *utf32_str2);
 }
 
+uint_least32_t *utf32_strchr(const uint_least32_t *str, uint_least32_t c) {
+	while (*str != c) {
+		if (!*str++) {
+			return NULL;
+		}
+	}
+
+	return (uint_least32_t *)str;
+}
+
 uint_least32_t utf8_char_to_utf32(const uint_least8_t *utf8_char) {
 	switch (utf8_byte_utf8_code_point_len(utf8_char[0])) {
 		case 1:

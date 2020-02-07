@@ -59,11 +59,10 @@ static const uint_least32_t command_names[][8 * sizeof(uint_least32_t)] = {
     U"mierda"
 };
 
+static uint_least32_t *get_code(const char *);
 static void file_not_found_exit();
 
 static command_t get_command(const uint_least32_t *, size_t, size_t);
-
-static bool is_char_valid(uint_least32_t);
 
 static int find_loop_start(const command_t *, int);
 static int find_loop_end(const command_t *, int, int);
@@ -78,77 +77,6 @@ void interpret_la_weá(const char *file_path) {
 
     run_commands(commands, commands_count);
     free(commands);
-}
-
-uint_least32_t *get_code(const char *file_path) {
-    size_t utf8_code_len;
-
-    int fd;
-    FILE *fp;
-
-    #if defined(__unix__) || (defined(__APPLE__) && defined(__MACH__)) || defined(__CYGWIN__) || defined(_WIN64)
-        #if !defined(_WIN64)
-            fd = open(file_path, O_RDONLY);
-        #else
-            errno = _sopen_s(&fd, file_path, _O_RDONLY, _SH_DENYWR, 0);
-        #endif
-
-        if (fd == -1) {
-            file_not_found_exit();
-        }
-
-        #if !defined(_WIN64)
-            utf8_code_len = lseek(fd, 0, SEEK_END);
-            lseek(fd, 0, SEEK_SET);
-        #else
-            utf8_code_len = _lseek(fd, 0, SEEK_END);
-            _lseek(fd, 0, SEEK_SET);
-        #endif
-    #else
-        fp = fopen(file_path, "r");
-
-        if (!fp) {
-            file_not_found_exit();
-        }
-
-        fseek(fp, 0, SEEK_END);
-        utf8_code_len = (size_t)ftell(fp);
-        fseek(fp, 0, SEEK_SET);
-    #endif
-
-    char *utf8_code = (char *)calloc(utf8_code_len + 1, sizeof(char));
-
-    if (!utf8_code) {
-        #if defined(__unix__) || (defined(__APPLE__) && defined(__MACH__)) || defined(__CYGWIN__)
-            close(fd);
-        #elif defined(_WIN64)
-            _close(fd);
-        #else
-            fclose(fp);
-        #endif
-
-        exit_interpreter("");
-    }
-
-    #if defined(__unix__) || (defined(__APPLE__) && defined(__MACH__)) || defined(__CYGWIN__)
-        read(fd, utf8_code, utf8_code_len);
-        close(fd);
-    #elif defined(_WIN64)
-        _read(fd, utf8_code, utf8_code_len);
-        _close(fd);
-    #else
-        fread(utf8_code, sizeof(char), utf8_code_len + 1, fp);
-        fclose(fp);
-    #endif
-
-    uint_least32_t *utf32_code = utf8_str_to_utf32((uint_least8_t *)utf8_code);
-    free(utf8_code);
-
-    if (!utf32_code) {
-        exit_interpreter("");
-    }
-
-    return utf32_code;
 }
 
 command_t *get_commands(const uint_least32_t *code, int *commands_count) {
@@ -220,7 +148,7 @@ command_t *get_commands(const uint_least32_t *code, int *commands_count) {
             }
         } else {
             if (!is_comment) {
-                if (!is_char_valid(code[k])) {
+                if (!utf32_strchr(U"abcdeghiklmnopqrtuwáéíóú", code[k])) {
                     free(commands);
 
                     char msg[59 + sizeof(uint_least32_t) + (int)(log10(line) + 1) + (int)(log10(col) + 1)];
@@ -507,6 +435,77 @@ void exit_interpreter(const char *err_msg) {
     exit(EXIT_FAILURE);
 }
 
+uint_least32_t *get_code(const char *file_path) {
+    size_t utf8_code_len;
+
+    int fd;
+    FILE *fp;
+
+    #if defined(__unix__) || (defined(__APPLE__) && defined(__MACH__)) || defined(__CYGWIN__) || defined(_WIN64)
+        #if !defined(_WIN64)
+            fd = open(file_path, O_RDONLY);
+        #else
+            errno = _sopen_s(&fd, file_path, _O_RDONLY, _SH_DENYWR, 0);
+        #endif
+
+        if (fd == -1) {
+            file_not_found_exit();
+        }
+
+        #if !defined(_WIN64)
+            utf8_code_len = lseek(fd, 0, SEEK_END);
+            lseek(fd, 0, SEEK_SET);
+        #else
+            utf8_code_len = _lseek(fd, 0, SEEK_END);
+            _lseek(fd, 0, SEEK_SET);
+        #endif
+    #else
+        fp = fopen(file_path, "r");
+
+        if (!fp) {
+            file_not_found_exit();
+        }
+
+        fseek(fp, 0, SEEK_END);
+        utf8_code_len = (size_t)ftell(fp);
+        fseek(fp, 0, SEEK_SET);
+    #endif
+
+    char *utf8_code = (char *)calloc(utf8_code_len + 1, sizeof(char));
+
+    if (!utf8_code) {
+        #if defined(__unix__) || (defined(__APPLE__) && defined(__MACH__)) || defined(__CYGWIN__)
+            close(fd);
+        #elif defined(_WIN64)
+            _close(fd);
+        #else
+            fclose(fp);
+        #endif
+
+        exit_interpreter("");
+    }
+
+    #if defined(__unix__) || (defined(__APPLE__) && defined(__MACH__)) || defined(__CYGWIN__)
+        read(fd, utf8_code, utf8_code_len);
+        close(fd);
+    #elif defined(_WIN64)
+        _read(fd, utf8_code, utf8_code_len);
+        _close(fd);
+    #else
+        fread(utf8_code, sizeof(char), utf8_code_len + 1, fp);
+        fclose(fp);
+    #endif
+
+    uint_least32_t *utf32_code = utf8_str_to_utf32((uint_least8_t *)utf8_code);
+    free(utf8_code);
+
+    if (!utf32_code) {
+        exit_interpreter("");
+    }
+
+    return utf32_code;
+}
+
 void file_not_found_exit() {
     char msg[26];
 
@@ -559,16 +558,6 @@ command_t get_command(const uint_least32_t *cmd_name, size_t line, size_t col) {
     }
 
     return (command_t)-1;
-}
-
-bool is_char_valid(uint_least32_t c) {
-    for (int i = 0; i < 24; i++) {
-        if (c == U"abcdeghiklmnopqrtuwáéíóú"[i]) {
-            return true;
-        }
-    }
-
-    return false;
 }
 
 int find_loop_start(const command_t *commands, int i) {

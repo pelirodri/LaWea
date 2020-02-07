@@ -21,7 +21,6 @@ import Foundation
 
 /// An interpreter for La Weá.
 open class LaWeáInterpreter {
-    
     /// All the valid commands.
     public enum Command: String, CaseIterable {
         /// Decrements current cell value by 1.
@@ -327,5 +326,4 @@ open class LaWeáInterpreter {
         
         return -1
     }
-    
 }

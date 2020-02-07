@@ -85,13 +85,6 @@ class la_weá_interpreter {
 		void interpret(const char *file_path);
 
 		/**
-		 * A utility function that retrieves the code.
-		 * @param file_path the path to the file with the code
-		 * @return The code, encoded in UTF-32
-		 */
-		std::u32string get_code(const char *file_path);
-
-		/**
 		 * Checks the validity of the code and retrieves the commands.
 		 * @param code the code to parse
 		 * @return The commands found
@@ -115,10 +108,11 @@ class la_weá_interpreter {
 
 		static const std::vector<std::u32string> command_names;
 
-		command_t get_command(const std::u32string &cmd_name, size_t line, size_t col);
+		std::u32string get_code(const char *);
+		command_t get_command(const std::u32string &, size_t, size_t);
 
-		int find_loop_start(const std::vector<command_t> &commands, int i);
-		int find_loop_end(const std::vector<command_t> &commands, int i);
+		int find_loop_start(const std::vector<command_t> &, int);
+		int find_loop_end(const std::vector<command_t> &, int);
 };
 
 #endif

@@ -29,8 +29,6 @@
 	std::locale::id std::codecvt<char32_t, char, std::mbstate_t>::id;
 #endif
 
-static std::wstring_convert<std::codecvt_utf8<char32_t>, char32_t> cvt;
-
 const std::vector<std::u32string> la_weá_interpreter::command_names = {
 	U"maricón",
 	U"maraco",
@@ -50,25 +48,10 @@ const std::vector<std::u32string> la_weá_interpreter::command_names = {
 	U"mierda"
 };
 
+static std::wstring_convert<std::codecvt_utf8<char32_t>, char32_t> cvt;
+
 void la_weá_interpreter::interpret(const char *file_path) {
 	run_commands(get_commands(get_code(file_path)));
-}
-
-std::u32string la_weá_interpreter::get_code(const char *file_path) {
-	std::ifstream is (file_path);
-
-	if (!is) {
-		exit_interpreter(u8"No existe la weá, po, wn");
-	}
-
-	is.seekg(0, is.end);
-	std::streampos code_len = is.tellg();
-	is.seekg(0, is.beg);
-
-	std::string code (code_len, ' ');
-	is.read(&code[0], code_len);
-
-	return cvt.from_bytes(code);
 }
 
 std::vector<la_weá_interpreter::command_t> la_weá_interpreter::get_commands(const std::u32string &code) {
@@ -320,6 +303,23 @@ void la_weá_interpreter::exit_interpreter(const std::string &err_msg) {
 	}
 	
 	std::exit(EXIT_FAILURE);
+}
+
+std::u32string la_weá_interpreter::get_code(const char *file_path) {
+	std::ifstream is (file_path);
+
+	if (!is) {
+		exit_interpreter(u8"No existe la weá, po, wn");
+	}
+
+	is.seekg(0, is.end);
+	std::streampos code_len = is.tellg();
+	is.seekg(0, is.beg);
+
+	std::string code (code_len, ' ');
+	is.read(&code[0], code_len);
+
+	return cvt.from_bytes(code);
 }
 
 la_weá_interpreter::command_t la_weá_interpreter::get_command(const std::u32string &cmd_name, size_t line, size_t col) {

@@ -168,13 +168,6 @@ export default class TheMainSection extends Vue implements LaWeáInterpreter {
 		this.stopRunningCommands();
 	}
 
-	stopRunningCommands() {
-		Module._stop_running_commands();
-
-		this.isStopButtonDisabled = true;
-		this.isInputDisabled = true;
-	}
-
 	private getCommand(commandName: string, line: number, col: number): Command {
 		for (let cmd = 0; cmd < 16; cmd++) {
 			if (commandName === Object.values(Command)[cmd]) {
@@ -207,6 +200,13 @@ export default class TheMainSection extends Vue implements LaWeáInterpreter {
 		}
 
 		return -1 as Command;
+	}
+
+	private stopRunningCommands(): void {
+		Module._stop_running_commands();
+
+		this.isStopButtonDisabled = true;
+		this.isInputDisabled = true;
 	}
 
 	mounted(): void {

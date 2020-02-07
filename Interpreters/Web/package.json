@@ -1,33 +1,33 @@
 {
-  "name": "lawea",
-  "version": "0.1.0",
-  "private": true,
-  "scripts": {
-	"serve": "vue-cli-service serve",
-	"build": "vue-cli-service build"
-  },
-  "dependencies": {
-	"bootstrap": "^4.3.1",
-	"bootstrap-vue": "^2.0.4",
-	"codemirror": "^5.48.4",
-	"vue": "^2.6.10",
-	"vue-class-component": "^7.0.2",
-	"vue-property-decorator": "^8.1.0"
-  },
-  "devDependencies": {
-	"@types/codemirror": "0.0.76",
-	"@vue/cli-plugin-typescript": "^3.11.0",
-	"@vue/cli-service": "^3.11.0",
-	"typescript": "^3.4.3",
-	"vue-template-compiler": "^2.6.10"
-  },
-  "postcss": {
-	"plugins": {
-	  "autoprefixer": {}
-	}
-  },
-  "browserslist": [
-	"> 1%",
-	"last 2 versions"
-  ]
+	"name": "lawea",
+	"version": "0.1.0",
+	"private": true,
+	"scripts": {
+		"serve": "vue-cli-service serve",
+		"build": "vue-cli-service build"
+	},
+	"dependencies": {
+		"bootstrap": "^4.3.1",
+		"bootstrap-vue": "^2.0.4",
+		"codemirror": "^5.48.4",
+		"vue": "^2.6.10",
+		"vue-class-component": "^7.0.2",
+		"vue-property-decorator": "^8.1.0"
+	},
+	"devDependencies": {
+		"@types/codemirror": "0.0.76",
+		"@vue/cli-plugin-typescript": "^3.11.0",
+		"@vue/cli-service": "^3.11.0",
+		"typescript": "^3.4.3",
+		"vue-template-compiler": "^2.6.10"
+	},
+	"postcss": {
+		"plugins": {
+			"autoprefixer": {}
+		}
+	},
+	"browserslist": [
+		"> 1%",
+		"last 2 versions"
+	]
 }

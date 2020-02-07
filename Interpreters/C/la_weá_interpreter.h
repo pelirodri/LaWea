@@ -83,13 +83,6 @@ typedef enum command_t {
 void interpret_la_weá(const char *file_path);
 
 /**
- * A utility function that retrieves the code.
- * @param file_path the path to the file with the code
- * @return The code, encoded in UTF-32
- */
-uint_least32_t *get_code(const char *file_path);
-
-/**
  * Checks the validity of the code and retrieves the commands.
  * @param code the code to parse
  * @param commands_count a pointer to store the number of commands found
