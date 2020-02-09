@@ -305,7 +305,7 @@ void run_commands(const command_t *commands, int commands_count) {
                             exit_interpreter("");
                         }
 
-                        printf("%s", strdup((const char *)utf8_output));
+                        printf("%s", (const char *)utf8_output);
                         free(utf8_output);
                     } else {
                         putchar(cells[cur_cell]);
