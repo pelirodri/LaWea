@@ -3,28 +3,16 @@
 	Author Tobias Koppers @sokra
 */
 
-var normalize = require("./normalize");
-var errors = require("errno");
-var stream = require("readable-stream");
+"use strict";
 
-var ReadableStream = stream.Readable;
-var WritableStream = stream.Writable;
+const normalize = require("./normalize");
+const join = require("./join");
+const MemoryFileSystemError = require("./MemoryFileSystemError");
+const errors = require("errno");
+const stream = require("readable-stream");
 
-function MemoryFileSystemError(err, path) {
-	Error.call(this)
-	if (Error.captureStackTrace)
-		Error.captureStackTrace(this, arguments.callee)
-	this.code = err.code;
-	this.errno = err.errno;
-	this.message = err.description;
-	this.path = path;
-}
-MemoryFileSystemError.prototype = new Error();
-
-function MemoryFileSystem(data) {
-	this.data = data || {};
-}
-module.exports = MemoryFileSystem;
+const ReadableStream = stream.Readable;
+const WritableStream = stream.Writable;
 
 function isDir(item) {
 	if(typeof item !== "object") return false;
@@ -38,7 +26,7 @@ function isFile(item) {
 
 function pathToArray(path) {
 	path = normalize(path);
-	var nix = /^\//.test(path);
+	const nix = /^\//.test(path);
 	if(!nix) {
 		if(!/^[A-Za-z]:/.test(path)) {
 			throw new MemoryFileSystemError(errors.code.EINVAL, path);
@@ -57,226 +45,258 @@ function pathToArray(path) {
 function trueFn() { return true; }
 function falseFn() { return false; }
 
-MemoryFileSystem.prototype.meta = function(_path) {
-	var path = pathToArray(_path);
-	var current = this.data;
-	for(var i = 0; i < path.length - 1; i++) {
-		if(!isDir(current[path[i]]))
-			return;
+class MemoryFileSystem {
+	constructor(data) {
+		this.data = data || {};
+		this.join = join;
+		this.pathToArray = pathToArray;
+		this.normalize = normalize;
+	}
+
+	meta(_path) {
+		const path = pathToArray(_path);
+		let current = this.data;
+		let i = 0;
+		for(; i < path.length - 1; i++) {
+			if(!isDir(current[path[i]]))
+				return;
+			current = current[path[i]];
+		}
+		return current[path[i]];
+	}
+
+	existsSync(_path) {
+		return !!this.meta(_path);
+	}
+
+	statSync(_path) {
+		let current = this.meta(_path);
+		if(_path === "/" || isDir(current)) {
+			return {
+				isFile: falseFn,
+				isDirectory: trueFn,
+				isBlockDevice: falseFn,
+				isCharacterDevice: falseFn,
+				isSymbolicLink: falseFn,
+				isFIFO: falseFn,
+				isSocket: falseFn
+			};
+		} else if(isFile(current)) {
+			return {
+				isFile: trueFn,
+				isDirectory: falseFn,
+				isBlockDevice: falseFn,
+				isCharacterDevice: falseFn,
+				isSymbolicLink: falseFn,
+				isFIFO: falseFn,
+				isSocket: falseFn
+			};
+		} else {
+			throw new MemoryFileSystemError(errors.code.ENOENT, _path, "stat");
+		}
+	}
+
+	readFileSync(_path, optionsOrEncoding) {
+		const path = pathToArray(_path);
+		let current = this.data;
+		let i = 0
+		for(; i < path.length - 1; i++) {
+			if(!isDir(current[path[i]]))
+				throw new MemoryFileSystemError(errors.code.ENOENT, _path, "readFile");
+			current = current[path[i]];
+		}
+		if(!isFile(current[path[i]])) {
+			if(isDir(current[path[i]]))
+				throw new MemoryFileSystemError(errors.code.EISDIR, _path, "readFile");
+			else
+				throw new MemoryFileSystemError(errors.code.ENOENT, _path, "readFile");
+		}
 		current = current[path[i]];
+		const encoding = typeof optionsOrEncoding === "object" ? optionsOrEncoding.encoding : optionsOrEncoding;
+		return encoding ? current.toString(encoding) : current;
 	}
-	return current[path[i]];
-}
 
-MemoryFileSystem.prototype.existsSync = function(_path) {
-	return !!this.meta(_path);
-}
-
-MemoryFileSystem.prototype.statSync = function(_path) {
-	var current = this.meta(_path);
-	if(_path === "/" || isDir(current)) {
-		return {
-			isFile: falseFn,
-			isDirectory: trueFn,
-			isBlockDevice: falseFn,
-			isCharacterDevice: falseFn,
-			isSymbolicLink: falseFn,
-			isFIFO: falseFn,
-			isSocket: falseFn
-		};
-	} else if(isFile(current)) {
-		return {
-			isFile: trueFn,
-			isDirectory: falseFn,
-			isBlockDevice: falseFn,
-			isCharacterDevice: falseFn,
-			isSymbolicLink: falseFn,
-			isFIFO: falseFn,
-			isSocket: falseFn
-		};
-	} else {
-		throw new MemoryFileSystemError(errors.code.ENOENT, _path);
+	readdirSync(_path) {
+		if(_path === "/") return Object.keys(this.data).filter(Boolean);
+		const path = pathToArray(_path);
+		let current = this.data;
+		let i = 0;
+		for(; i < path.length - 1; i++) {
+			if(!isDir(current[path[i]]))
+				throw new MemoryFileSystemError(errors.code.ENOENT, _path, "readdir");
+			current = current[path[i]];
+		}
+		if(!isDir(current[path[i]])) {
+			if(isFile(current[path[i]]))
+				throw new MemoryFileSystemError(errors.code.ENOTDIR, _path, "readdir");
+			else
+				throw new MemoryFileSystemError(errors.code.ENOENT, _path, "readdir");
+		}
+		return Object.keys(current[path[i]]).filter(Boolean);
 	}
-};
 
-MemoryFileSystem.prototype.readFileSync = function(_path, encoding) {
-	var path = pathToArray(_path);
-	var current = this.data;
-	for(var i = 0; i < path.length - 1; i++) {
-		if(!isDir(current[path[i]]))
-			throw new MemoryFileSystemError(errors.code.ENOENT, _path);
-		current = current[path[i]];
+	mkdirpSync(_path) {
+		const path = pathToArray(_path);
+		if(path.length === 0) return;
+		let current = this.data;
+		for(let i = 0; i < path.length; i++) {
+			if(isFile(current[path[i]]))
+				throw new MemoryFileSystemError(errors.code.ENOTDIR, _path, "mkdirp");
+			else if(!isDir(current[path[i]]))
+				current[path[i]] = {"":true};
+			current = current[path[i]];
+		}
+		return;
 	}
-	if(!isFile(current[path[i]])) {
+
+	mkdirSync(_path) {
+		const path = pathToArray(_path);
+		if(path.length === 0) return;
+		let current = this.data;
+		let i = 0;
+		for(; i < path.length - 1; i++) {
+			if(!isDir(current[path[i]]))
+				throw new MemoryFileSystemError(errors.code.ENOENT, _path, "mkdir");
+			current = current[path[i]];
+		}
 		if(isDir(current[path[i]]))
-			throw new MemoryFileSystemError(errors.code.EISDIR, _path);
-		else
-			throw new MemoryFileSystemError(errors.code.ENOENT, _path);
+			throw new MemoryFileSystemError(errors.code.EEXIST, _path, "mkdir");
+		else if(isFile(current[path[i]]))
+			throw new MemoryFileSystemError(errors.code.ENOTDIR, _path, "mkdir");
+		current[path[i]] = {"":true};
+		return;
 	}
-	current = current[path[i]];
-	return encoding ? current.toString(encoding) : current;
-};
 
-MemoryFileSystem.prototype.readdirSync = function(_path) {
-	if(_path === "/") return Object.keys(this.data).filter(Boolean);
-	var path = pathToArray(_path);
-	var current = this.data;
-	for(var i = 0; i < path.length - 1; i++) {
-		if(!isDir(current[path[i]]))
-			throw new MemoryFileSystemError(errors.code.ENOENT, _path);
-		current = current[path[i]];
+	_remove(_path, name, testFn) {
+		const path = pathToArray(_path);
+		const operation = name === "File" ? "unlink" : "rmdir";
+		if(path.length === 0) {
+			throw new MemoryFileSystemError(errors.code.EPERM, _path, operation);
+		}
+		let current = this.data;
+		let i = 0;
+		for(; i < path.length - 1; i++) {
+			if(!isDir(current[path[i]]))
+				throw new MemoryFileSystemError(errors.code.ENOENT, _path, operation);
+			current = current[path[i]];
+		}
+		if(!testFn(current[path[i]]))
+			throw new MemoryFileSystemError(errors.code.ENOENT, _path, operation);
+		delete current[path[i]];
+		return;
 	}
-	if(!isDir(current[path[i]])) {
-		if(isFile(current[path[i]]))
-			throw new MemoryFileSystemError(errors.code.ENOTDIR, _path);
-		else
-			throw new MemoryFileSystemError(errors.code.ENOENT, _path);
+
+	rmdirSync(_path) {
+		return this._remove(_path, "Directory", isDir);
 	}
-	return Object.keys(current[path[i]]).filter(Boolean);
-};
 
-MemoryFileSystem.prototype.mkdirpSync = function(_path) {
-	var path = pathToArray(_path);
-	if(path.length === 0) return;
-	var current = this.data;
-	for(var i = 0; i < path.length; i++) {
-		if(isFile(current[path[i]]))
-			throw new MemoryFileSystemError(errors.code.ENOTDIR, _path);
-		else if(!isDir(current[path[i]]))
-			current[path[i]] = {"":true};
-		current = current[path[i]];
+	unlinkSync(_path) {
+		return this._remove(_path, "File", isFile);
 	}
-	return;
-};
 
-MemoryFileSystem.prototype.mkdirSync = function(_path) {
-	var path = pathToArray(_path);
-	if(path.length === 0) return;
-	var current = this.data;
-	for(var i = 0; i < path.length - 1; i++) {
-		if(!isDir(current[path[i]]))
-			throw new MemoryFileSystemError(errors.code.ENOENT, _path);
-		current = current[path[i]];
+	readlinkSync(_path) {
+		throw new MemoryFileSystemError(errors.code.ENOSYS, _path, "readlink");
 	}
-	if(isDir(current[path[i]]))
-		throw new MemoryFileSystemError(errors.code.EEXIST, _path);
-	else if(isFile(current[path[i]]))
-		throw new MemoryFileSystemError(errors.code.ENOTDIR, _path);
-	current[path[i]] = {"":true};
-	return;
-};
 
-MemoryFileSystem.prototype._remove = function(_path, name, testFn) {
-	var path = pathToArray(_path);
-	if(path.length === 0) {
-		throw new MemoryFileSystemError(errors.code.EPERM, _path);
+	writeFileSync(_path, content, optionsOrEncoding) {
+		if(!content && !optionsOrEncoding) throw new Error("No content");
+		const path = pathToArray(_path);
+		if(path.length === 0) {
+			throw new MemoryFileSystemError(errors.code.EISDIR, _path, "writeFile");
+		}
+		let current = this.data;
+		let i = 0
+		for(; i < path.length - 1; i++) {
+			if(!isDir(current[path[i]]))
+				throw new MemoryFileSystemError(errors.code.ENOENT, _path, "writeFile");
+			current = current[path[i]];
+		}
+		if(isDir(current[path[i]]))
+			throw new MemoryFileSystemError(errors.code.EISDIR, _path, "writeFile");
+		const encoding = typeof optionsOrEncoding === "object" ? optionsOrEncoding.encoding : optionsOrEncoding;
+		current[path[i]] = optionsOrEncoding || typeof content === "string" ? new Buffer(content, encoding) : content;
+		return;
 	}
-	var current = this.data;
-	for(var i = 0; i < path.length - 1; i++) {
-		if(!isDir(current[path[i]]))
-			throw new MemoryFileSystemError(errors.code.ENOENT, _path);
-		current = current[path[i]];
-	}
-	if(!testFn(current[path[i]]))
-		throw new MemoryFileSystemError(errors.code.ENOENT, _path);
-	delete current[path[i]];
-	return;
-};
 
-MemoryFileSystem.prototype.rmdirSync = function(_path) {
-	return this._remove(_path, "Directory", isDir);
-};
-
-MemoryFileSystem.prototype.unlinkSync = function(_path) {
-	return this._remove(_path, "File", isFile);
-};
-
-MemoryFileSystem.prototype.readlinkSync = function(_path) {
-	throw new MemoryFileSystemError(errors.code.ENOSYS, _path);
-};
-
-MemoryFileSystem.prototype.writeFileSync = function(_path, content, encoding) {
-	if(!content && !encoding) throw new Error("No content");
-	var path = pathToArray(_path);
-	if(path.length === 0) {
-		throw new MemoryFileSystemError(errors.code.EISDIR, _path);
-	}
-	var current = this.data;
-	for(var i = 0; i < path.length - 1; i++) {
-		if(!isDir(current[path[i]]))
-			throw new MemoryFileSystemError(errors.code.ENOENT, _path);
-		current = current[path[i]];
-	}
-	if(isDir(current[path[i]]))
-		throw new MemoryFileSystemError(errors.code.EISDIR, _path);
-	current[path[i]] = encoding || typeof content === "string" ? new Buffer(content, encoding) : content;
-	return;
-};
-
-MemoryFileSystem.prototype.join = require("./join");
-MemoryFileSystem.prototype.pathToArray = pathToArray;
-MemoryFileSystem.prototype.normalize = normalize;
-
-// stream functions
-
-MemoryFileSystem.prototype.createReadStream = function(path, options) {
-	var stream = new ReadableStream();
-	var done = false;
-	var data;
-	try {
-		data = this.readFileSync(path);
-	} catch (e) {
+	// stream methods
+	createReadStream(path, options) {
+		let stream = new ReadableStream();
+		let done = false;
+		let data;
+		try {
+			data = this.readFileSync(path);
+		} catch (e) {
+			stream._read = function() {
+				if (done) {
+					return;
+				}
+				done = true;
+				this.emit('error', e);
+				this.push(null);
+			};
+			return stream;
+		}
+		options = options || { };
+		options.start = options.start || 0;
+		options.end = options.end || data.length;
 		stream._read = function() {
 			if (done) {
 				return;
 			}
 			done = true;
-			this.emit('error', e);
+			this.push(data.slice(options.start, options.end));
 			this.push(null);
 		};
 		return stream;
 	}
-	options = options || { };
-	options.start = options.start || 0;
-	options.end = options.end || data.length;
-	stream._read = function() {
-		if (done) {
-			return;
-		}
-		done = true;
-		this.push(data.slice(options.start, options.end));
-		this.push(null);
-	};
-	return stream;
-};
 
-MemoryFileSystem.prototype.createWriteStream = function(path, options) {
-	var stream = new WritableStream(), self = this;
-	try {
-		// Zero the file and make sure it is writable
-		this.writeFileSync(path, new Buffer(0));
-	} catch(e) {
-		// This or setImmediate?
-		stream.once('prefinish', function() {
-			stream.emit('error', e);
-		});
+	createWriteStream(path) {
+		let stream = new WritableStream();
+		try {
+			// Zero the file and make sure it is writable
+			this.writeFileSync(path, new Buffer(0));
+		} catch(e) {
+			// This or setImmediate?
+			stream.once('prefinish', function() {
+				stream.emit('error', e);
+			});
+			return stream;
+		}
+		let bl = [ ], len = 0;
+		stream._write = (chunk, encoding, callback) => {
+			bl.push(chunk);
+			len += chunk.length;
+			this.writeFile(path, Buffer.concat(bl, len), callback);
+		}
 		return stream;
 	}
-	var bl = [ ], len = 0;
-	stream._write = function(chunk, encoding, callback) {
-		bl.push(chunk);
-		len += chunk.length;
-		self.writeFile(path, Buffer.concat(bl, len), callback);
+
+	// async functions
+	exists(path, callback) {
+		return callback(this.existsSync(path));
 	}
-	return stream;
-};
+
+	writeFile(path, content, encoding, callback) {
+		if(!callback) {
+			callback = encoding;
+			encoding = undefined;
+		}
+		try {
+			this.writeFileSync(path, content, encoding);
+		} catch(e) {
+			return callback(e);
+		}
+		return callback();
+	}
+}
 
 // async functions
 
 ["stat", "readdir", "mkdirp", "rmdir", "unlink", "readlink"].forEach(function(fn) {
 	MemoryFileSystem.prototype[fn] = function(path, callback) {
+		let result;
 		try {
-			var result = this[fn + "Sync"](path);
+			result = this[fn + "Sync"](path);
 		} catch(e) {
 			setImmediate(function() {
 				callback(e);
@@ -296,8 +316,9 @@ MemoryFileSystem.prototype.createWriteStream = function(path, options) {
 			callback = optArg;
 			optArg = undefined;
 		}
+		let result;
 		try {
-			var result = this[fn + "Sync"](path, optArg);
+			result = this[fn + "Sync"](path, optArg);
 		} catch(e) {
 			setImmediate(function() {
 				callback(e);
@@ -311,19 +332,4 @@ MemoryFileSystem.prototype.createWriteStream = function(path, options) {
 	};
 });
 
-MemoryFileSystem.prototype.exists = function(path, callback) {
-	return callback(this.existsSync(path));
-}
-
-MemoryFileSystem.prototype.writeFile = function (path, content, encoding, callback) {
-	if(!callback) {
-		callback = encoding;
-		encoding = undefined;
-	}
-	try {
-		this.writeFileSync(path, content, encoding);
-	} catch(e) {
-		return callback(e);
-	}
-	return callback();
-};
+module.exports = MemoryFileSystem;

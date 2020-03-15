@@ -9,7 +9,10 @@ import { BLink } from '../link/link'
 
 // -- Constants --
 
-export const props = pluckProps(['menuClass', 'toggleClass', 'noCaret', 'role'], BDropdownProps)
+export const props = pluckProps(
+  ['text', 'html', 'menuClass', 'toggleClass', 'noCaret', 'role', 'lazy'],
+  BDropdownProps
+)
 
 // @vue/component
 export const BNavItemDropdown = /*#__PURE__*/ Vue.extend({
@@ -54,8 +57,9 @@ export const BNavItemDropdown = /*#__PURE__*/ Vue.extend({
           'aria-expanded': this.visible ? 'true' : 'false'
         },
         on: {
+          mousedown: this.onMousedown,
           click: this.toggle,
-          keydown: this.toggle // space, enter, down
+          keydown: this.toggle // Handle ENTER, SPACE and DOWN
         }
       },
       [
@@ -75,7 +79,7 @@ export const BNavItemDropdown = /*#__PURE__*/ Vue.extend({
           'aria-labelledby': this.safeId('_BV_button_')
         },
         on: {
-          keydown: this.onKeydown // up, down, esc
+          keydown: this.onKeydown // Handle UP, DOWN and ESC
         }
       },
       !this.lazy || this.visible ? this.normalizeSlot('default', { hide: this.hide }) : [h()]

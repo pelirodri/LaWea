@@ -1,7 +1,6 @@
 const path = require('path')
 const hash = require('hash-sum')
-const semver = require('semver')
-const { matchesPluginId } = require('@vue/cli-shared-utils')
+const { semver, matchesPluginId } = require('@vue/cli-shared-utils')
 
 // Note: if a plugin-registered command needs to run in a specific default mode,
 // the plugin needs to expose it via `module.exports.defaultModes` in the form
@@ -33,7 +32,7 @@ class PluginAPI {
       throw new Error('Expected string or integer value.')
     }
 
-    if (semver.satisfies(this.version, range)) return
+    if (semver.satisfies(this.version, range, { includePrerelease: true })) return
 
     throw new Error(
       `Require @vue/cli-service "${range}", but was loaded with "${this.version}".`
@@ -64,11 +63,6 @@ class PluginAPI {
    * @return {boolean}
    */
   hasPlugin (id) {
-    if (id === 'router') id = 'vue-router'
-    if (['vue-router', 'vuex'].includes(id)) {
-      const pkg = this.service.pkg
-      return ((pkg.dependencies && pkg.dependencies[id]) || (pkg.devDependencies && pkg.devDependencies[id]))
-    }
     return this.service.plugins.some(p => matchesPluginId(id, p.id))
   }
 
@@ -205,13 +199,10 @@ class PluginAPI {
       }
     }
 
-    for (const file of configFiles) {
+    variables.configFiles = configFiles.map(file => {
       const content = readConfig(file)
-      if (content) {
-        variables.configFiles = content.replace(/\r\n?/g, '\n')
-        break
-      }
-    }
+      return content && content.replace(/\r\n?/g, '\n')
+    })
 
     const cacheIdentifier = hash(variables)
     return { cacheDirectory, cacheIdentifier }

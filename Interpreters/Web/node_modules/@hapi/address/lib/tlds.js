@@ -4,7 +4,7 @@ const internals = {};
 
 
 // http://data.iana.org/TLD/tlds-alpha-by-domain.txt
-// # Version 2019032300, Last Updated Sat Mar 23 07:07:02 2019 UTC
+// # Version 2019091902, Last Updated Fri Sep 20 07: 07: 02 2019 UTC
 
 
 internals.tlds = [
@@ -161,7 +161,6 @@ internals.tlds = [
     'BMS',
     'BMW',
     'BN',
-    'BNL',
     'BNPPARIBAS',
     'BO',
     'BOATS',
@@ -368,7 +367,6 @@ internals.tlds = [
     'DOCTOR',
     'DODGE',
     'DOG',
-    'DOHA',
     'DOMAINS',
     'DOT',
     'DOWNLOAD',
@@ -377,7 +375,6 @@ internals.tlds = [
     'DUBAI',
     'DUCK',
     'DUNLOP',
-    'DUNS',
     'DUPONT',
     'DURBAN',
     'DVAG',
@@ -493,6 +490,7 @@ internals.tlds = [
     'GAMES',
     'GAP',
     'GARDEN',
+    'GAY',
     'GB',
     'GBIZ',
     'GD',
@@ -585,7 +583,6 @@ internals.tlds = [
     'HOMES',
     'HOMESENSE',
     'HONDA',
-    'HONEYWELL',
     'HORSE',
     'HOSPITAL',
     'HOST',
@@ -639,7 +636,6 @@ internals.tlds = [
     'IR',
     'IRISH',
     'IS',
-    'ISELECT',
     'ISMAILI',
     'IST',
     'ISTANBUL',
@@ -824,7 +820,6 @@ internals.tlds = [
     'MO',
     'MOBI',
     'MOBILE',
-    'MOBILY',
     'MODA',
     'MOE',
     'MOI',
@@ -1168,7 +1163,6 @@ internals.tlds = [
     'STADA',
     'STAPLES',
     'STAR',
-    'STARHUB',
     'STATEBANK',
     'STATEFARM',
     'STC',
@@ -1460,7 +1454,6 @@ internals.tlds = [
     'XN--MGBAH1A3HJKRD',
     'XN--MGBAI9AZGQP6J',
     'XN--MGBAYH7GPA',
-    'XN--MGBB9FBPOB',
     'XN--MGBBH1A',
     'XN--MGBBH1A71E',
     'XN--MGBC0A9AZCG',
@@ -1492,6 +1485,7 @@ internals.tlds = [
     'XN--PSSY2U',
     'XN--Q9JYB4C',
     'XN--QCKA1PMC',
+    'XN--QXA6A',
     'XN--QXAM',
     'XN--RHQV96G',
     'XN--ROVU88B',

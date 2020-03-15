@@ -404,26 +404,27 @@ class Stats {
 		}
 		if (showAssets) {
 			const assetsByFile = {};
-			const compilationAssets = Object.keys(compilation.assets).sort();
+			const compilationAssets = compilation
+				.getAssets()
+				.sort((a, b) => (a.name < b.name ? -1 : 1));
 			obj.assetsByChunkName = {};
 			obj.assets = compilationAssets
-				.map(asset => {
+				.map(({ name, source, info }) => {
 					const obj = {
-						name: asset,
-						size: compilation.assets[asset].size(),
+						name,
+						size: source.size(),
 						chunks: [],
 						chunkNames: [],
+						info,
 						// TODO webpack 5: remove .emitted
-						emitted:
-							compilation.assets[asset].emitted ||
-							compilation.emittedAssets.has(asset)
+						emitted: source.emitted || compilation.emittedAssets.has(name)
 					};
 
 					if (showPerformance) {
-						obj.isOverSizeLimit = compilation.assets[asset].isOverSizeLimit;
+						obj.isOverSizeLimit = source.isOverSizeLimit;
 					}
 
-					assetsByFile[asset] = obj;
+					assetsByFile[name] = obj;
 					return obj;
 				})
 				.filter(createAssetFilter());
@@ -973,16 +974,26 @@ class Stats {
 		}
 		if (typeof obj.builtAt === "number") {
 			const builtAtDate = new Date(obj.builtAt);
+			let timeZone = undefined;
+
+			try {
+				builtAtDate.toLocaleTimeString();
+			} catch (err) {
+				// Force UTC if runtime timezone is unsupported
+				timeZone = "UTC";
+			}
+
 			colors.normal("Built at: ");
 			colors.normal(
 				builtAtDate.toLocaleDateString(undefined, {
 					day: "2-digit",
 					month: "2-digit",
-					year: "numeric"
+					year: "numeric",
+					timeZone
 				})
 			);
 			colors.normal(" ");
-			colors.bold(builtAtDate.toLocaleTimeString());
+			colors.bold(builtAtDate.toLocaleTimeString(undefined, { timeZone }));
 			newline();
 		}
 		if (obj.env) {
@@ -1040,7 +1051,14 @@ class Stats {
 						color: colors.bold
 					},
 					{
-						value: asset.emitted ? "[emitted]" : "",
+						value: [
+							asset.emitted && "[emitted]",
+							asset.info.immutable && "[immutable]",
+							asset.info.development && "[dev]",
+							asset.info.hotModuleReplacement && "[hmr]"
+						]
+							.filter(Boolean)
+							.join(" "),
 						color: colors.green
 					},
 					{

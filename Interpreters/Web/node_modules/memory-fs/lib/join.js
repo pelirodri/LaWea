@@ -1,7 +1,9 @@
-var normalize = require("./normalize");
+"use strict";
 
-var absoluteWinRegExp = /^[A-Z]:([\\\/]|$)/i;
-var absoluteNixRegExp = /^\//i;
+const normalize = require("./normalize");
+
+const absoluteWinRegExp = /^[A-Z]:([\\\/]|$)/i;
+const absoluteNixRegExp = /^\//i;
 
 module.exports = function join(path, request) {
 	if(!request) return normalize(path);

@@ -62,7 +62,7 @@ function(hljs) {
 }
 
 /*  ==============================================================================
-                                      CHANGELOG                                   
+                                      CHANGELOG
     ==============================================================================
     - v.1.2 (2017-05-12)
         -- BUG-FIX: Some keywords were accidentally joyned together. Now fixed.

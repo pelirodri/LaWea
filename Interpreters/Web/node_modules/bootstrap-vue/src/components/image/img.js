@@ -1,7 +1,11 @@
 import Vue from '../../utils/vue'
-import { mergeData } from 'vue-functional-data-merge'
+import identity from '../../utils/identity'
+import { concat } from '../../utils/array'
 import { getComponentConfig } from '../../utils/config'
 import { isString } from '../../utils/inspect'
+import { toInteger } from '../../utils/number'
+import { toString } from '../../utils/string'
+import { mergeData } from 'vue-functional-data-merge'
 
 // --- Constants --
 
@@ -18,6 +22,14 @@ const BLANK_TEMPLATE =
 export const props = {
   src: {
     type: String,
+    default: null
+  },
+  srcset: {
+    type: [String, Array],
+    default: null
+  },
+  sizes: {
+    type: [String, Array],
     default: null
   },
   alt: {
@@ -88,8 +100,8 @@ export const props = {
 
 const makeBlankImgSrc = (width, height, color) => {
   const src = encodeURIComponent(
-    BLANK_TEMPLATE.replace('%{w}', String(width))
-      .replace('%{h}', String(height))
+    BLANK_TEMPLATE.replace('%{w}', toString(width))
+      .replace('%{h}', toString(height))
       .replace('%{f}', color)
   )
   return `data:image/svg+xml;charset=UTF-8,${src}`
@@ -102,14 +114,20 @@ export const BImg = /*#__PURE__*/ Vue.extend({
   props,
   render(h, { props, data }) {
     let src = props.src
-    let width = parseInt(props.width, 10) ? parseInt(props.width, 10) : null
-    let height = parseInt(props.height, 10) ? parseInt(props.height, 10) : null
+    let width = toInteger(props.width) || null
+    let height = toInteger(props.height) || null
     let align = null
     let block = props.block
+    let srcset = concat(props.srcset)
+      .filter(identity)
+      .join(',')
+    let sizes = concat(props.sizes)
+      .filter(identity)
+      .join(',')
     if (props.blank) {
-      if (!height && Boolean(width)) {
+      if (!height && width) {
         height = width
-      } else if (!width && Boolean(height)) {
+      } else if (!width && height) {
         width = height
       }
       if (!width && !height) {
@@ -118,6 +136,9 @@ export const BImg = /*#__PURE__*/ Vue.extend({
       }
       // Make a blank SVG image
       src = makeBlankImgSrc(width, height, props.blankColor || 'transparent')
+      // Disable srcset and sizes
+      srcset = null
+      sizes = null
     }
     if (props.left) {
       align = 'float-left'
@@ -133,8 +154,10 @@ export const BImg = /*#__PURE__*/ Vue.extend({
         attrs: {
           src: src,
           alt: props.alt,
-          width: width ? String(width) : null,
-          height: height ? String(height) : null
+          width: width ? toString(width) : null,
+          height: height ? toString(height) : null,
+          srcset: srcset || null,
+          sizes: sizes || null
         },
         class: {
           'img-thumbnail': props.thumbnail,
@@ -142,7 +165,7 @@ export const BImg = /*#__PURE__*/ Vue.extend({
           'w-100': props.fluidGrow,
           rounded: props.rounded === '' || props.rounded === true,
           [`rounded-${props.rounded}`]: isString(props.rounded) && props.rounded !== '',
-          [align]: Boolean(align),
+          [align]: align,
           'd-block': block
         }
       })

@@ -87,6 +87,7 @@ class NormalModule extends Module {
 		// Info from Build
 		this.error = null;
 		this._source = null;
+		this._sourceSize = null;
 		this._buildHash = "";
 		this.buildTimestamp = undefined;
 		/** @private @type {Map<string, CachedSourceEntry>} */
@@ -210,15 +211,17 @@ class NormalModule extends Module {
 					}
 				};
 			},
-			emitFile: (name, content, sourceMap) => {
+			emitFile: (name, content, sourceMap, assetInfo) => {
 				if (!this.buildInfo.assets) {
 					this.buildInfo.assets = Object.create(null);
+					this.buildInfo.assetsInfo = new Map();
 				}
 				this.buildInfo.assets[name] = this.createSourceForAsset(
 					name,
 					content,
 					sourceMap
 				);
+				this.buildInfo.assetsInfo.set(name, assetInfo);
 			},
 			rootContext: options.context,
 			webpack: true,
@@ -345,6 +348,7 @@ class NormalModule extends Module {
 					resourceBuffer,
 					sourceMap
 				);
+				this._sourceSize = null;
 				this._ast =
 					typeof extraInfo === "object" &&
 					extraInfo !== null &&
@@ -364,6 +368,7 @@ class NormalModule extends Module {
 		this._source = new RawSource(
 			"throw new Error(" + JSON.stringify(this.error.message) + ");"
 		);
+		this._sourceSize = null;
 		this._ast = null;
 	}
 
@@ -423,6 +428,7 @@ class NormalModule extends Module {
 		this.buildTimestamp = Date.now();
 		this.built = true;
 		this._source = null;
+		this._sourceSize = null;
 		this._ast = null;
 		this._buildHash = "";
 		this.error = null;
@@ -432,7 +438,9 @@ class NormalModule extends Module {
 		this.buildInfo = {
 			cacheable: false,
 			fileDependencies: new Set(),
-			contextDependencies: new Set()
+			contextDependencies: new Set(),
+			assets: undefined,
+			assetsInfo: undefined
 		};
 
 		return this.doBuild(options, compilation, resolver, fs, err => {
@@ -555,7 +563,10 @@ class NormalModule extends Module {
 	}
 
 	size() {
-		return this._source ? this._source.size() : -1;
+		if (this._sourceSize === null) {
+			this._sourceSize = this._source ? this._source.size() : -1;
+		}
+		return this._sourceSize;
 	}
 
 	/**
