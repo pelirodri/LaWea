@@ -74,7 +74,7 @@ std::vector<la_weá_interpreter::command_t> la_weá_interpreter::get_commands(co
 					exit_interpreter(
 						u8"'" +
 						cvt.to_bytes(cmd_name) +
-						u8"' no es un comando válido, po, saco de weas (línea: " +
+						u8"' no es un comando válido, poh, saco de weas (línea: " +
 						std::to_string(line) +
 						u8", columna: " +
 						std::to_string(col - cmd_name.length()) +
@@ -102,7 +102,7 @@ std::vector<la_weá_interpreter::command_t> la_weá_interpreter::get_commands(co
 
 				if (cmd_name.length() == 7) {
 					exit_interpreter(
-						u8"Voh creís q yo soy weón, ctm? Te gustan largos, parece (línea: " +
+						u8"¿Voh creís q yo soy weón, CTM? Te gustan largos, parece (línea: " +
 						std::to_string(line) +
 						u8", columna: " +
 						std::to_string(col - cmd_name.length()) +
@@ -143,7 +143,7 @@ void la_weá_interpreter::run_commands(const std::vector<command_t> &commands) {
 	std::string char_input;
 
 	#if defined(_WIN64)
-		wchar_t utf16_char_input[5];
+		WCHAR utf16_buffer[5];
 	#endif
 
 	for (int i = 0; i < commands.size(); i++) {
@@ -165,7 +165,7 @@ void la_weá_interpreter::run_commands(const std::vector<command_t> &commands) {
 				break;
 			case chucha:
 				if (!cur_cell) {
-					exit_interpreter(u8"Te saliste pa la izquierda, aweonao");
+					exit_interpreter(u8"Te saliste pa’ la izquierda, aweonao");
 				}
 
 				--cur_cell;
@@ -195,15 +195,27 @@ void la_weá_interpreter::run_commands(const std::vector<command_t> &commands) {
 				i = find_loop_end(commands, i);
 				break;
 			case ctm:
-				#if !defined(_WIN64)
-					if (cells[cur_cell] >= 0x0 && cells[cur_cell] <= 0x10FFFF) {
+				if (cells[cur_cell] >= 0x0 && cells[cur_cell] <= 0x10FFFF) {
+					#if !defined(_WIN64)
 						std::cout << cvt.to_bytes(std::u32string (1, cells[cur_cell]));
-					} else {
-						putchar(cells[cur_cell]);
-					}
-				#else
+					#else
+						wmemset(utf16_buffer, L'\0', 2);
+
+	                    if (cells[cur_cell] < 0x10000) {
+	                        utf16_buffer[0] = cells[cur_cell];
+	                    } else {
+	                        uint_least32_t tmp_char = cells[cur_cell] - 0x10000;
+
+	                        utf16_buffer[0] = (tmp_char >> 10) + 0xD800;
+	                        utf16_buffer[1] = (tmp_char & 0x3FF) + 0xDC00;
+	                    }
+
+	                    INT utf16_len = cells[cur_cell] < 0x10000 ? 1 : 2;
+	                    WriteConsoleW(GetStdHandle(STD_OUTPUT_HANDLE), utf16_buffer, utf16_len, NULL, NULL);
+					#endif
+				} else {
 					putchar(cells[cur_cell]);
-				#endif
+				}
 
 				break;
 			case quéweá:
@@ -217,22 +229,22 @@ void la_weá_interpreter::run_commands(const std::vector<command_t> &commands) {
 						cells[cur_cell] = U'\0';
 					}
 				#else
-					wmemset(utf16_char_input, L'\0', 5);
+					wmemset(utf16_buffer, L'\0', 5);
 
-                    unsigned long r;
-                    ReadConsoleW(GetStdHandle(STD_INPUT_HANDLE), utf16_char_input, 5, &r, NULL);
+                    ULONG r;
+                    ReadConsoleW(GetStdHandle(STD_INPUT_HANDLE), utf16_buffer, 4, &r, NULL);
 
-                    if (utf16_char_input[wcslen(utf16_char_input) - 1] != L'\n') {
+                    if (utf16_buffer[wcslen(utf16_buffer) - 1] != L'\n') {
                         while (getchar() != '\n') {}
                         cells[cur_cell] = U'\0';
                     } else {
                         if (r == 3) {
-                            cells[cur_cell] = utf16_char_input[0];
+                            cells[cur_cell] = utf16_buffer[0];
                         } else if (r == 4) {
-                            utf16_char_input[0] = (utf16_char_input[0] - 0xD800) * 0x400;
-                            utf16_char_input[1] -= 0xDC00;
+                            utf16_buffer[0] = (utf16_buffer[0] - 0xD800) * 0x400;
+                            utf16_buffer[1] -= 0xDC00;
 
-                            cells[cur_cell] = (utf16_char_input[0] + utf16_char_input[1]) + 0x10000;
+                            cells[cur_cell] = (utf16_buffer[0] + utf16_buffer[1]) + 0x10000;
                         } else {
                             cells[cur_cell] = U'\0';
                         }
@@ -284,10 +296,18 @@ void la_weá_interpreter::exit_interpreter(const std::string &err_msg) {
 		#if !defined(_WIN64)
 			std::cerr << "\x1b[1;31m" << err_msg << "\x1b[0m\n";
 		#else
-			wchar_t wchar_buf[(utf8_strlen((const uint_least8_t *)err_msg) + 1) * sizeof(wchar_t)];
+			WCHAR utf16_buffer[err_msg.length() + 1];
 
-            int str_len = MultiByteToWideChar(CP_UTF8, 0, err_msg, strlen(err_msg), wchar_buf, sizeof(wchar_buf));
-            wchar_buf[str_len] = L'\n';
+            INT utf16_len = MultiByteToWideChar(
+            	CP_UTF8,
+            	0,
+            	err_msg.c_str(),
+            	err_msg.length(),
+            	utf16_buffer,
+            	sizeof(utf16_buffer)
+            );
+            
+            utf16_buffer[utf16_len] = L'\n';
 
             HANDLE error_handle = GetStdHandle(STD_ERROR_HANDLE);
 
@@ -297,7 +317,7 @@ void la_weá_interpreter::exit_interpreter(const std::string &err_msg) {
             WORD saved_attributes = console_info.wAttributes;
 
             SetConsoleTextAttribute(error_handle, FOREGROUND_INTENSITY | FOREGROUND_RED);
-            WriteConsoleW(error_handle, wchar_buf, str_len + 1, NULL, NULL);
+            WriteConsoleW(error_handle, utf16_buffer, utf16_len + 1, NULL, NULL);
             SetConsoleTextAttribute(error_handle, saved_attributes);
 		#endif
 	}
@@ -309,7 +329,7 @@ std::u32string la_weá_interpreter::get_code(const char *file_path) {
 	std::ifstream is (file_path);
 
 	if (!is) {
-		exit_interpreter(u8"No existe la weá, po, wn");
+		exit_interpreter(u8"No existe la weá, poh, wn");
 	}
 
 	is.seekg(0, is.end);

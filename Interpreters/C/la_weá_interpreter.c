@@ -119,7 +119,7 @@ command_t *get_commands(const uint_least32_t *code, int *commands_count) {
 
                     sprintf(
                         msg,
-                        "'%s' no es un comando válido, po, saco de weas (línea: %zu, columna: %zu)",
+                        "'%s' no es un comando válido, poh, saco de weas (línea: %zu, columna: %zu)",
                         utf8_cmd_name,
                         line,
                         col - utf32_strlen(cmd_name)
@@ -179,7 +179,7 @@ command_t *get_commands(const uint_least32_t *code, int *commands_count) {
 
                     sprintf(
                         msg,
-                        "Voh creís q yo soy weón, ctm? Te gustan largos, parece (línea: %zu, columna: %zu)",
+                        "¿Voh creís que yo soy weón, CTM? Te gustan largos, parece (línea: %zu, columna: %zu)",
                         line,
                         col - utf32_strlen(cmd_name)
                     );
@@ -233,7 +233,7 @@ void run_commands(const command_t *commands, int commands_count) {
     #if !defined(_WIN64)
         uint_least8_t utf8_char_input[6];
     #else
-        wchar_t utf16_char_input[5];
+        WCHAR utf16_buffer[5];
     #endif
 
     char char_input[22];
@@ -258,7 +258,7 @@ void run_commands(const command_t *commands, int commands_count) {
             case chucha:
                 if (!cur_cell) {
                     free(cells);
-                    exit_interpreter("Te saliste pa la izquierda, aweonao");
+                    exit_interpreter("Te saliste pa’ la izquierda, aweonao");
                 }
 
                 cur_cell--;
@@ -296,8 +296,10 @@ void run_commands(const command_t *commands, int commands_count) {
                 i = find_loop_end(commands, commands_count, i);
                 break;
             case ctm:
-                #if !defined(_WIN64)
-                    if (cells[cur_cell] >= 0x0 && cells[cur_cell] <= 0x10FFFF) {
+                if (cells[cur_cell] < 0x0 || cells[cur_cell] > 0x10FFFF) {
+                    putchar(cells[cur_cell]);
+                } else {
+                    #if !defined(_WIN64)
                         uint_least8_t *utf8_output = utf32_char_to_utf8(cells[cur_cell]);
 
                         if (!utf8_output) {
@@ -307,19 +309,29 @@ void run_commands(const command_t *commands, int commands_count) {
 
                         printf("%s", (const char *)utf8_output);
                         free(utf8_output);
-                    } else {
-                        putchar(cells[cur_cell]);
-                    } 
-                #else
-                    putchar(cells[cur_cell]);
-                #endif
+                    #else
+                        wmemset(utf16_buffer, L'\0', 2);
+
+                        if (cells[cur_cell] < 0x10000) {
+                            utf16_buffer[0] = cells[cur_cell];
+                        } else {
+                            uint_least32_t tmp_char = cells[cur_cell] - 0x10000;
+
+                            utf16_buffer[0] = (tmp_char >> 10) + 0xD800;
+                            utf16_buffer[1] = (tmp_char & 0x3FF) + 0xDC00;
+                        }
+
+                        INT utf16_len = cells[cur_cell] < 0x10000 ? 1 : 2;
+                        WriteConsoleW(GetStdHandle(STD_OUTPUT_HANDLE), utf16_buffer, utf16_len, NULL, NULL);
+                    #endif
+                }
 
                 break;
             case quéweá:
                 #if !defined(_WIN64)
                     memset(utf8_char_input, '\0', 6);
 
-                    if (fgets((char *)utf8_char_input, 6, stdin)[strlen((const char *)utf8_char_input) - 1] != '\n') {
+                    if (fgets((char *)utf8_char_input, 5, stdin)[strlen((const char *)utf8_char_input) - 1] != '\n') {
                         while (getchar() != '\n') {}
                         cells[cur_cell] = U'\0';
                     } else {
@@ -338,22 +350,22 @@ void run_commands(const command_t *commands, int commands_count) {
                         }
                     }
                 #else
-                    wmemset(utf16_char_input, L'\0', 5);
+                    wmemset(utf16_buffer, L'\0', 5);
 
-                    unsigned long r;
-                    ReadConsoleW(GetStdHandle(STD_INPUT_HANDLE), utf16_char_input, 5, &r, NULL);
+                    ULONG r;
+                    ReadConsoleW(GetStdHandle(STD_INPUT_HANDLE), utf16_buffer, 4, &r, NULL);
 
-                    if (utf16_char_input[wcslen(utf16_char_input) - 1] != L'\n') {
+                    if (utf16_buffer[wcslen(utf16_buffer) - 1] != L'\n') {
                         while (getchar() != '\n') {}
                         cells[cur_cell] = U'\0';
                     } else {
                         if (r == 3) {
-                            cells[cur_cell] = utf16_char_input[0];
+                            cells[cur_cell] = utf16_buffer[0];
                         } else if (r == 4) {
-                            utf16_char_input[0] = (utf16_char_input[0] - 0xD800) * 0x400;
-                            utf16_char_input[1] -= 0xDC00;
+                            utf16_buffer[0] = (utf16_buffer[0] - 0xD800) * 0x400;
+                            utf16_buffer[1] -= 0xDC00;
 
-                            cells[cur_cell] = (utf16_char_input[0] + utf16_char_input[1]) + 0x10000;
+                            cells[cur_cell] = (utf16_buffer[0] + utf16_buffer[1]) + 0x10000;
                         } else {
                             cells[cur_cell] = U'\0';
                         }
@@ -414,10 +426,10 @@ void exit_interpreter(const char *err_msg) {
         #if !defined(_WIN64)
             fprintf(stderr, "\x1b[1;31m%s\x1b[0m\n", err_msg);
         #else
-            wchar_t wchar_buf[(utf8_strlen((const uint_least8_t *)err_msg) + 1) * sizeof(wchar_t)];
+            WCHAR utf16_buffer[(utf8_strlen((const uint_least8_t *)err_msg) + 1)];
 
-            int str_len = MultiByteToWideChar(CP_UTF8, 0, err_msg, strlen(err_msg), wchar_buf, sizeof(wchar_buf));
-            wchar_buf[str_len] = L'\n';
+            INT utf16_len = MultiByteToWideChar(CP_UTF8, 0, err_msg, strlen(err_msg), utf16_buffer, sizeof(utf16_buffer));
+            utf16_buffer[utf16_len] = L'\n';
 
             HANDLE error_handle = GetStdHandle(STD_ERROR_HANDLE);
 
@@ -427,7 +439,7 @@ void exit_interpreter(const char *err_msg) {
             WORD saved_attributes = console_info.wAttributes;
 
             SetConsoleTextAttribute(error_handle, FOREGROUND_INTENSITY | FOREGROUND_RED);
-            WriteConsoleW(error_handle, wchar_buf, str_len + 1, NULL, NULL);
+            WriteConsoleW(error_handle, utf16_buffer, utf16_len + 1, NULL, NULL);
             SetConsoleTextAttribute(error_handle, saved_attributes);
         #endif
     }
@@ -510,7 +522,7 @@ void file_not_found_exit() {
     char msg[26];
 
     if (errno == ENOENT) {
-        char src[] = "No existe la weá, po, wn";
+        char src[] = "No existe la weá, poh, wn";
 
         #if !defined(_WIN64)
             strcpy(msg, src);

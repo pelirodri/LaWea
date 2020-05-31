@@ -88,7 +88,7 @@ open class LaWeáInterpreter {
             runCommands(getCommands(from: code))
         } catch {
             if (error as NSError).code == NSFileReadNoSuchFileError {
-                exitInterpreter(with: "No existe la weá, po, wn")
+                exitInterpreter(with: "No existe la weá, poh, wn")
             }
         }
     }
@@ -127,7 +127,7 @@ open class LaWeáInterpreter {
                     let command = getCommand(from: commandName, line: line, col: col - commandName.count)
                     
                     if command == nil {
-                        let subMessage = " no es un comando válido, po, saco de weas (línea: "
+                        let subMessage = " no es un comando válido, poh, saco de weas (línea: "
                         
                         exitInterpreter(
                             with: "'\(commandName)'\(subMessage)\(line), columna: \(col - commandName.count))"
@@ -145,7 +145,7 @@ open class LaWeáInterpreter {
                     }
                     
                     if commandName.count == 7 {
-                        let subMessage = "Voh creís q yo soy weón, ctm? Te gustan largos, parece (línea: "
+                        let subMessage = "¿Voh creís q yo soy weón, CTM? Te gustan largos, parece (línea: "
                         exitInterpreter(with: "\(subMessage)\(line), columna: \(col - commandName.count))")
                     }
                     
@@ -200,7 +200,7 @@ open class LaWeáInterpreter {
                 cells[currentCell] = 0
             case .chucha:
                 if currentCell == 0 {
-                    exitInterpreter(with: "Te saliste pa la izquierda, aweonao")
+                    exitInterpreter(with: "Te saliste pa’ la izquierda, aweonao")
                 }
                 
                 currentCell -= 1

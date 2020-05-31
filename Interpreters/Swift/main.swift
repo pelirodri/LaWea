@@ -21,9 +21,9 @@
 let interpreter = LaWeáInterpreter()
 
 if CommandLine.arguments.count != 2 {
-    interpreter.exitInterpreter(with: "Tenís q pasar la ruta del archivo con el código, po, aweonao qlo")
+    interpreter.exitInterpreter(with: "Tenís que pasar la ruta del archivo con el código, poh, aweonao qlo")
 } else if !CommandLine.arguments[1].hasSuffix(".lw") {
-    interpreter.exitInterpreter(with: "El archivo qlo tiene q tener la extensión .lw")
+    interpreter.exitInterpreter(with: "El archivo qlo tiene que tener la extensión .lw")
 }
 
 interpreter.interpret(filePath: CommandLine.arguments[1])
