@@ -1,44 +1,40 @@
-import { mount, createLocalVue as CreateLocalVue } from '@vue/test-utils'
-import { waitNT } from '../../tests/utils'
+import { mount } from '@vue/test-utils'
+import { createContainer, waitNT } from '../../tests/utils'
 import { BTransporterSingle } from './transporter'
 
 describe('utils/transporter component', () => {
-  const localVue = new CreateLocalVue()
-
   it('renders in-pace when disabled=true', async () => {
-    const App = localVue.extend({
+    const App = {
       render(h) {
         return h(BTransporterSingle, { props: { disabled: true } }, [h('div', 'content')])
       }
-    })
+    }
 
     const wrapper = mount(App, {
-      attachToDocument: true,
-      localVue: localVue
+      attachTo: createContainer()
     })
 
-    expect(wrapper.isVueInstance()).toBe(true)
-    expect(wrapper.is('div')).toBe(true)
+    expect(wrapper.vm).toBeDefined()
+    expect(wrapper.element.tagName).toBe('DIV')
     expect(wrapper.text()).toEqual('content')
 
     wrapper.destroy()
   })
 
   it('does not render in-pace when disabled=false', async () => {
-    const App = localVue.extend({
+    const App = {
       render(h) {
         return h(BTransporterSingle, { props: { disabled: false } }, [
           h('div', { attrs: { id: 'foobar' } }, 'content')
         ])
       }
-    })
+    }
 
     const wrapper = mount(App, {
-      attachToDocument: true,
-      localVue: localVue
+      attachTo: createContainer()
     })
 
-    expect(wrapper.isVueInstance()).toBe(true)
+    expect(wrapper.vm).toBeDefined()
 
     await waitNT(wrapper.vm)
 

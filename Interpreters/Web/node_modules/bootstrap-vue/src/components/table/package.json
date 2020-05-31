@@ -143,7 +143,7 @@
           {
             "prop": "detailsTdClass",
             "version": "2.1.0",
-            "description": "CSS class (or classes) to apply to the td element in the details row"
+            "description": "CSS class (or classes) to apply to the row details' `td` element for the row-details slot"
           },
           {
             "prop": "value",
@@ -255,6 +255,7 @@
           },
           {
             "prop": "selectedVariant",
+            "settings": true,
             "description": "Bootstrap color theme variant to set selected rows to. Use any of the standard Bootstrap theme color variants, or the special table row variant 'active' (default). Set to an empty string to not use a variant"
           },
           {
@@ -1062,6 +1063,7 @@
           },
           {
             "prop": "headVariant",
+            "settings": true,
             "description": "Header variant: 'light' or 'dark', or unset. May take precedence over head-row-variant"
           },
           {
@@ -1071,6 +1073,7 @@
           },
           {
             "prop": "footVariant",
+            "settings": true,
             "description": "Footer variant: 'light' or 'dark', or unset. May take precedence over foot-row-variant"
           },
           {

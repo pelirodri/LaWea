@@ -1,5 +1,7 @@
 import looseEqual from '../../../utils/loose-equal'
 import { isArray, isFunction, isString, isUndefinedOrNull } from '../../../utils/inspect'
+import { mathMax } from '../../../utils/math'
+import { toInteger } from '../../../utils/number'
 import { clone } from '../../../utils/object'
 import normalizeFields from './normalize-fields'
 
@@ -8,6 +10,7 @@ export default {
     items: {
       // Provider mixin adds in `Function` type
       type: Array,
+      /* istanbul ignore next */
       default() /* istanbul ignore next */ {
         return []
       }
@@ -19,8 +22,8 @@ export default {
     primaryKey: {
       // Primary key for record
       // If provided the value in each row must be unique!
-      type: String,
-      default: null
+      type: String
+      // default: null
     },
     value: {
       // `v-model` for retrieving the current displayed rows
@@ -74,6 +77,7 @@ export default {
         this.sortedItems ||
         this.filteredItems ||
         this.localItems ||
+        /* istanbul ignore next */
         []
       ).slice()
     },
@@ -83,8 +87,8 @@ export default {
         filter: this.localFilter,
         sortBy: this.localSortBy,
         sortDesc: this.localSortDesc,
-        perPage: parseInt(this.perPage, 10) || 0,
-        currentPage: parseInt(this.currentPage, 10) || 1,
+        perPage: mathMax(toInteger(this.perPage, 0), 0),
+        currentPage: mathMax(toInteger(this.currentPage, 0), 1),
         apiUrl: this.apiUrl
       }
     }

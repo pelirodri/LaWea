@@ -20,7 +20,9 @@ import {
 } from '../../utils/dom'
 import { EVENT_OPTIONS_NO_CAPTURE, eventOn, eventOff } from '../../utils/events'
 import { isString, isUndefined } from '../../utils/inspect'
-import { toString as objectToString } from '../../utils/object'
+import { mathMax } from '../../utils/math'
+import { toInteger } from '../../utils/number'
+import { hasOwnProperty, toString as objectToString } from '../../utils/object'
 import { warn } from '../../utils/warn'
 
 /*
@@ -90,13 +92,14 @@ const toType = obj => /* istanbul ignore next: not easy to test */ {
 }
 
 // Check config properties for expected types
+/* istanbul ignore next */
 const typeCheckConfig = (
   componentName,
   config,
   configTypes
 ) => /* istanbul ignore next: not easy to test */ {
   for (const property in configTypes) {
-    if (Object.prototype.hasOwnProperty.call(configTypes, property)) {
+    if (hasOwnProperty(configTypes, property)) {
       const expectedTypes = configTypes[property]
       const value = config[property]
       let valueType = value && isElement(value) ? 'element' : toType(value)
@@ -131,8 +134,8 @@ class ScrollSpy /* istanbul ignore next: not easy to test */ {
     this.$activeTarget = null
     this.$scrollHeight = 0
     this.$resizeTimeout = null
-    this.$obs_scroller = null
-    this.$obs_targets = null
+    this.$scrollerObserver = null
+    this.$targetsObserver = null
     this.$root = $root || null
     this.$config = null
 
@@ -220,16 +223,12 @@ class ScrollSpy /* istanbul ignore next: not easy to test */ {
 
   setObservers(on) {
     // We observe both the scroller for content changes, and the target links
-    if (this.$obs_scroller) {
-      this.$obs_scroller.disconnect()
-      this.$obs_scroller = null
-    }
-    if (this.$obs_targets) {
-      this.$obs_targets.disconnect()
-      this.$obs_targets = null
-    }
+    this.$scrollerObserver && this.$scrollerObserver.disconnect()
+    this.$targetsObserver && this.$targetsObserver.disconnect()
+    this.$scrollerObserver = null
+    this.$targetsObserver = null
     if (on) {
-      this.$obs_targets = observeDom(
+      this.$targetsObserver = observeDom(
         this.$el,
         () => {
           this.handleEvent('mutation')
@@ -241,7 +240,7 @@ class ScrollSpy /* istanbul ignore next: not easy to test */ {
           attributeFilter: ['href']
         }
       )
-      this.$obs_scroller = observeDom(
+      this.$scrollerObserver = observeDom(
         this.getScroller(),
         () => {
           this.handleEvent('mutation')
@@ -273,7 +272,7 @@ class ScrollSpy /* istanbul ignore next: not easy to test */ {
     }
 
     if (type === 'scroll') {
-      if (!this.$obs_scroller) {
+      if (!this.$scrollerObserver) {
         // Just in case we are added to the DOM before the scroll target is
         // We re-instantiate our listeners, just in case
         this.listen()
@@ -318,7 +317,7 @@ class ScrollSpy /* istanbul ignore next: not easy to test */ {
         const el = select(id, scroller)
         if (el && isVisible(el)) {
           return {
-            offset: parseInt(methodFn(el).top, 10) + offsetBase,
+            offset: toInteger(methodFn(el).top, 0) + offsetBase,
             target: id
           }
         }
@@ -404,7 +403,7 @@ class ScrollSpy /* istanbul ignore next: not easy to test */ {
   getScrollHeight() {
     return (
       this.getScroller().scrollHeight ||
-      Math.max(document.body.scrollHeight, document.documentElement.scrollHeight)
+      mathMax(document.body.scrollHeight, document.documentElement.scrollHeight)
     )
   }
 

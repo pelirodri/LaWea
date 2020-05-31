@@ -1,8 +1,6 @@
-import Vue from '../../utils/vue'
 import { mergeData } from 'vue-functional-data-merge'
-import prefixPropName from '../../utils/prefix-prop-name'
-import copyProps from '../../utils/copy-props'
-import pluckProps from '../../utils/pluck-props'
+import Vue from '../../utils/vue'
+import { copyProps, pluckProps, prefixPropName } from '../../utils/props'
 import cardMixin from '../../mixins/card'
 import { BCardTitle, props as titleProps } from './card-title'
 import { BCardSubTitle, props as subTitleProps } from './card-sub-title'
@@ -11,8 +9,8 @@ export const props = {
   // Import common card props and prefix them with `body-`
   ...copyProps(cardMixin.props, prefixPropName.bind(null, 'body')),
   bodyClass: {
-    type: [String, Object, Array],
-    default: null
+    type: [String, Object, Array]
+    // default: null
   },
   ...titleProps,
   ...subTitleProps,

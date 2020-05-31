@@ -1,7 +1,7 @@
 import Vue from '../../utils/vue';
-import { isVisible, selectAll } from '../../utils/dom';
-import normalizeSlotMixin from '../../mixins/normalize-slot';
 import KeyCodes from '../../utils/key-codes';
+import { attemptFocus, isVisible, selectAll } from '../../utils/dom';
+import normalizeSlotMixin from '../../mixins/normalize-slot';
 var ITEM_SELECTOR = ['.btn:not(.disabled):not([disabled]):not(.dropdown-item)', '.form-control:not(.disabled):not([disabled])', 'select:not(.disabled):not([disabled])', 'input[type="checkbox"]:not(.disabled)', 'input[type="radio"]:not(.disabled)'].join(','); // @vue/component
 
 export var BButtonToolbar = /*#__PURE__*/Vue.extend({
@@ -52,12 +52,9 @@ export var BButtonToolbar = /*#__PURE__*/Vue.extend({
         shift ? this.focusLast(evt) : this.focusNext(evt);
       }
     },
-    setItemFocus: function setItemFocus(item) {
-      item && item.focus && item.focus();
-    },
     focusFirst: function focusFirst() {
       var items = this.getItems();
-      this.setItemFocus(items[0]);
+      attemptFocus(items[0]);
     },
     focusPrev: function focusPrev(evt) {
       var items = this.getItems();
@@ -65,7 +62,7 @@ export var BButtonToolbar = /*#__PURE__*/Vue.extend({
 
       if (index > -1) {
         items = items.slice(0, index).reverse();
-        this.setItemFocus(items[0]);
+        attemptFocus(items[0]);
       }
     },
     focusNext: function focusNext(evt) {
@@ -74,12 +71,12 @@ export var BButtonToolbar = /*#__PURE__*/Vue.extend({
 
       if (index > -1) {
         items = items.slice(index + 1);
-        this.setItemFocus(items[0]);
+        attemptFocus(items[0]);
       }
     },
     focusLast: function focusLast() {
       var items = this.getItems().reverse();
-      this.setItemFocus(items[0]);
+      attemptFocus(items[0]);
     },
     getItems: function getItems() {
       var items = selectAll(ITEM_SELECTOR, this.$el);

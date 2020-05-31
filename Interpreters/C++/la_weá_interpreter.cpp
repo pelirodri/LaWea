@@ -102,7 +102,7 @@ std::vector<la_weá_interpreter::command_t> la_weá_interpreter::get_commands(co
 
 				if (cmd_name.length() == 7) {
 					exit_interpreter(
-						u8"¿Voh creís q yo soy weón, CTM? Te gustan largos, parece (línea: " +
+						u8"¿Voh creís que yo soy weón, CTM? Te gustan largos, parece (línea: " +
 						std::to_string(line) +
 						u8", columna: " +
 						std::to_string(col - cmd_name.length()) +
@@ -306,7 +306,7 @@ void la_weá_interpreter::exit_interpreter(const std::string &err_msg) {
             	utf16_buffer,
             	sizeof(utf16_buffer)
             );
-            
+
             utf16_buffer[utf16_len] = L'\n';
 
             HANDLE error_handle = GetStdHandle(STD_ERROR_HANDLE);

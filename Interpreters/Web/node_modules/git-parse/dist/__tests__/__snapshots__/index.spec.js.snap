@@ -1,0 +1,21 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`index tests with a real repository reads a git repo successfully 1`] = `
+Array [
+  Object {
+    "authorEmail": "mpackard@wayfair.com",
+    "authorName": "mpackard@wayfair.com",
+    "date": "Thu, 1 Feb 2018 16:35:05 -0500",
+    "filesAdded": Array [
+      Object {
+        "path": "file.txt",
+      },
+    ],
+    "filesDeleted": Array [],
+    "filesModified": Array [],
+    "filesRenamed": Array [],
+    "hash": "99402395036c4282de837cd1d2004ee7b11988bb",
+    "message": "added file",
+  },
+]
+`;

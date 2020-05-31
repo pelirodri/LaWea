@@ -1,16 +1,13 @@
-import { mount, createWrapper, createLocalVue as CreateLocalVue } from '@vue/test-utils'
-import { waitNT, waitRAF } from '../../../../tests/utils'
+import { createLocalVue, createWrapper, mount } from '@vue/test-utils'
+import { createContainer, waitNT, waitRAF } from '../../../../tests/utils'
 import { ToastPlugin } from '../index'
 
+const localVue = createLocalVue()
+localVue.use(ToastPlugin)
+
 describe('$bvToast', () => {
-  const localVue = new CreateLocalVue()
-
-  beforeAll(() => {
-    localVue.use(ToastPlugin)
-  })
-
   it('$bvToast.show() and $bvToast.hide() works', async () => {
-    const App = localVue.extend({
+    const App = {
       render(h) {
         return h(
           'b-toast',
@@ -25,13 +22,13 @@ describe('$bvToast', () => {
           'content'
         )
       }
-    })
+    }
     const wrapper = mount(App, {
-      attachToDocument: true,
-      localVue: localVue
+      attachTo: createContainer(),
+      localVue
     })
 
-    expect(wrapper.isVueInstance()).toBe(true)
+    expect(wrapper.vm).toBeDefined()
 
     await waitNT(wrapper.vm)
     await waitRAF()
@@ -72,17 +69,17 @@ describe('$bvToast', () => {
   })
 
   it('$bvModal.toast() works', async () => {
-    const App = localVue.extend({
+    const App = {
       render(h) {
         return h('div', 'app')
       }
-    })
+    }
     const wrapper = mount(App, {
-      attachToDocument: true,
-      localVue: localVue
+      attachTo: createContainer(),
+      localVue
     })
 
-    expect(wrapper.isVueInstance()).toBe(true)
+    expect(wrapper.vm).toBeDefined()
 
     // `$bvModal.toast`
     expect(wrapper.vm.$bvToast).toBeDefined()
@@ -109,7 +106,7 @@ describe('$bvToast', () => {
     expect(toast).toBeDefined()
     expect(toast).not.toEqual(null)
     const $toast = createWrapper(toast)
-    expect($toast.is('div')).toBe(true)
+    expect($toast.element.tagName).toBe('DIV')
 
     // Find  header
     expect($toast.find('.toast-header').exists()).toBe(true)
@@ -123,15 +120,11 @@ describe('$bvToast', () => {
     expect($toast.findAll('button').length).toBe(1)
     const $button = $toast.find('button')
     expect($button.classes()).toContain('close')
-    $button.trigger('click')
 
-    await waitNT(wrapper.vm)
+    await $button.trigger('click')
     await waitRAF()
-    await waitNT(wrapper.vm)
     await waitRAF()
-    await waitNT(wrapper.vm)
     await waitRAF()
-    await waitNT(wrapper.vm)
     await waitRAF()
 
     // Toast should be gone from DOM

@@ -1,18 +1,24 @@
 import Vue from '../../utils/vue'
+import { isTag } from '../../utils/dom'
 import { isUndefinedOrNull } from '../../utils/inspect'
+import { toInteger } from '../../utils/number'
 import { toString } from '../../utils/string'
+import attrsMixin from '../../mixins/attrs'
+import listenersMixin from '../../mixins/listeners'
 import normalizeSlotMixin from '../../mixins/normalize-slot'
 
-const digitsRx = /^\d+$/
+// --- Utility methods ---
 
-// Parse a rowspan or colspan into a digit (or null if < 1 or NaN)
-const parseSpan = val => {
-  val = parseInt(val, 10)
-  return digitsRx.test(String(val)) && val > 0 ? val : null
+// Parse a rowspan or colspan into a digit (or `null` if < `1` )
+const parseSpan = value => {
+  value = toInteger(value, 0)
+  return value > 0 ? value : null
 }
 
 /* istanbul ignore next */
 const spanValidator = val => isUndefinedOrNull(val) || parseSpan(val) > 0
+
+// --- Props ---
 
 export const props = {
   variant: {
@@ -39,13 +45,19 @@ export const props = {
   }
 }
 
+// --- Main component ---
+// TODO:
+//   In Bootstrap v5, we won't need "sniffing" as table element variants properly inherit
+//   to the child elements, so this can be converted to a functional component
 // @vue/component
 export const BTd = /*#__PURE__*/ Vue.extend({
   name: 'BTableCell',
-  mixins: [normalizeSlotMixin],
+  // Mixin order is important!
+  mixins: [attrsMixin, listenersMixin, normalizeSlotMixin],
   inheritAttrs: false,
   inject: {
     bvTableTr: {
+      /* istanbul ignore next */
       default() /* istanbul ignore next */ {
         return {}
       }
@@ -104,7 +116,7 @@ export const BTd = /*#__PURE__*/ Vue.extend({
     headVariant() {
       return this.bvTableTr.headVariant
     },
-    footVariant() /* istanbul ignore next: need to add in tests for footer variant */ {
+    footVariant() {
       return this.bvTableTr.footVariant
     },
     tableVariant() {
@@ -119,11 +131,12 @@ export const BTd = /*#__PURE__*/ Vue.extend({
     cellClasses() {
       // We use computed props here for improved performance by caching
       // the results of the string interpolation
-      // TODO: need to add handling for footVariant
       let variant = this.variant
       if (
         (!variant && this.isStickyHeader && !this.headVariant) ||
-        (!variant && this.isStickyColumn)
+        (!variant && this.isStickyColumn && this.inTfoot && !this.footVariant) ||
+        (!variant && this.isStickyColumn && this.inThead && !this.headVariant) ||
+        (!variant && this.isStickyColumn && this.inTbody)
       ) {
         // Needed for sticky-header mode as Bootstrap v4 table cells do
         // not inherit parent's background-color. Boo!
@@ -151,7 +164,7 @@ export const BTd = /*#__PURE__*/ Vue.extend({
         // Header or footer cells
         role = 'columnheader'
         scope = colspan > 0 ? 'colspan' : 'col'
-      } else if (this.tag === 'th') {
+      } else if (isTag(this.tag, 'th')) {
         // th's in tbody
         role = 'rowheader'
         scope = rowspan > 0 ? 'rowgroup' : 'row'
@@ -163,12 +176,12 @@ export const BTd = /*#__PURE__*/ Vue.extend({
         role: role,
         scope: scope,
         // Allow users to override role/scope plus add other attributes
-        ...this.$attrs,
+        ...this.bvAttrs,
         // Add in the stacked cell label data-attribute if in
         // stacked mode (if a stacked heading label is provided)
         'data-label':
           this.isStackedCell && !isUndefinedOrNull(this.stackedHeading)
-            ? toString(this.stackedHeading)
+            ? /* istanbul ignore next */ toString(this.stackedHeading)
             : null
       }
     }
@@ -181,7 +194,7 @@ export const BTd = /*#__PURE__*/ Vue.extend({
         class: this.cellClasses,
         attrs: this.cellAttrs,
         // Transfer any native listeners
-        on: this.$listeners
+        on: this.bvListeners
       },
       [this.isStackedCell ? h('div', [content]) : content]
     )

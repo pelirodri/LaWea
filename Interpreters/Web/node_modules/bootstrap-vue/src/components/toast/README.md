@@ -35,7 +35,7 @@ under the toast.
 <!-- toast-intro.vue -->
 ```
 
-**Note:** we are using the `static` prop in the above example to render the toast in-pace in the
+**Note:** we are using the `static` prop in the above example to render the toast in-place in the
 document, rather than transporting it to a `<b-toaster>` target container. And we have added classes
 `bg-secondary` and `progress-bar-striped` to the outer `<div>` for illustrative purposes of toast
 transparency only.
@@ -580,7 +580,7 @@ provides general guidelines when using toasts.
   be reached by keyboard-only users.
 - Avoid initiating many toasts in quick succession, as screen readers may interrupt reading the
   current toast and announce the new toast, causing the context of the previous toast to be missed.
-- For toasts with long textual content, adjust the `auto-hide-delay` to a larger timout, to allow
+- For toasts with long textual content, adjust the `auto-hide-delay` to a larger timeout, to allow
   users time to read the content of the toast. A good length of time to keep messages up is 4
   seconds plus 1 extra second for every 100 words, rounding up. This is approximately how fast the
   average person reads. That means the shortest default that should be used as a best practice is 5
@@ -597,7 +597,7 @@ provides general guidelines when using toasts.
 ### Internet Explorer screen reader support
 
 Unfortunately, IE 11 when used with [NVDA](https://github.com/nvaccess/nvda) or
-[JAWS](http://www.freedomscientific.com/products/software/jaws/) screen readers, will not properly
+[JAWS](https://www.freedomscientific.com/products/software/jaws/) screen readers, will not properly
 announce/voice toasts when they appear. If you have a large non-sighted user-base using IE 11, you
 may want to create an additional off-screen `aria-live` region for IE 11 browsers only (created on
 page load) where copies of toast message text are placed dynamically, in addition to displaying

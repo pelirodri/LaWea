@@ -68,7 +68,7 @@ export default class TheMainSection extends Vue implements LaWeáInterpreter {
 							"'" +
 							commandName +
 							"'" +
-							" no es un comando válido, po, saco de weas (línea: " +
+							" no es un comando válido, poh, saco de weas (línea: " +
 							String(line) +
 							", columna: " +
 							String(col - commandName.length) +
@@ -95,7 +95,7 @@ export default class TheMainSection extends Vue implements LaWeáInterpreter {
 					
 					if (commandName.length === 7) {
 						this.exitInterpreter(
-							"Voh creís q yo soy weón, ctm? Te gustan largos, parece (línea: " +
+							"¿Voh creís que yo soy weón, CTM? Te gustan largos, parece (línea: " +
 							String(line) +
 							", columna: " +
 							String(col - commandName.length) +

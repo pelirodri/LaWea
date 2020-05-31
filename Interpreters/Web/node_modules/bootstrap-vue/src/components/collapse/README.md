@@ -1,7 +1,8 @@
 # Collapse
 
-> Easily toggle visibility of almost any content on your pages. Includes support for making
-> accordions.
+> Easily toggle visibility of almost any content on your pages in a vertically collapsing container.
+> Includes support for making accordions. Visibility can be easily toggled with our
+> [`v-b-toggle` directive](/docs/directives/toggle), or via `v-model`.
 
 ```html
 <div>
@@ -22,7 +23,8 @@
 
 ## Usage
 
-Other elements can easily toggle `<b-collapse>` components using the `v-b-toggle` directive.
+Other elements can easily toggle `<b-collapse>` components using the
+[`v-b-toggle` directive](/docs/directives/toggle).
 
 ```html
 <div>
@@ -40,6 +42,9 @@ Other elements can easily toggle `<b-collapse>` components using the `v-b-toggle
 
 <!-- b-collapse-usage.vue -->
 ```
+
+See the [`v-b-toggle` directive documentation](/docs/directives/toggle) for detailed usage
+information.
 
 ## Initial visibility (start expanded)
 
@@ -103,12 +108,20 @@ support.
 ## Trigger multiple collapse elements
 
 You can even collapse multiple `<b-collapse>` components via a single `v-b-toggle` by providing
-multiple target IDs using modifiers:
+multiple target IDs using _modifiers_.
+
+You can also pass multiple target IDs via the directive _value_ in BootstrapVue release v2.14.0+.
 
 ```html
 <div>
-  <!-- Single button triggers two "<b-collapse>" components -->
-  <b-button v-b-toggle.collapse-a.collapse-b>Toggle Both Collapse A and B</b-button>
+  <!-- Via multiple directive modifiers -->
+  <b-button v-b-toggle.collapse-a.collapse-b>Toggle Collapse A and B</b-button>
+
+  <!-- Via space separated string of IDs passed to directive value -->
+  <b-button v-b-toggle="'collapse-a collapse-b'">Toggle Collapse A and B</b-button>
+
+  <!-- Via array of string IDs passed to directive value -->
+  <b-button v-b-toggle="['collapse-a', 'collapse-b']">Toggle Collapse A and B</b-button>
 
   <!-- Elements to collapse -->
   <b-collapse id="collapse-a" class="mt-2">
@@ -133,7 +146,7 @@ at a time.
   <div role="tablist">
     <b-card no-body class="mb-1">
       <b-card-header header-tag="header" class="p-1" role="tab">
-        <b-button block href="#" v-b-toggle.accordion-1 variant="info">Accordion 1</b-button>
+        <b-button block v-b-toggle.accordion-1 variant="info">Accordion 1</b-button>
       </b-card-header>
       <b-collapse id="accordion-1" visible accordion="my-accordion" role="tabpanel">
         <b-card-body>
@@ -145,7 +158,7 @@ at a time.
 
     <b-card no-body class="mb-1">
       <b-card-header header-tag="header" class="p-1" role="tab">
-        <b-button block href="#" v-b-toggle.accordion-2 variant="info">Accordion 2</b-button>
+        <b-button block v-b-toggle.accordion-2 variant="info">Accordion 2</b-button>
       </b-card-header>
       <b-collapse id="accordion-2" accordion="my-accordion" role="tabpanel">
         <b-card-body>
@@ -156,7 +169,7 @@ at a time.
 
     <b-card no-body class="mb-1">
       <b-card-header header-tag="header" class="p-1" role="tab">
-        <b-button block href="#" v-b-toggle.accordion-3 variant="info">Accordion 3</b-button>
+        <b-button block v-b-toggle.accordion-3 variant="info">Accordion 3</b-button>
       </b-card-header>
       <b-collapse id="accordion-3" accordion="my-accordion" role="tabpanel">
         <b-card-body>
@@ -204,14 +217,15 @@ at a time.
 
 When using the `v-b-toggle` directive, the class `collapsed` will automatically be placed on the
 trigger element when the collapse is closed, and removed when open. You can use this class to
-display or hide content within the toggle via custom CSS:
+display or hide content within the toggle via custom CSS. As of BootstrapVue 2.14.0, the class
+`not-collapsed` will be applied when the target(s) are not closed.
 
 **Example HTML markup:**
 
 ```html
 <div>
-  <b-button v-b-toggle.my-collapse>
-    <span class="when-opened">Close</span> <span class="when-closed">Open</span> My Collapse
+  <b-button v-b-toggle:my-collapse>
+    <span class="when-open">Close</span><span class="when-closed">Open</span> My Collapse
   </b-button>
   <b-collapse id="my-collapse">
     <!-- Content here -->
@@ -222,8 +236,8 @@ display or hide content within the toggle via custom CSS:
 **Example Custom CSS:**
 
 ```css
-.collapsed > .when-opened,
-:not(.collapsed) > .when-closed {
+.collapsed > .when-open,
+.not-collapsed > .when-closed {
   display: none;
 }
 ```
@@ -299,5 +313,9 @@ apply those roles for you automatically, as it depends on your final document ma
 query. See the
 [reduced motion section of our accessibility documentation](/docs/reference/accessibility) for
 additional details.
+
+## See also
+
+- [`v-b-toggle` directive](/docs/directives/toggle)
 
 <!-- Component reference added automatically from component package.json -->

@@ -78,7 +78,7 @@ static void run_commands_worker(char *data, int size) {
             case chucha:
                 if (!cur_cell) {
                     free(cells);
-                    exit_interpreter_worker("Te saliste pa la izquierda, aweonao", 36, true);
+                    exit_interpreter_worker("Te saliste pa’ la izquierda, aweonao", 36, true);
 
                     return;
                 }

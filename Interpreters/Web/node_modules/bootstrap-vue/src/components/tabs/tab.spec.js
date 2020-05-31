@@ -10,7 +10,7 @@ describe('tab', () => {
 
     await waitNT(wrapper.vm)
 
-    expect(wrapper.is('div')).toBe(true)
+    expect(wrapper.element.tagName).toBe('DIV')
     expect(wrapper.classes()).toContain('tab-pane')
     expect(wrapper.classes()).not.toContain('disabled')
     expect(wrapper.classes()).not.toContain('active')
@@ -78,20 +78,13 @@ describe('tab', () => {
   })
 
   it('has class active and show when localActive becomes true', async () => {
-    const wrapper = mount(BTab, {
-      mountToDocument: true,
-      stubs: {
-        // The builtin stub doesn't execute the transition hooks
-        // so we let it use the real transition component
-        transition: false
-      }
-    })
+    const wrapper = mount(BTab)
 
     expect(wrapper.classes()).not.toContain('active')
     expect(wrapper.classes()).not.toContain('disabled')
     expect(wrapper.classes()).not.toContain('card-body')
 
-    wrapper.setData({ localActive: true })
+    await wrapper.setData({ localActive: true })
     await waitNT(wrapper.vm)
     await waitRAF()
 
@@ -99,7 +92,7 @@ describe('tab', () => {
     expect(wrapper.classes()).not.toContain('disabled')
     expect(wrapper.classes()).not.toContain('card-body')
 
-    wrapper.setData({ localActive: false })
+    await wrapper.setData({ localActive: false })
     await waitNT(wrapper.vm)
     await waitRAF()
 
@@ -123,7 +116,7 @@ describe('tab', () => {
     expect(called).toBe(false)
     expect(value).toBe(null)
 
-    wrapper.setData({ localActive: true })
+    await wrapper.setData({ localActive: true })
 
     expect(called).toBe(true)
     expect(value).toBe(true)
@@ -202,7 +195,7 @@ describe('tab', () => {
       }
     })
 
-    wrapper.setData({ localActive: true })
+    await wrapper.setData({ localActive: true })
 
     expect(called).toBe(true)
     expect(vm).toEqual(wrapper.vm)
@@ -246,7 +239,7 @@ describe('tab', () => {
     expect(deactivateCalled).toBe(false)
     expect(deactivateVm).toBe(null)
 
-    wrapper.setProps({ active: true })
+    await wrapper.setProps({ active: true })
 
     expect(activateCalled).toBe(true)
     expect(activateVm).toBe(wrapper.vm)
@@ -258,7 +251,7 @@ describe('tab', () => {
     deactivateCalled = false
     deactivateVm = null
 
-    wrapper.setProps({ active: false })
+    await wrapper.setProps({ active: false })
 
     expect(activateCalled).toBe(false)
     expect(activateVm).toBe(null)
@@ -295,7 +288,7 @@ describe('tab', () => {
     expect(activateCalled).toBe(false)
     expect(activateVm).toBe(null)
 
-    wrapper.setProps({ active: true })
+    await wrapper.setProps({ active: true })
 
     expect(activateCalled).toBe(false)
     expect(activateVm).toBe(null)

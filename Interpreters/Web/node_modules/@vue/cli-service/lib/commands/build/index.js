@@ -37,7 +37,8 @@ module.exports = (api, options) => {
       '--report': `generate report.html to help analyze bundle content`,
       '--report-json': 'generate report.json to help analyze bundle content',
       '--skip-plugins': `comma-separated list of plugin names to skip for this run`,
-      '--watch': `watch for changes`
+      '--watch': `watch for changes`,
+      '--stdin': `close when stdin ends`
     }
   }, async (args, rawArgs) => {
     for (const key in defaults) {
@@ -62,7 +63,7 @@ module.exports = (api, options) => {
         // spawn sub-process of self for modern build
         const { execa } = require('@vue/cli-shared-utils')
         const cliBin = require('path').resolve(__dirname, '../../../bin/vue-cli-service.js')
-        await execa(cliBin, ['build', ...rawArgs], {
+        await execa('node', [cliBin, 'build', ...rawArgs], {
           stdio: 'inherit',
           env: {
             VUE_CLI_MODERN_BUILD: true
@@ -153,6 +154,13 @@ async function build (args, api, options) {
     modifyConfig(webpackConfig, config => {
       config.watch = true
     })
+  }
+
+  if (args.stdin) {
+    process.stdin.on('end', () => {
+      process.exit(0)
+    })
+    process.stdin.resume()
   }
 
   // Expose advanced stats

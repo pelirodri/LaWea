@@ -1,23 +1,19 @@
 import Vue from '../../utils/vue'
+import { getComponentConfig } from '../../utils/config'
 import listenOnRootMixin from '../../mixins/listen-on-root'
 import normalizeSlotMixin from '../../mixins/normalize-slot'
-import { getComponentConfig } from '../../utils/config'
+import { VBToggle, EVENT_STATE, EVENT_STATE_SYNC } from '../../directives/toggle/toggle'
+
+// --- Constants ---
 
 const NAME = 'BNavbarToggle'
+const CLASS_NAME = 'navbar-toggler'
 
-// TODO: Switch to using VBToggle directive, will reduce code footprint
-
-// Events we emit on $root
-const EVENT_TOGGLE = 'bv::toggle::collapse'
-
-// Events we listen to on $root
-const EVENT_STATE = 'bv::collapse::state'
-// This private event is NOT to be documented as people should not be using it.
-const EVENT_STATE_SYNC = 'bv::collapse::sync::state'
-
+// --- Main component ---
 // @vue/component
 export const BNavbarToggle = /*#__PURE__*/ Vue.extend({
   name: NAME,
+  directives: { BToggle: VBToggle },
   mixins: [listenOnRootMixin, normalizeSlotMixin],
   props: {
     label: {
@@ -27,6 +23,10 @@ export const BNavbarToggle = /*#__PURE__*/ Vue.extend({
     target: {
       type: String,
       required: true
+    },
+    disabled: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -40,31 +40,39 @@ export const BNavbarToggle = /*#__PURE__*/ Vue.extend({
   },
   methods: {
     onClick(evt) {
-      this.$emit('click', evt)
-      if (!evt.defaultPrevented) {
-        this.$root.$emit(EVENT_TOGGLE, this.target)
+      if (!this.disabled) {
+        // Emit courtesy `click` event
+        this.$emit('click', evt)
       }
     },
     handleStateEvt(id, state) {
+      // We listen for state events so that we can pass the
+      // boolean expanded state to the default scoped slot
       if (id === this.target) {
         this.toggleState = state
       }
     }
   },
   render(h) {
+    const { disabled } = this
+
     return h(
       'button',
       {
-        class: ['navbar-toggler'],
+        staticClass: CLASS_NAME,
+        class: { disabled },
+        directives: [{ name: 'BToggle', value: this.target }],
         attrs: {
           type: 'button',
-          'aria-label': this.label,
-          'aria-controls': this.target,
-          'aria-expanded': this.toggleState ? 'true' : 'false'
+          disabled,
+          'aria-label': this.label
         },
         on: { click: this.onClick }
       },
-      [this.normalizeSlot('default') || h('span', { class: ['navbar-toggler-icon'] })]
+      [
+        this.normalizeSlot('default', { expanded: this.toggleState }) ||
+          h('span', { staticClass: `${CLASS_NAME}-icon` })
+      ]
     )
   }
 })

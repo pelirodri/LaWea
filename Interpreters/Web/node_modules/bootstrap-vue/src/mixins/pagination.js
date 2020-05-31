@@ -1,7 +1,15 @@
 import KeyCodes from '../utils/key-codes'
 import range from '../utils/range'
-import { isVisible, isDisabled, selectAll, getAttr } from '../utils/dom'
+import {
+  attemptFocus,
+  getActiveElement,
+  getAttr,
+  isDisabled,
+  isVisible,
+  selectAll
+} from '../utils/dom'
 import { isFunction, isNull } from '../utils/inspect'
+import { mathFloor, mathMax, mathMin } from '../utils/math'
 import { toInteger } from '../utils/number'
 import { toString } from '../utils/string'
 import { warn } from '../utils/warn'
@@ -60,8 +68,7 @@ export const props = {
     type: [Number, String],
     default: null,
     validator(value) /* istanbul ignore next */ {
-      const number = toInteger(value)
-      if (!isNull(value) && (isNaN(number) || number < 1)) {
+      if (!isNull(value) && toInteger(value, 0) < 1) {
         warn('"v-model" value must be a number greater than "0"', 'BPagination')
         return false
       }
@@ -72,8 +79,7 @@ export const props = {
     type: [Number, String],
     default: DEFAULT_LIMIT,
     validator(value) /* istanbul ignore next */ {
-      const number = toInteger(value)
-      if (isNaN(number) || number < 1) {
+      if (toInteger(value, 0) < 1) {
         warn('Prop "limit" must be a number greater than "0"', 'BPagination')
         return false
       }
@@ -133,8 +139,8 @@ export const props = {
     default: '\u203A' // '›'
   },
   nextClass: {
-    type: [String, Array, Object],
-    default: null
+    type: [String, Array, Object]
+    // default: null
   },
   labelLastPage: {
     type: String,
@@ -149,16 +155,16 @@ export const props = {
     default: false
   },
   lastClass: {
-    type: [String, Array, Object],
-    default: null
+    type: [String, Array, Object]
+    // default: null
   },
   labelPage: {
     type: [String, Function],
     default: 'Go to page'
   },
   pageClass: {
-    type: [String, Array, Object],
-    default: null
+    type: [String, Array, Object]
+    // default: null
   },
   hideEllipsis: {
     type: Boolean,
@@ -169,8 +175,8 @@ export const props = {
     default: '\u2026' // '…'
   },
   ellipsisClass: {
-    type: [String, Array, Object],
-    default: null
+    type: [String, Array, Object]
+    // default: null
   }
 }
 
@@ -183,10 +189,11 @@ export default {
   },
   props,
   data() {
-    const curr = toInteger(this.value)
+    // `-1` signifies no page initially selected
+    let currentPage = toInteger(this.value, 0)
+    currentPage = currentPage > 0 ? currentPage : -1
     return {
-      // -1 signifies no page initially selected
-      currentPage: curr > 0 ? curr : -1,
+      currentPage,
       localNumberOfPages: 1,
       localLimit: DEFAULT_LIMIT
     }
@@ -235,7 +242,7 @@ export default {
           showLastDots = true
           numberOfLinks = limit - (firstNumber ? 0 : 1)
         }
-        numberOfLinks = Math.min(numberOfLinks, limit)
+        numberOfLinks = mathMin(numberOfLinks, limit)
       } else if (numberOfPages - currentPage + 2 < limit && limit > ELLIPSIS_THRESHOLD) {
         if (!hideEllipsis || firstNumber) {
           showFirstDots = true
@@ -249,7 +256,7 @@ export default {
           showFirstDots = !!(!hideEllipsis || firstNumber)
           showLastDots = !!(!hideEllipsis || lastNumber)
         }
-        startNumber = currentPage - Math.floor(numberOfLinks / 2)
+        startNumber = currentPage - mathFloor(numberOfLinks / 2)
       }
       // Sanity checks
       /* istanbul ignore if */
@@ -273,13 +280,13 @@ export default {
       // Special handling for lower limits (where ellipsis are never shown)
       if (limit <= ELLIPSIS_THRESHOLD) {
         if (firstNumber && startNumber === 1) {
-          numberOfLinks = Math.min(numberOfLinks + 1, numberOfPages, limit + 1)
+          numberOfLinks = mathMin(numberOfLinks + 1, numberOfPages, limit + 1)
         } else if (lastNumber && numberOfPages === startNumber + numberOfLinks - 1) {
-          startNumber = Math.max(startNumber - 1, 1)
-          numberOfLinks = Math.min(numberOfPages - startNumber + 1, numberOfPages, limit + 1)
+          startNumber = mathMax(startNumber - 1, 1)
+          numberOfLinks = mathMin(numberOfPages - startNumber + 1, numberOfPages, limit + 1)
         }
       }
-      numberOfLinks = Math.min(numberOfLinks, numberOfPages - startNumber + 1)
+      numberOfLinks = mathMin(numberOfLinks, numberOfPages - startNumber + 1)
       return { showFirstDots, showLastDots, numberOfLinks, startNumber }
     },
     pageList() {
@@ -368,18 +375,13 @@ export default {
       // Return only buttons that are visible
       return selectAll('button.page-link, a.page-link', this.$el).filter(btn => isVisible(btn))
     },
-    setBtnFocus(btn) {
-      btn.focus()
-    },
     focusCurrent() {
       // We do this in `$nextTick()` to ensure buttons have finished rendering
       this.$nextTick(() => {
         const btn = this.getButtons().find(
-          el => toInteger(getAttr(el, 'aria-posinset')) === this.computedCurrentPage
+          el => toInteger(getAttr(el, 'aria-posinset'), 0) === this.computedCurrentPage
         )
-        if (btn && btn.focus) {
-          this.setBtnFocus(btn)
-        } else {
+        if (!attemptFocus(btn)) {
           // Fallback if current page is not in button list
           this.focusFirst()
         }
@@ -389,9 +391,7 @@ export default {
       // We do this in `$nextTick()` to ensure buttons have finished rendering
       this.$nextTick(() => {
         const btn = this.getButtons().find(el => !isDisabled(el))
-        if (btn && btn.focus && btn !== document.activeElement) {
-          this.setBtnFocus(btn)
-        }
+        attemptFocus(btn)
       })
     },
     focusLast() {
@@ -400,18 +400,16 @@ export default {
         const btn = this.getButtons()
           .reverse()
           .find(el => !isDisabled(el))
-        if (btn && btn.focus && btn !== document.activeElement) {
-          this.setBtnFocus(btn)
-        }
+        attemptFocus(btn)
       })
     },
     focusPrev() {
       // We do this in `$nextTick()` to ensure buttons have finished rendering
       this.$nextTick(() => {
         const buttons = this.getButtons()
-        const idx = buttons.indexOf(document.activeElement)
-        if (idx > 0 && !isDisabled(buttons[idx - 1]) && buttons[idx - 1].focus) {
-          this.setBtnFocus(buttons[idx - 1])
+        const index = buttons.indexOf(getActiveElement())
+        if (index > 0 && !isDisabled(buttons[index - 1])) {
+          attemptFocus(buttons[index - 1])
         }
       })
     },
@@ -419,10 +417,9 @@ export default {
       // We do this in `$nextTick()` to ensure buttons have finished rendering
       this.$nextTick(() => {
         const buttons = this.getButtons()
-        const idx = buttons.indexOf(document.activeElement)
-        const cnt = buttons.length - 1
-        if (idx < cnt && !isDisabled(buttons[idx + 1]) && buttons[idx + 1].focus) {
-          this.setBtnFocus(buttons[idx + 1])
+        const index = buttons.indexOf(getActiveElement())
+        if (index < buttons.length - 1 && !isDisabled(buttons[index + 1])) {
+          attemptFocus(buttons[index + 1])
         }
       })
     }
@@ -525,7 +522,7 @@ export default {
         'aria-disabled': disabled ? 'true' : null,
         'aria-controls': this.ariaControls || null,
         'aria-label': isFunction(this.labelPage)
-          ? this.labelPage(page.number)
+          ? /* istanbul ignore next */ this.labelPage(page.number)
           : `${this.labelPage} ${page.number}`,
         'aria-checked': isNav ? null : active ? 'true' : 'false',
         'aria-current': isNav && active ? 'page' : null,

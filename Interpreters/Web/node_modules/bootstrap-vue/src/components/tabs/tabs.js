@@ -6,8 +6,10 @@ import observeDom from '../../utils/observe-dom'
 import stableSort from '../../utils/stable-sort'
 import { arrayIncludes, concat } from '../../utils/array'
 import { BvEvent } from '../../utils/bv-event.class'
-import { requestAF, selectAll } from '../../utils/dom'
+import { attemptFocus, requestAF, selectAll } from '../../utils/dom'
 import { isEvent } from '../../utils/inspect'
+import { mathMax } from '../../utils/math'
+import { toInteger } from '../../utils/number'
 import { omit } from '../../utils/object'
 import idMixin from '../../mixins/id'
 import normalizeSlotMixin from '../../mixins/normalize-slot'
@@ -30,6 +32,7 @@ const BTabButtonHelper = /*#__PURE__*/ Vue.extend({
   name: 'BTabButtonHelper',
   inject: {
     bvTabs: {
+      /* istanbul ignore next */
       default() /* istanbul ignore next */ {
         return {}
       }
@@ -40,6 +43,7 @@ const BTabButtonHelper = /*#__PURE__*/ Vue.extend({
     tab: { default: null },
     tabs: {
       type: Array,
+      /* istanbul ignore next */
       default() /* istanbul ignore next */ {
         return []
       }
@@ -53,9 +57,7 @@ const BTabButtonHelper = /*#__PURE__*/ Vue.extend({
   },
   methods: {
     focus() {
-      if (this.$refs && this.$refs.link && this.$refs.link.focus) {
-        this.$refs.link.focus()
-      }
+      attemptFocus(this.$refs.link)
     },
     handleEvt(evt) {
       const stop = () => {
@@ -190,27 +192,27 @@ export const BTabs = /*#__PURE__*/ Vue.extend({
       default: false
     },
     contentClass: {
-      type: [String, Array, Object],
-      default: null
+      type: [String, Array, Object]
+      // default: null
     },
     navClass: {
-      type: [String, Array, Object],
-      default: null
+      type: [String, Array, Object]
+      // default: null
     },
     navWrapperClass: {
-      type: [String, Array, Object],
-      default: null
+      type: [String, Array, Object]
+      // default: null
     },
     activeNavItemClass: {
       // Only applied to the currently active <b-nav-item>
-      type: [String, Array, Object],
-      default: null
+      type: [String, Array, Object]
+      // default: null
     },
     activeTabClass: {
       // Only applied to the currently active <b-tab>
       // This prop is sniffed by the <b-tab> child
-      type: [String, Array, Object],
-      default: null
+      type: [String, Array, Object]
+      // default: null
     },
     value: {
       // v-model
@@ -219,11 +221,9 @@ export const BTabs = /*#__PURE__*/ Vue.extend({
     }
   },
   data() {
-    let tabIdx = parseInt(this.value, 10)
-    tabIdx = isNaN(tabIdx) ? -1 : tabIdx
     return {
       // Index of current tab
-      currentTab: tabIdx,
+      currentTab: toInteger(this.value, -1),
       // Array of direct child <b-tab> instances, in DOM order
       tabs: [],
       // Array of child instances registered (for triggering reactive updates)
@@ -262,9 +262,8 @@ export const BTabs = /*#__PURE__*/ Vue.extend({
     },
     value(newVal, oldVal) {
       if (newVal !== oldVal) {
-        newVal = parseInt(newVal, 10)
-        newVal = isNaN(newVal) ? -1 : newVal
-        oldVal = parseInt(oldVal, 10) || 0
+        newVal = toInteger(newVal, -1)
+        oldVal = toInteger(oldVal, 0)
         const tabs = this.tabs
         if (tabs[newVal] && !tabs[newVal].disabled) {
           this.activateTab(tabs[newVal])
@@ -313,9 +312,9 @@ export const BTabs = /*#__PURE__*/ Vue.extend({
     }
   },
   created() {
-    const tabIdx = parseInt(this.value, 10)
-    this.currentTab = isNaN(tabIdx) ? -1 : tabIdx
-    this._bvObserver = null
+    // Create private non-reactive props
+    this.$_observer = null
+    this.currentTab = toInteger(this.value, -1)
     // For SSR and to make sure only a single tab is shown on mount
     // We wrap this in a `$nextTick()` to ensure the child tabs have been created
     this.$nextTick(() => {
@@ -333,12 +332,13 @@ export const BTabs = /*#__PURE__*/ Vue.extend({
       this.isMounted = true
     })
   },
+  /* istanbul ignore next */
   deactivated() /* istanbul ignore next */ {
     this.isMounted = false
   },
+  /* istanbul ignore next */
   activated() /* istanbul ignore next */ {
-    const tabIdx = parseInt(this.value, 10)
-    this.currentTab = isNaN(tabIdx) ? -1 : tabIdx
+    this.currentTab = toInteger(this.value, -1)
     this.$nextTick(() => {
       this.updateTabs()
       this.isMounted = true
@@ -363,11 +363,11 @@ export const BTabs = /*#__PURE__*/ Vue.extend({
     unregisterTab(tab) {
       this.registeredTabs = this.registeredTabs.slice().filter(t => t !== tab)
     },
+    // DOM observer is needed to detect changes in order of tabs
     setObserver(on) {
-      // DOM observer is needed to detect changes in order of tabs
+      this.$_observer && this.$_observer.disconnect()
+      this.$_observer = null
       if (on) {
-        // Make sure no existing observer running
-        this.setObserver(false)
         const self = this
         /* istanbul ignore next: difficult to test mutation observer in JSDOM */
         const handler = () => {
@@ -380,17 +380,12 @@ export const BTabs = /*#__PURE__*/ Vue.extend({
           })
         }
         // Watch for changes to <b-tab> sub components
-        this._bvObserver = observeDom(this.$refs.tabsContainer, handler, {
+        this.$_observer = observeDom(this.$refs.tabsContainer, handler, {
           childList: true,
           subtree: false,
           attributes: true,
           attributeFilter: ['id']
         })
-      } else {
-        if (this._bvObserver && this._bvObserver.disconnect) {
-          this._bvObserver.disconnect()
-        }
-        this._bvObserver = null
       }
     },
     getTabs() {
@@ -521,10 +516,7 @@ export const BTabs = /*#__PURE__*/ Vue.extend({
     focusButton(tab) {
       // Wrap in `$nextTick()` to ensure DOM has completed rendering/updating before focusing
       this.$nextTick(() => {
-        const button = this.getButtonForTab(tab)
-        if (button && button.focus) {
-          button.focus()
-        }
+        attemptFocus(this.getButtonForTab(tab))
       })
     },
     // Emit a click event on a specified <b-tab> component instance
@@ -548,7 +540,7 @@ export const BTabs = /*#__PURE__*/ Vue.extend({
     },
     // Move to previous non-disabled tab
     previousTab(focus) {
-      const currentIndex = Math.max(this.currentTab, 0)
+      const currentIndex = mathMax(this.currentTab, 0)
       const tab = this.tabs
         .slice(0, currentIndex)
         .reverse()
@@ -560,7 +552,7 @@ export const BTabs = /*#__PURE__*/ Vue.extend({
     },
     // Move to next non-disabled tab
     nextTab(focus) {
-      const currentIndex = Math.max(this.currentTab, -1)
+      const currentIndex = mathMax(this.currentTab, -1)
       const tab = this.tabs.slice(currentIndex + 1).find(notDisabled)
       if (this.activateTab(tab) && focus) {
         this.focusButton(tab)

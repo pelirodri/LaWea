@@ -1,4 +1,6 @@
 import Vue from '../../utils/vue'
+import attrsMixin from '../../mixins/attrs'
+import listenersMixin from '../../mixins/listeners'
 import normalizeSlotMixin from '../../mixins/normalize-slot'
 
 export const props = {
@@ -11,10 +13,14 @@ export const props = {
 const LIGHT = 'light'
 const DARK = 'dark'
 
+// TODO:
+//   In Bootstrap v5, we won't need "sniffing" as table element variants properly inherit
+//   to the child elements, so this can be converted to a functional component
 // @vue/component
 export const BTr = /*#__PURE__*/ Vue.extend({
   name: 'BTr',
-  mixins: [normalizeSlotMixin],
+  // Mixin order is important!
+  mixins: [attrsMixin, listenersMixin, normalizeSlotMixin],
   inheritAttrs: false,
   provide() {
     return {
@@ -23,6 +29,7 @@ export const BTr = /*#__PURE__*/ Vue.extend({
   },
   inject: {
     bvTableRowGroup: {
+      /* istanbul ignore next */
       default() /* istanbul ignore next */ {
         return {}
       }
@@ -79,16 +86,16 @@ export const BTr = /*#__PURE__*/ Vue.extend({
     },
     isRowDark() {
       return this.headVariant === LIGHT || this.footVariant === LIGHT
-        ? false
+        ? /* istanbul ignore next */ false
         : this.headVariant === DARK || this.footVariant === DARK
-          ? true
+          ? /* istanbul ignore next */ true
           : this.isDark
     },
     trClasses() {
       return [this.variant ? `${this.isRowDark ? 'bg' : 'table'}-${this.variant}` : null]
     },
     trAttrs() {
-      return { role: 'row', ...this.$attrs }
+      return { role: 'row', ...this.bvAttrs }
     }
   },
   render(h) {
@@ -98,7 +105,7 @@ export const BTr = /*#__PURE__*/ Vue.extend({
         class: this.trClasses,
         attrs: this.trAttrs,
         // Pass native listeners to child
-        on: this.$listeners
+        on: this.bvListeners
       },
       this.normalizeSlot('default')
     )

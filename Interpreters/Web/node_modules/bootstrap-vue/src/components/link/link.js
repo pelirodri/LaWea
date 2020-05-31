@@ -1,41 +1,22 @@
 import Vue from '../../utils/vue'
-import normalizeSlotMixin from '../../mixins/normalize-slot'
 import { concat } from '../../utils/array'
-import { isEvent, isFunction, isUndefined } from '../../utils/inspect'
+import { getComponentConfig } from '../../utils/config'
+import { attemptBlur, attemptFocus } from '../../utils/dom'
+import { isBoolean, isEvent, isFunction, isUndefined } from '../../utils/inspect'
+import { pluckProps } from '../../utils/props'
 import { computeHref, computeRel, computeTag, isRouterLink } from '../../utils/router'
+import attrsMixin from '../../mixins/attrs'
+import listenersMixin from '../../mixins/listeners'
+import normalizeSlotMixin from '../../mixins/normalize-slot'
 
-/**
- * The Link component is used in many other BV components.
- * As such, sharing its props makes supporting all its features easier.
- * However, some components need to modify the defaults for their own purpose.
- * Prefer sharing a fresh copy of the props to ensure mutations
- * do not affect other component references to the props.
- *
- * https://github.com/vuejs/vue-router/blob/dev/src/components/link.js
- * @return {{}}
- */
-export const propsFactory = () => ({
-  href: {
-    type: String,
-    default: null
-  },
-  rel: {
-    type: String,
-    default: null
-  },
-  target: {
-    type: String,
-    default: '_self'
-  },
-  active: {
-    type: Boolean,
-    default: false
-  },
-  disabled: {
-    type: Boolean,
-    default: false
-  },
-  // router-link specific props
+// --- Constants ---
+
+const NAME = 'BLink'
+
+// --- Props ---
+
+// <router-link> specific props
+export const routerLinkProps = {
   to: {
     type: [String, Object],
     default: null
@@ -67,26 +48,74 @@ export const propsFactory = () => ({
   routerTag: {
     type: String,
     default: 'a'
+  }
+}
+
+// <nuxt-link> specific props
+export const nuxtLinkProps = {
+  prefetch: {
+    type: Boolean,
+    // Must be `null` to fall back to the value defined in the
+    // `nuxt.config.js` configuration file for `router.prefetchLinks`
+    // We convert `null` to `undefined`, so that Nuxt.js will use the
+    // compiled default. Vue treats `undefined` as default of `false`
+    // for Boolean props, so we must set it as `null` here to be a
+    // true tri-state prop
+    default: null
   },
-  // nuxt-link specific prop(s)
   noPrefetch: {
     type: Boolean,
     default: false
   }
-})
+}
 
-export const props = propsFactory()
+export const props = {
+  href: {
+    type: String,
+    default: null
+  },
+  rel: {
+    type: String,
+    // Must be `null` if no value provided
+    default: null
+  },
+  target: {
+    type: String,
+    default: '_self'
+  },
+  active: {
+    type: Boolean,
+    default: false
+  },
+  disabled: {
+    type: Boolean,
+    default: false
+  },
+  ...routerLinkProps,
+  ...nuxtLinkProps,
+  // To support 3rd party router links based on `<router-link>` (i.e. `g-link` for Gridsome)
+  // Default is to auto choose between `<router-link>` and `<nuxt-link>`
+  // Gridsome doesn't provide a mechanism to auto detect and has caveats
+  // such as not supporting FQDN URLs or hash only URLs
+  routerComponentName: {
+    type: String,
+    default: () => getComponentConfig(NAME, 'routerComponentName')
+  }
+}
 
+// --- Main component ---
 // @vue/component
 export const BLink = /*#__PURE__*/ Vue.extend({
   name: 'BLink',
-  mixins: [normalizeSlotMixin],
+  // Mixin order is important!
+  mixins: [attrsMixin, listenersMixin, normalizeSlotMixin],
   inheritAttrs: false,
-  props: propsFactory(),
+  props,
   computed: {
     computedTag() {
       // We don't pass `this` as the first arg as we need reactivity of the props
-      return computeTag({ to: this.to, disabled: this.disabled }, this)
+      const { to, disabled, routerComponentName } = this
+      return computeTag({ to, disabled, routerComponentName }, this)
     },
     isRouterLink() {
       return isRouterLink(this.computedTag)
@@ -100,14 +129,55 @@ export const BLink = /*#__PURE__*/ Vue.extend({
       return computeHref({ to: this.to, href: this.href }, this.computedTag)
     },
     computedProps() {
-      return this.isRouterLink ? { ...this.$props, tag: this.routerTag } : {}
+      const prefetch = this.prefetch
+      return this.isRouterLink
+        ? {
+            ...pluckProps({ ...routerLinkProps, ...nuxtLinkProps }, this),
+            // Coerce `prefetch` value `null` to be `undefined`
+            prefetch: isBoolean(prefetch) ? prefetch : undefined,
+            // Pass `router-tag` as `tag` prop
+            tag: this.routerTag
+          }
+        : {}
+    },
+    computedAttrs() {
+      const {
+        bvAttrs,
+        computedHref: href,
+        computedRel: rel,
+        disabled,
+        target,
+        routerTag,
+        isRouterLink
+      } = this
+
+      return {
+        ...bvAttrs,
+        // If `href` attribute exists on `<router-link>` (even `undefined` or `null`)
+        // it fails working on SSR, so we explicitly add it here if needed
+        // (i.e. if `computedHref()` is truthy)
+        ...(href ? { href } : {}),
+        // We don't render `rel` or `target` on non link tags when using `vue-router`
+        ...(isRouterLink && routerTag !== 'a' && routerTag !== 'area' ? {} : { rel, target }),
+        tabindex: disabled ? '-1' : isUndefined(bvAttrs.tabindex) ? null : bvAttrs.tabindex,
+        'aria-disabled': disabled ? 'true' : null
+      }
+    },
+    computedListeners() {
+      return {
+        // Transfer all listeners (native) to the root element
+        ...this.bvListeners,
+        // We want to overwrite any click handler since our callback
+        // will invoke the user supplied handler(s) if `!this.disabled`
+        click: this.onClick
+      }
     }
   },
   methods: {
     onClick(evt) {
       const evtIsEvent = isEvent(evt)
       const isRouterLink = this.isRouterLink
-      const suppliedHandler = this.$listeners.click
+      const suppliedHandler = this.bvListeners.click
       if (evtIsEvent && this.disabled) {
         // Stop event from bubbling up
         evt.stopPropagation()
@@ -137,56 +207,25 @@ export const BLink = /*#__PURE__*/ Vue.extend({
       }
     },
     focus() {
-      if (this.$el && this.$el.focus) {
-        this.$el.focus()
-      }
+      attemptFocus(this.$el)
     },
     blur() {
-      if (this.$el && this.$el.blur) {
-        this.$el.blur()
-      }
+      attemptBlur(this.$el)
     }
   },
   render(h) {
-    const tag = this.computedTag
-    const rel = this.computedRel
-    const href = this.computedHref
-    const isRouterLink = this.isRouterLink
+    const { active, disabled } = this
 
-    const componentData = {
-      class: { active: this.active, disabled: this.disabled },
-      attrs: {
-        ...this.$attrs,
-        rel,
-        target: this.target,
-        tabindex: this.disabled
-          ? '-1'
-          : isUndefined(this.$attrs.tabindex)
-            ? null
-            : this.$attrs.tabindex,
-        'aria-disabled': this.disabled ? 'true' : null
+    return h(
+      this.computedTag,
+      {
+        class: { active, disabled },
+        attrs: this.computedAttrs,
+        props: this.computedProps,
+        // We must use `nativeOn` for `<router-link>`/`<nuxt-link>` instead of `on`
+        [this.isRouterLink ? 'nativeOn' : 'on']: this.computedListeners
       },
-      props: this.computedProps
-    }
-    // Add the event handlers. We must use `nativeOn` for
-    // `<router-link>`/`<nuxt-link>` instead of `on`
-    componentData[isRouterLink ? 'nativeOn' : 'on'] = {
-      // Transfer all listeners (native) to the root element
-      ...this.$listeners,
-      // We want to overwrite any click handler since our callback
-      // will invoke the user supplied handler(s) if `!this.disabled`
-      click: this.onClick
-    }
-
-    // If href attribute exists on <router-link> (even undefined or null) it fails working on
-    // SSR, so we explicitly add it here if needed (i.e. if computedHref() is truthy)
-    if (href) {
-      componentData.attrs.href = href
-    } else {
-      // Ensure the prop HREF does not exist for router links
-      delete componentData.props.href
-    }
-
-    return h(tag, componentData, this.normalizeSlot('default'))
+      this.normalizeSlot('default')
+    )
   }
 })

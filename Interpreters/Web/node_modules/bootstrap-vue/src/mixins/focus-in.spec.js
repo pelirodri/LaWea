@@ -1,12 +1,12 @@
-import Vue from 'vue'
-import { mount } from '@vue/test-utils'
-import { waitNT } from '../../tests/utils'
+import { createLocalVue, mount } from '@vue/test-utils'
+import { createContainer, waitNT } from '../../tests/utils'
 import focusInMixin from './focus-in'
 
 describe('utils/focus-in', () => {
   it('works', async () => {
     let count = 0
-    const App = Vue.extend({
+    const localVue = createLocalVue()
+    const App = localVue.extend({
       mixins: [focusInMixin],
       // listenForFocusIn comes from the mixin
       created() {
@@ -23,7 +23,8 @@ describe('utils/focus-in', () => {
     })
 
     const wrapper = mount(App, {
-      attachToDocument: true
+      attachTo: createContainer(),
+      localVue
     })
 
     const focusinEvt = new FocusEvent('focusin')
@@ -34,18 +35,16 @@ describe('utils/focus-in', () => {
 
     // When this.listenForFocusIn is true
     expect(count).toBe(0)
-    wrapper.find('button').trigger('focusin')
+    await wrapper.find('button').trigger('focusin')
     expect(count).toBe(1)
     document.dispatchEvent(focusinEvt)
     await waitNT(wrapper.vm)
     expect(count).toBe(2)
 
     // When this.listenForFocusIn is false
-    wrapper.setData({
-      listenForFocusIn: false
-    })
+    await wrapper.setData({ listenForFocusIn: false })
     expect(count).toBe(2)
-    wrapper.find('button').trigger('focusin')
+    await wrapper.find('button').trigger('focusin')
     expect(count).toBe(2)
     document.dispatchEvent(focusinEvt)
     await waitNT(wrapper.vm)

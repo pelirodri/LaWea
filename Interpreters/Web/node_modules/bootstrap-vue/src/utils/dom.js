@@ -1,8 +1,22 @@
 import { from as arrayFrom } from './array'
 import { hasWindowSupport, hasDocumentSupport } from './env'
-import { isFunction, isNull } from '../utils/inspect'
+import { isFunction, isNull } from './inspect'
+import { toFloat } from './number'
+import { toString } from './string'
 
 // --- Constants ---
+
+const TABABLE_SELECTOR = [
+  'button',
+  '[href]:not(.disabled)',
+  'input',
+  'select',
+  'textarea',
+  '[tabindex]',
+  '[contenteditable]'
+]
+  .map(s => `${s}:not(:disabled):not([disabled])`)
+  .join(', ')
 
 const w = hasWindowSupport ? window : {}
 const d = hasDocumentSupport ? document : {}
@@ -32,6 +46,7 @@ export const closestEl =
   }
 
 // `requestAnimationFrame()` convenience method
+/* istanbul ignore next: JSDOM always returns the first option */
 export const requestAF =
   w.requestAnimationFrame ||
   w.webkitRequestAnimationFrame ||
@@ -53,6 +68,18 @@ export const removeNode = el => el && el.parentNode && el.parentNode.removeChild
 
 // Determine if an element is an HTML element
 export const isElement = el => !!(el && el.nodeType === Node.ELEMENT_NODE)
+
+// Get the currently active HTML element
+export const getActiveElement = (excludes = []) => {
+  const activeElement = d.activeElement
+  return activeElement && !excludes.some(el => el === activeElement) ? activeElement : null
+}
+
+// Returns `true` if a tag's name equals `name`
+export const isTag = (tag, name) => toString(tag).toLowerCase() === toString(name).toLowerCase()
+
+// Determine if an HTML element is the currently active element
+export const isActiveElement = el => isElement(el) && el === getActiveElement()
 
 // Determine if an HTML element is visible - Faster than CSS check
 export const isVisible = el => {
@@ -223,12 +250,35 @@ export const position = el => /* istanbul ignore next: getBoundingClientRect() d
     if (offsetParent && offsetParent !== el && offsetParent.nodeType === Node.ELEMENT_NODE) {
       parentOffset = offset(offsetParent)
       const offsetParentStyles = getCS(offsetParent)
-      parentOffset.top += parseFloat(offsetParentStyles.borderTopWidth)
-      parentOffset.left += parseFloat(offsetParentStyles.borderLeftWidth)
+      parentOffset.top += toFloat(offsetParentStyles.borderTopWidth, 0)
+      parentOffset.left += toFloat(offsetParentStyles.borderLeftWidth, 0)
     }
   }
   return {
-    top: _offset.top - parentOffset.top - parseFloat(elStyles.marginTop),
-    left: _offset.left - parentOffset.left - parseFloat(elStyles.marginLeft)
+    top: _offset.top - parentOffset.top - toFloat(elStyles.marginTop, 0),
+    left: _offset.left - parentOffset.left - toFloat(elStyles.marginLeft, 0)
   }
+}
+
+// Find all tabable elements in the given element
+// Assumes users have not used `tabindex` > `0` on elements
+export const getTabables = (rootEl = document) =>
+  selectAll(TABABLE_SELECTOR, rootEl)
+    .filter(isVisible)
+    .filter(el => el.tabIndex > -1 && !el.disabled)
+
+// Attempt to focus an element, and return `true` if successful
+export const attemptFocus = (el, options = {}) => {
+  try {
+    el.focus(options)
+  } catch {}
+  return isActiveElement(el)
+}
+
+// Attempt to blur an element, and return `true` if successful
+export const attemptBlur = el => {
+  try {
+    el.blur()
+  } catch {}
+  return !isActiveElement(el)
 }

@@ -1,4 +1,6 @@
+import { attemptBlur, attemptFocus } from '../utils/dom'
 import { isFunction } from '../utils/inspect'
+import { mathMax } from '../utils/math'
 import { toInteger, toFloat } from '../utils/number'
 import { toString } from '../utils/string'
 
@@ -26,16 +28,16 @@ export default {
       default: false
     },
     autocomplete: {
-      type: String,
-      default: null
+      type: String
+      // default: null
     },
     placeholder: {
-      type: String,
-      default: null
+      type: String
+      // default: null
     },
     formatter: {
-      type: Function,
-      default: null
+      type: Function
+      // default: null
     },
     lazyFormatter: {
       type: Boolean,
@@ -55,7 +57,7 @@ export default {
       default: false
     },
     debounce: {
-      // Debounce timout (in ms). Not applicable with `lazy` prop
+      // Debounce timeout (in ms). Not applicable with `lazy` prop
       type: [Number, String],
       default: 0
     }
@@ -97,7 +99,7 @@ export default {
     },
     computedDebounce() {
       // Ensure we have a positive number equal to or greater than 0
-      return Math.max(toInteger(this.debounce) || 0, 0)
+      return mathMax(toInteger(this.debounce, 0), 0)
     },
     hasFormatter() {
       return isFunction(this.formatter)
@@ -115,9 +117,12 @@ export default {
       }
     }
   },
-  mounted() {
-    // Create non-reactive property and set up destroy handler
+  created() {
+    // Create private non-reactive props
     this.$_inputDebounceTimer = null
+  },
+  mounted() {
+    // Set up destroy handler
     this.$on('hook:beforeDestroy', this.clearDebounce)
     // Preset the internal state
     const value = this.value
@@ -147,8 +152,7 @@ export default {
       }
       // Emulate `.number` modifier behaviour
       if (this.number) {
-        const number = toFloat(value)
-        value = isNaN(number) ? value : number
+        value = toFloat(value, value)
       }
       return value
     },
@@ -242,13 +246,13 @@ export default {
     focus() {
       // For external handler that may want a focus method
       if (!this.disabled) {
-        this.$el.focus()
+        attemptFocus(this.$el)
       }
     },
     blur() {
       // For external handler that may want a blur method
       if (!this.disabled) {
-        this.$el.blur()
+        attemptBlur(this.$el)
       }
     }
   }

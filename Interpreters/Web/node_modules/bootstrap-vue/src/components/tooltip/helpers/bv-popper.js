@@ -8,6 +8,7 @@
 import Vue from '../../../utils/vue'
 import Popper from 'popper.js'
 import { getCS, select } from '../../../utils/dom'
+import { toFloat } from '../../../utils/number'
 import { HTMLElement, SVGElement } from '../../../utils/safe-types'
 import { BVTransition } from '../../../utils/bv-transition'
 
@@ -51,8 +52,8 @@ export const BVPopper = /*#__PURE__*/ Vue.extend({
   props: {
     target: {
       // Element that the tooltip/popover is positioned relative to
-      type: [HTMLElement, SVGElement],
-      default: null
+      type: [HTMLElement, SVGElement]
+      // default: null
     },
     placement: {
       type: String,
@@ -94,6 +95,7 @@ export const BVPopper = /*#__PURE__*/ Vue.extend({
     }
   },
   computed: {
+    /* istanbul ignore next */
     templateType() /* istanbul ignore next */ {
       // Overridden by template component
       return 'unknown'
@@ -155,10 +157,10 @@ export const BVPopper = /*#__PURE__*/ Vue.extend({
   updated() {
     // Update popper if needed
     // TODO: Should this be a watcher on `this.popperConfig` instead?
-    this.popperUpdate()
+    this.updatePopper()
   },
   beforeDestroy() {
-    this.popperDestroy()
+    this.destroyPopper()
   },
   destroyed() {
     // Make sure template is removed from DOM
@@ -178,12 +180,13 @@ export const BVPopper = /*#__PURE__*/ Vue.extend({
       if (!this.offset) {
         // Could set a ref for the arrow element
         const arrow = this.$refs.arrow || select('.arrow', this.$el)
-        const arrowOffset =
-          (parseFloat(getCS(arrow).width) || 0) + (parseFloat(this.arrowPadding) || 0)
+        const arrowOffset = toFloat(getCS(arrow).width, 0) + toFloat(this.arrowPadding, 0)
         switch (OffsetMap[String(placement).toUpperCase()] || 0) {
+          /* istanbul ignore next: can't test in JSDOM */
           case +1:
             /* istanbul ignore next: can't test in JSDOM */
             return `+50%p - ${arrowOffset}px`
+          /* istanbul ignore next: can't test in JSDOM */
           case -1:
             /* istanbul ignore next: can't test in JSDOM */
             return `-50%p + ${arrowOffset}px`
@@ -195,22 +198,23 @@ export const BVPopper = /*#__PURE__*/ Vue.extend({
       return this.offset
     },
     popperCreate(el) {
-      this.popperDestroy()
+      this.destroyPopper()
       // We use `el` rather than `this.$el` just in case the original
       // mountpoint root element type was changed by the template
       this.$_popper = new Popper(this.target, el, this.popperConfig)
     },
-    popperDestroy() {
+    destroyPopper() {
       this.$_popper && this.$_popper.destroy()
       this.$_popper = null
     },
-    popperUpdate() {
+    updatePopper() {
       this.$_popper && this.$_popper.scheduleUpdate()
     },
     popperPlacementChange(data) {
       // Callback used by popper to adjust the arrow placement
       this.attachment = this.getAttachment(data.placement)
     },
+    /* istanbul ignore next */
     renderTemplate(h) /* istanbul ignore next */ {
       // Will be overridden by templates
       return h('div')

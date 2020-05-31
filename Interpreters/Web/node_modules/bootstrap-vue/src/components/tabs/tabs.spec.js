@@ -1,4 +1,3 @@
-import Vue from 'vue'
 import { mount } from '@vue/test-utils'
 import { waitNT, waitRAF } from '../../../tests/utils'
 import { BLink } from '../link/link'
@@ -14,7 +13,7 @@ describe('tabs', () => {
     await waitNT(wrapper.vm)
     await waitRAF()
 
-    expect(wrapper.is('div')).toBe(true)
+    expect(wrapper.element.tagName).toBe('DIV')
     expect(wrapper.classes()).toContain('tabs')
     expect(wrapper.classes()).not.toContain('row')
     expect(wrapper.classes()).not.toContain('no-gutters')
@@ -43,7 +42,7 @@ describe('tabs', () => {
     await waitNT(wrapper.vm)
     await waitRAF()
 
-    expect(wrapper.is('div')).toBe(true)
+    expect(wrapper.element.tagName).toBe('DIV')
     expect(wrapper.classes()).toContain('tabs')
     expect(wrapper.findAll('.card-header').length).toBe(1)
     expect(wrapper.findAll('ul').length).toBe(1)
@@ -65,7 +64,7 @@ describe('tabs', () => {
     await waitNT(wrapper.vm)
     await waitRAF()
 
-    expect(wrapper.is('div')).toBe(true)
+    expect(wrapper.element.tagName).toBe('DIV')
     expect(wrapper.classes()).toContain('tabs')
     expect(wrapper.classes()).toContain('row')
     expect(wrapper.classes()).toContain('no-gutters')
@@ -102,7 +101,7 @@ describe('tabs', () => {
   })
 
   it('sets correct tab active when first tab is disabled', async () => {
-    const App = Vue.extend({
+    const App = {
       render(h) {
         return h(BTabs, [
           h(BTab, { props: { disabled: true } }, 'tab 0'),
@@ -110,16 +109,16 @@ describe('tabs', () => {
           h(BTab, { props: {} }, 'tab 2')
         ])
       }
-    })
+    }
     const wrapper = mount(App)
     expect(wrapper).toBeDefined()
 
     await waitNT(wrapper.vm)
     await waitRAF()
 
-    const tabs = wrapper.find(BTabs)
+    const tabs = wrapper.findComponent(BTabs)
     expect(tabs).toBeDefined()
-    expect(tabs.findAll(BTab).length).toBe(3)
+    expect(tabs.findAllComponents(BTab).length).toBe(3)
 
     // Expect 2nd tab (index 1) to be active
     expect(tabs.vm.currentTab).toBe(1)
@@ -134,7 +133,7 @@ describe('tabs', () => {
   })
 
   it('sets current index based on active prop of b-tab', async () => {
-    const App = Vue.extend({
+    const App = {
       render(h) {
         return h(BTabs, [
           h(BTab, { props: { active: false } }, 'tab 0'),
@@ -142,16 +141,16 @@ describe('tabs', () => {
           h(BTab, { props: { active: false } }, 'tab 2')
         ])
       }
-    })
+    }
     const wrapper = mount(App)
     expect(wrapper).toBeDefined()
 
     await waitNT(wrapper.vm)
     await waitRAF()
 
-    const tabs = wrapper.find(BTabs)
+    const tabs = wrapper.findComponent(BTabs)
     expect(tabs).toBeDefined()
-    expect(tabs.findAll(BTab).length).toBe(3)
+    expect(tabs.findAllComponents(BTab).length).toBe(3)
 
     // Expect 2nd tab (index 1) to be active
     expect(tabs.vm.currentTab).toBe(1)
@@ -166,7 +165,7 @@ describe('tabs', () => {
   })
 
   it('selects first non-disabled tab when active tab disabled', async () => {
-    const App = Vue.extend({
+    const App = {
       render(h) {
         return h(BTabs, [
           h(BTab, { props: { active: false, disabled: true } }, 'tab 0'),
@@ -174,21 +173,21 @@ describe('tabs', () => {
           h(BTab, { props: { active: false } }, 'tab 2')
         ])
       }
-    })
+    }
     const wrapper = mount(App)
     expect(wrapper).toBeDefined()
 
     await waitNT(wrapper.vm)
     await waitRAF()
-    const tabs = wrapper.find(BTabs)
+    const tabs = wrapper.findComponent(BTabs)
     expect(tabs).toBeDefined()
-    expect(tabs.findAll(BTab).length).toBe(3)
+    expect(tabs.findAllComponents(BTab).length).toBe(3)
 
     // Expect 2nd tab (index 1) to be active
     expect(tabs.vm.currentTab).toBe(1)
-    expect(tabs.findAll(BTab).at(0).vm.localActive).toBe(false)
-    expect(tabs.findAll(BTab).at(1).vm.localActive).toBe(true)
-    expect(tabs.findAll(BTab).at(2).vm.localActive).toBe(false)
+    expect(tabs.findAllComponents(BTab).at(0).vm.localActive).toBe(false)
+    expect(tabs.findAllComponents(BTab).at(1).vm.localActive).toBe(true)
+    expect(tabs.findAllComponents(BTab).at(2).vm.localActive).toBe(false)
 
     expect(tabs.emitted('input')).toBeDefined()
     expect(tabs.emitted('input').length).toBe(1)
@@ -196,18 +195,16 @@ describe('tabs', () => {
     expect(tabs.emitted('input')[0][0]).toBe(1)
 
     // Deactivate current tab (BTab 2, index 1)
-    tabs
-      .findAll(BTab)
+    await tabs
+      .findAllComponents(BTab)
       .at(1)
       .setProps({ active: false })
-    await waitNT(wrapper.vm)
-    await waitRAF()
 
     // Expect last tab (index 2) to be active
     expect(tabs.vm.currentTab).toBe(2)
-    expect(tabs.findAll(BTab).at(0).vm.localActive).toBe(false)
-    expect(tabs.findAll(BTab).at(1).vm.localActive).toBe(false)
-    expect(tabs.findAll(BTab).at(2).vm.localActive).toBe(true)
+    expect(tabs.findAllComponents(BTab).at(0).vm.localActive).toBe(false)
+    expect(tabs.findAllComponents(BTab).at(1).vm.localActive).toBe(false)
+    expect(tabs.findAllComponents(BTab).at(2).vm.localActive).toBe(true)
     expect(tabs.emitted('input').length).toBe(2)
     expect(tabs.emitted('input')[1][0]).toBe(2)
 
@@ -215,7 +212,7 @@ describe('tabs', () => {
   })
 
   it('v-model works', async () => {
-    const App = Vue.extend({
+    const App = {
       render(h) {
         return h(BTabs, { props: { value: 0 } }, [
           h(BTab, { props: {} }, 'tab 0'),
@@ -223,15 +220,15 @@ describe('tabs', () => {
           h(BTab, { props: {} }, 'tab 2')
         ])
       }
-    })
+    }
     const wrapper = mount(App)
     expect(wrapper).toBeDefined()
 
     await waitNT(wrapper.vm)
     await waitRAF()
-    const tabs = wrapper.find(BTabs)
+    const tabs = wrapper.findComponent(BTabs)
     expect(tabs).toBeDefined()
-    expect(tabs.findAll(BTab).length).toBe(3)
+    expect(tabs.findAllComponents(BTab).length).toBe(3)
 
     // Expect 1st tab (index 0) to be active
     expect(tabs.vm.currentTab).toBe(0)
@@ -240,8 +237,7 @@ describe('tabs', () => {
     expect(tabs.emitted('input')).not.toBeDefined()
 
     // Set 2nd BTab to be active
-    tabs.setProps({ value: 1 })
-    await waitNT(wrapper.vm)
+    await tabs.setProps({ value: 1 })
     await waitRAF()
     expect(tabs.vm.currentTab).toBe(1)
     expect(tabs.emitted('input').length).toBe(1)
@@ -249,8 +245,7 @@ describe('tabs', () => {
     expect(tabs.emitted('input')[0][0]).toBe(1)
 
     // Set 3rd BTab to be active
-    tabs.setProps({ value: 2 })
-    await waitNT(wrapper.vm)
+    await tabs.setProps({ value: 2 })
     await waitRAF()
     expect(tabs.vm.currentTab).toBe(2)
     expect(tabs.emitted('input').length).toBe(2)
@@ -261,7 +256,7 @@ describe('tabs', () => {
   })
 
   it('v-model works when trying to activate a disabled tab', async () => {
-    const App = Vue.extend({
+    const App = {
       render(h) {
         return h(BTabs, { props: { value: 0 } }, [
           h(BTab, { props: {} }, 'tab 0'),
@@ -269,15 +264,15 @@ describe('tabs', () => {
           h(BTab, { props: {} }, 'tab 2')
         ])
       }
-    })
+    }
     const wrapper = mount(App)
     expect(wrapper).toBeDefined()
 
     await waitNT(wrapper.vm)
     await waitRAF()
-    const tabs = wrapper.find(BTabs)
+    const tabs = wrapper.findComponent(BTabs)
     expect(tabs).toBeDefined()
-    expect(tabs.findAll(BTab).length).toBe(3)
+    expect(tabs.findAllComponents(BTab).length).toBe(3)
 
     // Expect 1st tab (index 0) to be active
     expect(tabs.vm.currentTab).toBe(0)
@@ -285,8 +280,7 @@ describe('tabs', () => {
     expect(tabs.emitted('input')).not.toBeDefined()
 
     // Try to set 2nd (disabled) BTab to be active
-    tabs.setProps({ value: 1 })
-    await waitNT(wrapper.vm)
+    await tabs.setProps({ value: 1 })
     await waitRAF()
     // Will try activate next non-disabled tab instead (3rd tab, index 2)
     expect(tabs.vm.currentTab).toBe(2)
@@ -295,12 +289,10 @@ describe('tabs', () => {
     expect(tabs.emitted('input')[0][0]).toBe(2)
 
     // Needed for test since value not bound to actual v-model on App
-    tabs.setProps({ value: 2 })
-    await waitNT(wrapper.vm)
+    await tabs.setProps({ value: 2 })
     await waitRAF()
     // Try and set 2nd BTab to be active
-    tabs.setProps({ value: 1 })
-    await waitNT(wrapper.vm)
+    await tabs.setProps({ value: 1 })
     await waitRAF()
     // Will find the previous non-disabled tab (1st tab, index 0)
     expect(tabs.vm.currentTab).toBe(0)
@@ -312,7 +304,7 @@ describe('tabs', () => {
   })
 
   it('`activate-tab` event works', async () => {
-    const App = Vue.extend({
+    const App = {
       methods: {
         preventTab(next, prev, bvEvt) {
           // Prevent 3rd tab (index === 2) from activating
@@ -328,15 +320,15 @@ describe('tabs', () => {
           h(BTab, { props: {} }, 'tab 2')
         ])
       }
-    })
+    }
     const wrapper = mount(App)
     expect(wrapper).toBeDefined()
 
     await waitNT(wrapper.vm)
     await waitRAF()
-    const tabs = wrapper.find(BTabs)
+    const tabs = wrapper.findComponent(BTabs)
     expect(tabs).toBeDefined()
-    expect(tabs.findAll(BTab).length).toBe(3)
+    expect(tabs.findAllComponents(BTab).length).toBe(3)
 
     // Expect 1st tab (index 0) to be active
     expect(tabs.vm.currentTab).toBe(0)
@@ -345,8 +337,7 @@ describe('tabs', () => {
     expect(tabs.emitted('activate-tab')).not.toBeDefined()
 
     // Set 2nd BTab to be active
-    tabs.setProps({ value: 1 })
-    await waitNT(wrapper.vm)
+    await tabs.setProps({ value: 1 })
     await waitRAF()
     expect(tabs.vm.currentTab).toBe(1)
     expect(tabs.emitted('input')).toBeDefined()
@@ -360,8 +351,7 @@ describe('tabs', () => {
     expect(tabs.emitted('activate-tab')[0][2].vueTarget).toBe(tabs.vm)
 
     // Attempt to set 3rd BTab to be active
-    tabs.setProps({ value: 2 })
-    await waitNT(wrapper.vm)
+    await tabs.setProps({ value: 2 })
     await waitRAF()
     expect(tabs.vm.currentTab).toBe(1)
     expect(tabs.emitted('input')).toBeDefined()
@@ -378,7 +368,7 @@ describe('tabs', () => {
   })
 
   it('clicking on tab activates the tab, and tab emits click event', async () => {
-    const App = Vue.extend({
+    const App = {
       render(h) {
         return h(BTabs, { props: { value: 0 } }, [
           h(BTab, { props: { title: 'one' } }, 'tab 0'),
@@ -386,19 +376,19 @@ describe('tabs', () => {
           h(BTab, { props: { title: 'three' } }, 'tab 2')
         ])
       }
-    })
+    }
     const wrapper = mount(App)
     expect(wrapper).toBeDefined()
 
     await waitNT(wrapper.vm)
     await waitRAF()
-    const tabs = wrapper.find(BTabs)
+    const tabs = wrapper.findComponent(BTabs)
     expect(tabs).toBeDefined()
-    expect(tabs.findAll(BTab).length).toBe(3)
+    expect(tabs.findAllComponents(BTab).length).toBe(3)
 
-    const tab1 = tabs.findAll(BTab).at(0)
-    const tab2 = tabs.findAll(BTab).at(1)
-    const tab3 = tabs.findAll(BTab).at(2)
+    const tab1 = tabs.findAllComponents(BTab).at(0)
+    const tab2 = tabs.findAllComponents(BTab).at(1)
+    const tab3 = tabs.findAllComponents(BTab).at(2)
 
     expect(wrapper.findAll('.nav-link')).toBeDefined()
     expect(wrapper.findAll('.nav-link').length).toBe(3)
@@ -411,11 +401,10 @@ describe('tabs', () => {
 
     // Try to set 2nd BTab to be active via click
     expect(tab2.emitted('click')).not.toBeDefined()
-    wrapper
+    await wrapper
       .findAll('.nav-link')
       .at(1)
       .trigger('click')
-    await waitNT(wrapper.vm)
     await waitRAF()
     expect(tabs.vm.currentTab).toBe(1)
     expect(tab1.vm.localActive).toBe(false)
@@ -425,11 +414,10 @@ describe('tabs', () => {
 
     // Try to set 3rd BTab to be active via click
     expect(tab3.emitted('click')).not.toBeDefined()
-    wrapper
+    await wrapper
       .findAll('.nav-link')
       .at(2)
       .trigger('click')
-    await waitNT(wrapper.vm)
     await waitRAF()
     expect(tabs.vm.currentTab).toBe(2)
     expect(tab1.vm.localActive).toBe(false)
@@ -439,11 +427,10 @@ describe('tabs', () => {
 
     // Try to set 1st BTab to be active via click (space === click in keynav mode)
     expect(tab1.emitted('click')).not.toBeDefined()
-    wrapper
+    await wrapper
       .findAll('.nav-link')
       .at(0)
       .trigger('keydown.space')
-    await waitNT(wrapper.vm)
     await waitRAF()
     expect(tabs.vm.currentTab).toBe(0)
     expect(tab1.vm.localActive).toBe(true)
@@ -455,7 +442,7 @@ describe('tabs', () => {
   })
 
   it('pressing space on tab activates the tab, and tab emits click event', async () => {
-    const App = Vue.extend({
+    const App = {
       render(h) {
         return h(BTabs, { props: { value: 0, noKeyNav: true } }, [
           h(BTab, { props: { title: 'one' } }, 'tab 0'),
@@ -463,19 +450,19 @@ describe('tabs', () => {
           h(BTab, { props: { title: 'three' } }, 'tab 2')
         ])
       }
-    })
+    }
     const wrapper = mount(App)
     expect(wrapper).toBeDefined()
 
     await waitNT(wrapper.vm)
     await waitRAF()
-    const tabs = wrapper.find(BTabs)
+    const tabs = wrapper.findComponent(BTabs)
     expect(tabs).toBeDefined()
-    expect(tabs.findAll(BTab).length).toBe(3)
+    expect(tabs.findAllComponents(BTab).length).toBe(3)
 
-    const tab1 = tabs.findAll(BTab).at(0)
-    const tab2 = tabs.findAll(BTab).at(1)
-    const tab3 = tabs.findAll(BTab).at(2)
+    const tab1 = tabs.findAllComponents(BTab).at(0)
+    const tab2 = tabs.findAllComponents(BTab).at(1)
+    const tab3 = tabs.findAllComponents(BTab).at(2)
 
     expect(wrapper.findAll('.nav-link')).toBeDefined()
     expect(wrapper.findAll('.nav-link').length).toBe(3)
@@ -488,11 +475,10 @@ describe('tabs', () => {
 
     // Try to set 2nd BTab to be active via space keypress
     expect(tab2.emitted('click')).not.toBeDefined()
-    wrapper
+    await wrapper
       .findAll('.nav-link')
       .at(1)
       .trigger('keydown.space')
-    await waitNT(wrapper.vm)
     await waitRAF()
     expect(tabs.vm.currentTab).toBe(1)
     expect(tab1.vm.localActive).toBe(false)
@@ -502,11 +488,10 @@ describe('tabs', () => {
 
     // Try to set 3rd BTab to be active via space keypress
     expect(tab3.emitted('click')).not.toBeDefined()
-    wrapper
+    await wrapper
       .findAll('.nav-link')
       .at(2)
       .trigger('keydown.space')
-    await waitNT(wrapper.vm)
     await waitRAF()
     expect(tabs.vm.currentTab).toBe(2)
     expect(tab1.vm.localActive).toBe(false)
@@ -516,11 +501,10 @@ describe('tabs', () => {
 
     // Try to set 1st BTab to be active via space keypress
     expect(tab1.emitted('click')).not.toBeDefined()
-    wrapper
+    await wrapper
       .findAll('.nav-link')
       .at(0)
       .trigger('keydown.space')
-    await waitNT(wrapper.vm)
     await waitRAF()
     expect(tabs.vm.currentTab).toBe(0)
     expect(tab1.vm.localActive).toBe(true)
@@ -532,7 +516,7 @@ describe('tabs', () => {
   })
 
   it('key nav works', async () => {
-    const App = Vue.extend({
+    const App = {
       render(h) {
         return h(BTabs, { props: { value: 0 } }, [
           h(BTab, { props: { title: 'one' } }, 'tab 0'),
@@ -540,19 +524,19 @@ describe('tabs', () => {
           h(BTab, { props: { title: 'three' } }, 'tab 2')
         ])
       }
-    })
+    }
     const wrapper = mount(App)
     expect(wrapper).toBeDefined()
 
     await waitNT(wrapper.vm)
     await waitRAF()
-    const tabs = wrapper.find(BTabs)
+    const tabs = wrapper.findComponent(BTabs)
     expect(tabs).toBeDefined()
-    expect(tabs.findAll(BTab).length).toBe(3)
+    expect(tabs.findAllComponents(BTab).length).toBe(3)
 
-    const tab1 = tabs.findAll(BTab).at(0)
-    const tab2 = tabs.findAll(BTab).at(1)
-    const tab3 = tabs.findAll(BTab).at(2)
+    const tab1 = tabs.findAllComponents(BTab).at(0)
+    const tab2 = tabs.findAllComponents(BTab).at(1)
+    const tab3 = tabs.findAllComponents(BTab).at(2)
 
     expect(wrapper.findAll('.nav-link')).toBeDefined()
     expect(wrapper.findAll('.nav-link').length).toBe(3)
@@ -564,11 +548,10 @@ describe('tabs', () => {
     expect(tab3.vm.localActive).toBe(false)
 
     // RIGHT moves to next tab
-    wrapper
-      .findAll(BLink)
+    await wrapper
+      .findAllComponents(BLink)
       .at(0)
       .trigger('keydown.right')
-    await waitNT(wrapper.vm)
     await waitRAF()
     expect(tabs.vm.currentTab).toBe(1)
     expect(tab1.vm.localActive).toBe(false)
@@ -576,11 +559,10 @@ describe('tabs', () => {
     expect(tab3.vm.localActive).toBe(false)
 
     // END key moves to last tab
-    wrapper
-      .findAll(BLink)
+    await wrapper
+      .findAllComponents(BLink)
       .at(1)
       .trigger('keydown.end')
-    await waitNT(wrapper.vm)
     await waitRAF()
     expect(tabs.vm.currentTab).toBe(2)
     expect(tab1.vm.localActive).toBe(false)
@@ -588,11 +570,10 @@ describe('tabs', () => {
     expect(tab3.vm.localActive).toBe(true)
 
     // LEFT moves to previous tab
-    wrapper
-      .findAll(BLink)
+    await wrapper
+      .findAllComponents(BLink)
       .at(2)
       .trigger('keydown.left')
-    await waitNT(wrapper.vm)
     await waitRAF()
     expect(tabs.vm.currentTab).toBe(1)
     expect(tab1.vm.localActive).toBe(false)
@@ -600,11 +581,10 @@ describe('tabs', () => {
     expect(tab3.vm.localActive).toBe(false)
 
     // HOME moves to first tab
-    wrapper
-      .findAll(BLink)
+    await wrapper
+      .findAllComponents(BLink)
       .at(1)
       .trigger('keydown.home')
-    await waitNT(wrapper.vm)
     await waitRAF()
     expect(tabs.vm.currentTab).toBe(0)
     expect(tab1.vm.localActive).toBe(true)
@@ -615,7 +595,7 @@ describe('tabs', () => {
   })
 
   it('disabling active tab selects first non-disabled tab', async () => {
-    const App = Vue.extend({
+    const App = {
       render(h) {
         return h(BTabs, { props: { value: 2 } }, [
           h(BTab, { props: { title: 'one' } }, 'tab 0'),
@@ -623,19 +603,19 @@ describe('tabs', () => {
           h(BTab, { props: { title: 'three', disabled: false } }, 'tab 2')
         ])
       }
-    })
+    }
     const wrapper = mount(App)
     expect(wrapper).toBeDefined()
 
     await waitNT(wrapper.vm)
     await waitRAF()
-    const tabs = wrapper.find(BTabs)
+    const tabs = wrapper.findComponent(BTabs)
     expect(tabs).toBeDefined()
-    expect(tabs.findAll(BTab).length).toBe(3)
+    expect(tabs.findAllComponents(BTab).length).toBe(3)
 
-    const tab1 = tabs.findAll(BTab).at(0)
-    const tab2 = tabs.findAll(BTab).at(1)
-    const tab3 = tabs.findAll(BTab).at(2)
+    const tab1 = tabs.findAllComponents(BTab).at(0)
+    const tab2 = tabs.findAllComponents(BTab).at(1)
+    const tab3 = tabs.findAllComponents(BTab).at(2)
 
     // Expect 3rd tab (index 2) to be active
     expect(tabs.vm.currentTab).toBe(2)
@@ -644,8 +624,7 @@ describe('tabs', () => {
     expect(tab3.vm.localActive).toBe(true)
 
     // Disable 3rd tab
-    tab3.setProps({ disabled: true })
-    await waitNT(wrapper.vm)
+    await tab3.setProps({ disabled: true })
     await waitRAF()
 
     // Expect 1st tab to be active
@@ -655,9 +634,8 @@ describe('tabs', () => {
     expect(tab3.vm.localActive).toBe(false)
 
     // Enable 3rd tab and Disable 1st tab
-    tab3.setProps({ disabled: false })
-    tab1.setProps({ disabled: true })
-    await waitNT(wrapper.vm)
+    await tab3.setProps({ disabled: false })
+    await tab1.setProps({ disabled: true })
     await waitRAF()
 
     // Expect 2nd tab to be active
@@ -670,27 +648,27 @@ describe('tabs', () => {
   })
 
   it('tab title slots are reactive', async () => {
-    const App = Vue.extend({
+    const App = {
       render(h) {
         return h(BTabs, { props: { value: 2 } }, [
           h(BTab, { props: { title: 'original' } }, 'tab content')
         ])
       }
-    })
+    }
     const wrapper = mount(App)
     expect(wrapper).toBeDefined()
 
     await waitNT(wrapper.vm)
     await waitRAF()
-    const tabs = wrapper.find(BTabs)
+    const tabs = wrapper.findComponent(BTabs)
     expect(tabs).toBeDefined()
-    expect(tabs.findAll(BTab).length).toBe(1)
+    expect(tabs.findAllComponents(BTab).length).toBe(1)
 
     // Expect tab button content to be `original`
     expect(wrapper.find('.nav-link').text()).toBe('original')
 
     // Get the BTab's instance
-    const tabVm = wrapper.find(BTab).vm
+    const tabVm = wrapper.findComponent(BTab).vm
     expect(tabVm).toBeDefined()
 
     // Change title slot content
@@ -707,7 +685,7 @@ describe('tabs', () => {
 
   it('"active-nav-item-class" is applied to active nav item', async () => {
     const activeNavItemClass = 'text-success'
-    const App = Vue.extend({
+    const App = {
       render(h) {
         return h(BTabs, { props: { value: 0, activeNavItemClass } }, [
           h(BTab, { props: {} }, 'tab 0'),
@@ -715,15 +693,15 @@ describe('tabs', () => {
           h(BTab, { props: {} }, 'tab 2')
         ])
       }
-    })
+    }
     const wrapper = mount(App)
     expect(wrapper).toBeDefined()
 
-    await wrapper.vm.$nextTick()
+    await waitNT(wrapper.vm)
     await waitRAF()
-    const tabs = wrapper.find(BTabs)
+    const tabs = wrapper.findComponent(BTabs)
     expect(tabs).toBeDefined()
-    expect(tabs.findAll(BTab).length).toBe(3)
+    expect(tabs.findAllComponents(BTab).length).toBe(3)
 
     const getNavItemByTab = tab => wrapper.find(`#${tab.$el.id}___BV_tab_button__`)
 
@@ -735,7 +713,7 @@ describe('tabs', () => {
 
     // Set 2nd tab to be active
     tabs.setProps({ value: 1 })
-    await wrapper.vm.$nextTick()
+    await waitNT(wrapper.vm)
     await waitRAF()
     expect(tabs.vm.currentTab).toBe(1)
     // Expect 2nd tabs nav item to have "active-nav-item-class" applied
@@ -748,7 +726,7 @@ describe('tabs', () => {
 
   it('"active-tab-class" is applied to active tab', async () => {
     const activeTabClass = 'text-success'
-    const App = Vue.extend({
+    const App = {
       render(h) {
         return h(BTabs, { props: { value: 0, activeTabClass } }, [
           h(BTab, { props: {} }, 'tab 0'),
@@ -756,15 +734,15 @@ describe('tabs', () => {
           h(BTab, { props: {} }, 'tab 2')
         ])
       }
-    })
+    }
     const wrapper = mount(App)
     expect(wrapper).toBeDefined()
 
-    await wrapper.vm.$nextTick()
+    await waitNT(wrapper.vm)
     await waitRAF()
-    const tabs = wrapper.find(BTabs)
+    const tabs = wrapper.findComponent(BTabs)
     expect(tabs).toBeDefined()
-    expect(tabs.findAll(BTab).length).toBe(3)
+    expect(tabs.findAllComponents(BTab).length).toBe(3)
 
     // Expect 1st tab (index 0) to be active
     expect(tabs.vm.currentTab).toBe(0)
@@ -773,8 +751,7 @@ describe('tabs', () => {
     expect(tabs.vm.tabs[0].$el.classList.contains(activeTabClass)).toBe(true)
 
     // Set 2nd tab to be active
-    tabs.setProps({ value: 1 })
-    await wrapper.vm.$nextTick()
+    await tabs.setProps({ value: 1 })
     await waitRAF()
     expect(tabs.vm.currentTab).toBe(1)
     // Expect 2nd tab to have "active-tab-class" applied

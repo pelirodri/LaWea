@@ -38,7 +38,7 @@ import { clone, keys } from '../../utils/object'
 
 const OBSERVER_PROP_NAME = '__bv__visibility_observer'
 
-const onlyDgitsRE = /^\d+$/
+const RX_ONLY_DIGITS = /^\d+$/
 
 class VisibilityObserver {
   constructor(el, options, vnode) {
@@ -99,6 +99,7 @@ class VisibilityObserver {
     })
   }
 
+  /* istanbul ignore next */
   handler(entries) /* istanbul ignore next: IntersectionObserver not supported in JSDOM */ {
     const entry = entries ? entries[0] : {}
     const isIntersecting = Boolean(entry.isIntersecting || entry.intersectionRatio > 0.0)
@@ -113,11 +114,8 @@ class VisibilityObserver {
   }
 
   stop() {
-    const observer = this.observer
     /* istanbul ignore next */
-    if (observer && observer.disconnect) {
-      observer.disconnect()
-    }
+    this.observer && this.observer.disconnect()
     this.observer = null
   }
 }
@@ -140,7 +138,7 @@ const bind = (el, { value, modifiers }, vnode) => {
   // Parse modifiers
   keys(modifiers).forEach(mod => {
     /* istanbul ignore else: Until <b-img-lazy> is switched to use this directive */
-    if (onlyDgitsRE.test(mod)) {
+    if (RX_ONLY_DIGITS.test(mod)) {
       options.margin = `${mod}px`
     } else if (mod.toLowerCase() === 'once') {
       options.once = true

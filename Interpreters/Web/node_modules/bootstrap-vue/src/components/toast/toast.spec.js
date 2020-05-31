@@ -1,5 +1,5 @@
 import { mount } from '@vue/test-utils'
-import { waitNT, waitRAF } from '../../../tests/utils'
+import { createContainer, waitNT, waitRAF } from '../../../tests/utils'
 import { BToast } from './toast'
 
 describe('b-toast', () => {
@@ -14,10 +14,7 @@ describe('b-toast', () => {
 
   it('has expected structure', async () => {
     const wrapper = mount(BToast, {
-      attachToDocument: true,
-      stubs: {
-        transition: false
-      },
+      attachTo: createContainer(),
       propsData: {
         static: true,
         noAutoHide: true,
@@ -29,13 +26,13 @@ describe('b-toast', () => {
       }
     })
 
-    expect(wrapper.isVueInstance()).toBe(true)
+    expect(wrapper.vm).toBeDefined()
     await waitNT(wrapper.vm)
     await waitRAF()
     await waitNT(wrapper.vm)
     await waitRAF()
 
-    expect(wrapper.is('div')).toBe(true)
+    expect(wrapper.element.tagName).toBe('DIV')
     expect(wrapper.classes()).toContain('b-toast')
     expect(wrapper.classes()).toContain('b-toast-prepend')
     expect(wrapper.classes().length).toBe(2)
@@ -45,13 +42,13 @@ describe('b-toast', () => {
 
     expect(wrapper.find('.toast').exists()).toBe(true)
     const $toast = wrapper.find('.toast')
-    expect($toast.is('div')).toBe(true)
+    expect($toast.element.tagName).toBe('DIV')
     expect($toast.classes()).toContain('toast')
     expect($toast.attributes('tabindex')).toEqual('0')
 
     expect($toast.find('.toast-header').exists()).toBe(true)
     const $header = $toast.find('.toast-header')
-    expect($header.is('header')).toBe(true)
+    expect($header.element.tagName).toBe('HEADER')
     expect($header.classes().length).toBe(1)
     expect($header.find('strong').exists()).toBe(true)
     expect($header.find('strong').text()).toEqual('title')
@@ -63,7 +60,7 @@ describe('b-toast', () => {
 
     expect($toast.find('.toast-body').exists()).toBe(true)
     const $body = $toast.find('.toast-body')
-    expect($body.is('div')).toBe(true)
+    expect($body.element.tagName).toBe('DIV')
     expect($body.classes().length).toBe(1)
     expect($body.text()).toEqual('content')
 
@@ -72,10 +69,7 @@ describe('b-toast', () => {
 
   it('visible prop works', async () => {
     const wrapper = mount(BToast, {
-      attachToDocument: true,
-      stubs: {
-        transition: false
-      },
+      attachTo: createContainer(),
       propsData: {
         static: true,
         noAutoHide: true,
@@ -88,7 +82,7 @@ describe('b-toast', () => {
       }
     })
 
-    expect(wrapper.isVueInstance()).toBe(true)
+    expect(wrapper.vm).toBeDefined()
     await waitNT(wrapper.vm)
     await waitRAF()
     await waitNT(wrapper.vm)
@@ -103,18 +97,14 @@ describe('b-toast', () => {
     expect(wrapper.emitted('hide')).not.toBeDefined()
     expect(wrapper.emitted('hidden')).not.toBeDefined()
 
-    wrapper.setProps({
-      visible: true
-    })
-
-    await waitNT(wrapper.vm)
+    await wrapper.setProps({ visible: true })
     await waitRAF()
     await waitNT(wrapper.vm)
     await waitRAF()
     await waitNT(wrapper.vm)
     await waitRAF()
 
-    expect(wrapper.is('div')).toBe(true)
+    expect(wrapper.element.tagName).toBe('DIV')
 
     expect(wrapper.emitted('show')).toBeDefined()
     expect(wrapper.emitted('shown')).toBeDefined()
@@ -123,11 +113,7 @@ describe('b-toast', () => {
     expect(wrapper.emitted('show').length).toBe(1)
     expect(wrapper.emitted('shown').length).toBe(1)
 
-    wrapper.setProps({
-      visible: false
-    })
-
-    await waitNT(wrapper.vm)
+    await wrapper.setProps({ visible: false })
     await waitRAF()
     await waitNT(wrapper.vm)
     await waitRAF()
@@ -150,10 +136,7 @@ describe('b-toast', () => {
 
   it('alert with link closes on click works', async () => {
     const wrapper = mount(BToast, {
-      attachToDocument: true,
-      stubs: {
-        transition: false
-      },
+      attachTo: createContainer(),
       propsData: {
         static: true,
         noAutoHide: true,
@@ -166,36 +149,36 @@ describe('b-toast', () => {
       }
     })
 
-    expect(wrapper.isVueInstance()).toBe(true)
+    expect(wrapper.vm).toBeDefined()
     await waitNT(wrapper.vm)
     await waitRAF()
     await waitNT(wrapper.vm)
     await waitRAF()
     await waitNT(wrapper.vm)
     await waitRAF()
+    await waitNT(wrapper.vm)
 
-    expect(wrapper.is('div')).toBe(true)
+    expect(wrapper.element.tagName).toBe('DIV')
 
     const $body = wrapper.find('.toast-body')
-    expect($body.is('a')).toBe(true)
+    expect($body.element.tagName).toBe('A')
     expect($body.attributes('href')).toEqual('#foobar')
 
     expect(wrapper.emitted('hide')).not.toBeDefined()
     expect(wrapper.emitted('hidden')).not.toBeDefined()
     expect(wrapper.emitted('change')).not.toBeDefined()
 
-    $body.trigger('click')
+    $body.element.focus()
+    await $body.trigger('click')
+    await waitRAF()
+    await waitNT(wrapper.vm)
+    await waitRAF()
+    await waitNT(wrapper.vm)
+    await waitRAF()
+    await waitNT(wrapper.vm)
+    await waitRAF()
+    await waitNT(wrapper.vm)
 
-    await waitNT(wrapper.vm)
-    await waitRAF()
-    await waitNT(wrapper.vm)
-    await waitRAF()
-    await waitNT(wrapper.vm)
-    await waitRAF()
-    await waitNT(wrapper.vm)
-    await waitRAF()
-
-    expect(wrapper.is('div')).not.toBe(true)
     expect(wrapper.element.nodeType).toBe(Node.COMMENT_NODE)
 
     expect(wrapper.emitted('hide')).toBeDefined()
@@ -208,10 +191,7 @@ describe('b-toast', () => {
   it('auto-hide works', async () => {
     jest.useFakeTimers()
     const wrapper = mount(BToast, {
-      attachToDocument: true,
-      stubs: {
-        transition: false
-      },
+      attachTo: createContainer(),
       propsData: {
         static: true,
         noAutoHide: false,
@@ -223,7 +203,7 @@ describe('b-toast', () => {
       }
     })
 
-    expect(wrapper.isVueInstance()).toBe(true)
+    expect(wrapper.vm).toBeDefined()
     await waitNT(wrapper.vm)
     await waitRAF()
     await waitNT(wrapper.vm)
@@ -233,7 +213,7 @@ describe('b-toast', () => {
     await waitNT(wrapper.vm)
     await waitRAF()
 
-    expect(wrapper.is('div')).toBe(true)
+    expect(wrapper.element.tagName).toBe('DIV')
     expect(wrapper.vm.timer).not.toEqual(null)
 
     jest.runOnlyPendingTimers()
@@ -247,7 +227,6 @@ describe('b-toast', () => {
     await waitNT(wrapper.vm)
     await waitRAF()
 
-    expect(wrapper.is('div')).not.toBe(true)
     expect(wrapper.element.nodeType).toBe(Node.COMMENT_NODE)
     expect(wrapper.vm.timer).toBe(null)
 
@@ -256,10 +235,7 @@ describe('b-toast', () => {
 
   it('hover pause works', async () => {
     const wrapper = mount(BToast, {
-      attachToDocument: true,
-      stubs: {
-        transition: false
-      },
+      attachTo: createContainer(),
       propsData: {
         static: true,
         noAutoHide: false,
@@ -271,7 +247,7 @@ describe('b-toast', () => {
       }
     })
 
-    expect(wrapper.isVueInstance()).toBe(true)
+    expect(wrapper.vm).toBeDefined()
 
     await waitNT(wrapper.vm)
     await waitRAF()
@@ -282,21 +258,17 @@ describe('b-toast', () => {
     await waitNT(wrapper.vm)
     await waitRAF()
 
-    expect(wrapper.is('div')).toBe(true)
+    expect(wrapper.element.tagName).toBe('DIV')
     expect(wrapper.vm.timer).not.toEqual(null)
     await waitNT(wrapper.vm)
     await waitRAF()
 
-    wrapper.trigger('mouseenter')
-    await waitNT(wrapper.vm)
+    await wrapper.trigger('mouseenter')
     await waitRAF()
-
     expect(wrapper.vm.timer).toEqual(null)
 
-    wrapper.trigger('mouseleave')
-    await waitNT(wrapper.vm)
+    await wrapper.trigger('mouseleave')
     await waitRAF()
-
     expect(wrapper.vm.timer).not.toEqual(null)
 
     wrapper.destroy()
@@ -304,10 +276,7 @@ describe('b-toast', () => {
 
   it('hover pause has no effect when no-hover-pause is set', async () => {
     const wrapper = mount(BToast, {
-      attachToDocument: true,
-      stubs: {
-        transition: false
-      },
+      attachTo: createContainer(),
       propsData: {
         static: true,
         noAutoHide: false,
@@ -320,7 +289,7 @@ describe('b-toast', () => {
       }
     })
 
-    expect(wrapper.isVueInstance()).toBe(true)
+    expect(wrapper.vm).toBeDefined()
 
     await waitNT(wrapper.vm)
     await waitRAF()
@@ -331,21 +300,17 @@ describe('b-toast', () => {
     await waitNT(wrapper.vm)
     await waitRAF()
 
-    expect(wrapper.is('div')).toBe(true)
+    expect(wrapper.element.tagName).toBe('DIV')
     expect(wrapper.vm.timer).not.toEqual(null)
     await waitNT(wrapper.vm)
     await waitRAF()
 
-    wrapper.trigger('mouseenter')
-    await waitNT(wrapper.vm)
+    await wrapper.trigger('mouseenter')
     await waitRAF()
-
     expect(wrapper.vm.timer).not.toEqual(null)
 
-    wrapper.trigger('mouseleave')
-    await waitNT(wrapper.vm)
+    await wrapper.trigger('mouseleave')
     await waitRAF()
-
     expect(wrapper.vm.timer).not.toEqual(null)
 
     wrapper.destroy()

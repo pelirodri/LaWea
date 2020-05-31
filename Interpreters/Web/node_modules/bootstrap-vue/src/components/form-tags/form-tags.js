@@ -6,7 +6,7 @@ import identity from '../../utils/identity'
 import looseEqual from '../../utils/loose-equal'
 import { arrayIncludes, concat } from '../../utils/array'
 import { getComponentConfig } from '../../utils/config'
-import { matches, requestAF, select } from '../../utils/dom'
+import { attemptBlur, attemptFocus, matches, requestAF, select } from '../../utils/dom'
 import { isEvent, isFunction, isString } from '../../utils/inspect'
 import { escapeRegExp, toString, trim, trimLeft } from '../../utils/string'
 import idMixin from '../../mixins/id'
@@ -65,8 +65,8 @@ export const BFormTags = /*#__PURE__*/ Vue.extend({
   },
   props: {
     inputId: {
-      type: String,
-      default: null
+      type: String
+      // default: null
     },
     placeholder: {
       type: String,
@@ -77,12 +77,12 @@ export const BFormTags = /*#__PURE__*/ Vue.extend({
       default: false
     },
     name: {
-      type: String,
-      default: null
+      type: String
+      // default: null
     },
     form: {
-      type: String,
-      default: null
+      type: String
+      // default: null
     },
     autofocus: {
       type: Boolean,
@@ -94,8 +94,8 @@ export const BFormTags = /*#__PURE__*/ Vue.extend({
       default: null
     },
     size: {
-      type: String,
-      default: null
+      type: String
+      // default: null
     },
     inputType: {
       type: String,
@@ -103,8 +103,8 @@ export const BFormTags = /*#__PURE__*/ Vue.extend({
       validator: type => arrayIncludes(TYPES, type)
     },
     inputClass: {
-      type: [String, Array, Object],
-      default: null
+      type: [String, Array, Object]
+      // default: null
     },
     inputAttrs: {
       // Additional attributes to add to the input element
@@ -124,8 +124,8 @@ export const BFormTags = /*#__PURE__*/ Vue.extend({
       default: () => getComponentConfig(NAME, 'tagVariant')
     },
     tagClass: {
-      type: [String, Array, Object],
-      default: null
+      type: [String, Array, Object]
+      // default: null
     },
     tagPills: {
       type: Boolean,
@@ -140,8 +140,8 @@ export const BFormTags = /*#__PURE__*/ Vue.extend({
       default: () => getComponentConfig(NAME, 'tagRemovedLabel')
     },
     tagValidator: {
-      type: Function,
-      default: null
+      type: Function
+      // default: null
     },
     duplicateTagText: {
       type: String,
@@ -153,8 +153,8 @@ export const BFormTags = /*#__PURE__*/ Vue.extend({
     },
     separator: {
       // Character (or characters) that trigger adding tags
-      type: [String, Array],
-      default: null
+      type: [String, Array]
+      // default: null
     },
     removeOnDelete: {
       // Enable deleting last tag in list when BACKSPACE is
@@ -298,6 +298,7 @@ export const BFormTags = /*#__PURE__*/ Vue.extend({
   mounted() {
     this.handleAutofocus()
   },
+  /* istanbul ignore next */
   activated() /* istanbul ignore next */ {
     this.handleAutofocus()
   },
@@ -439,15 +440,13 @@ export const BFormTags = /*#__PURE__*/ Vue.extend({
     // --- Public methods ---
     focus() {
       if (!this.disabled) {
-        try {
-          this.getInput().focus()
-        } catch {}
+        attemptFocus(this.getInput())
       }
     },
     blur() {
-      try {
-        this.getInput().blur()
-      } catch {}
+      if (!this.disabled) {
+        attemptBlur(this.getInput())
+      }
     },
     // --- Private methods ---
     splitTags(newTag) {

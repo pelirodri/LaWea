@@ -145,7 +145,7 @@ open class LaWeáInterpreter {
                     }
                     
                     if commandName.count == 7 {
-                        let subMessage = "¿Voh creís q yo soy weón, CTM? Te gustan largos, parece (línea: "
+                        let subMessage = "¿Voh creís que yo soy weón, CTM? Te gustan largos, parece (línea: "
                         exitInterpreter(with: "\(subMessage)\(line), columna: \(col - commandName.count))")
                     }
                     

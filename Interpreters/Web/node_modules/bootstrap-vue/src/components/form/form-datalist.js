@@ -1,7 +1,7 @@
 import Vue from '../../utils/vue'
+import { htmlOrText } from '../../utils/html'
 import formOptionsMixin from '../../mixins/form-options'
 import normalizeSlotMixin from '../../mixins/normalize-slot'
-import { htmlOrText } from '../../utils/html'
 
 // @vue/component
 export const BFormDatalist = /*#__PURE__*/ Vue.extend({
@@ -10,18 +10,20 @@ export const BFormDatalist = /*#__PURE__*/ Vue.extend({
   props: {
     id: {
       type: String,
-      default: null,
       required: true
     }
   },
   render(h) {
-    const options = this.formOptions.map((option, index) => {
+    const $options = this.formOptions.map((option, index) => {
+      const { value, text, html, disabled } = option
+
       return h('option', {
-        key: `option_${index}_opt`,
-        attrs: { disabled: option.disabled },
-        domProps: { ...htmlOrText(option.html, option.text), value: option.value }
+        attrs: { value, disabled },
+        domProps: htmlOrText(html, text),
+        key: `option_${index}`
       })
     })
-    return h('datalist', { attrs: { id: this.id } }, [options, this.normalizeSlot('default')])
+
+    return h('datalist', { attrs: { id: this.id } }, [$options, this.normalizeSlot('default')])
   }
 })

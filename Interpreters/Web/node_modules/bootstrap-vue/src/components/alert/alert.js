@@ -14,7 +14,7 @@ const parseCountDown = show => {
   if (show === '' || isBoolean(show)) {
     return 0
   }
-  show = toInteger(show)
+  show = toInteger(show, 0)
   return show > 0 ? show : 0
 }
 
@@ -23,7 +23,7 @@ const parseShow = show => {
   if (show === '' || show === true) {
     return true
   }
-  if (toInteger(show) < 1) {
+  if (toInteger(show, 0) < 1) {
     // Boolean will always return false for the above comparison
     return false
   }
@@ -65,8 +65,8 @@ export const BAlert = /*#__PURE__*/ Vue.extend({
   },
   data() {
     return {
-      countDownTimerId: null,
       countDown: 0,
+      countDownTimeout: null,
       // If initially shown, we need to set these for SSR
       localShow: parseShow(this.show)
     }
@@ -77,7 +77,7 @@ export const BAlert = /*#__PURE__*/ Vue.extend({
       this.localShow = parseShow(newVal)
     },
     countDown(newVal) {
-      this.clearTimer()
+      this.clearCountDownInterval()
       if (isNumericLike(this.show)) {
         // Ignore if this.show transitions to a boolean value.
         this.$emit('dismiss-count-down', newVal)
@@ -87,7 +87,7 @@ export const BAlert = /*#__PURE__*/ Vue.extend({
         }
         if (newVal > 0) {
           this.localShow = true
-          this.countDownTimerId = setTimeout(() => {
+          this.countDownTimeout = setTimeout(() => {
             this.countDown--
           }, 1000)
         } else {
@@ -120,18 +120,18 @@ export const BAlert = /*#__PURE__*/ Vue.extend({
     this.localShow = parseShow(this.show)
   },
   beforeDestroy() {
-    this.clearTimer()
+    this.clearCountDownInterval()
   },
   methods: {
     dismiss() {
-      this.clearTimer()
+      this.clearCountDownInterval()
       this.countDown = 0
       this.localShow = false
     },
-    clearTimer() {
-      if (this.countDownTimerId) {
-        clearInterval(this.countDownTimerId)
-        this.countDownTimerId = null
+    clearCountDownInterval() {
+      if (this.countDownTimeout) {
+        clearTimeout(this.countDownTimeout)
+        this.countDownTimeout = null
       }
     }
   },

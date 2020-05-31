@@ -1,26 +1,27 @@
-import { mount, createWrapper, createLocalVue as CreateLocalVue } from '@vue/test-utils'
-import { waitNT, waitRAF } from '../../../../tests/utils'
+import { config as vtuConfig, createLocalVue, createWrapper, mount } from '@vue/test-utils'
+import { createContainer, waitNT, waitRAF } from '../../../../tests/utils'
+import { TransitionStub } from '../../../../tests/components'
 import { ModalPlugin } from '../index'
 
+// Stub `<transition>` component
+vtuConfig.stubs.transition = TransitionStub
+
+const localVue = createLocalVue()
+localVue.use(ModalPlugin)
+
 describe('$bvModal', () => {
-  const localVue = new CreateLocalVue()
-
-  beforeAll(() => {
-    localVue.use(ModalPlugin)
-  })
-
   it('$bvModal.show() and $bvModal.hide() works', async () => {
-    const App = localVue.extend({
+    const App = {
       render(h) {
         return h('b-modal', { props: { static: true, id: 'test1' } }, 'content')
       }
-    })
+    }
     const wrapper = mount(App, {
-      attachToDocument: true,
-      localVue: localVue
+      attachTo: createContainer(),
+      localVue
     })
 
-    expect(wrapper.isVueInstance()).toBe(true)
+    expect(wrapper.vm).toBeDefined()
 
     await waitNT(wrapper.vm)
     await waitRAF()
@@ -58,17 +59,17 @@ describe('$bvModal', () => {
   })
 
   it('$bvModal.msgBoxOk() works', async () => {
-    const App = localVue.extend({
+    const App = {
       render(h) {
         return h('div', 'app')
       }
-    })
+    }
     const wrapper = mount(App, {
-      attachToDocument: true,
-      localVue: localVue
+      attachTo: createContainer(),
+      localVue
     })
 
-    expect(wrapper.isVueInstance()).toBe(true)
+    expect(wrapper.vm).toBeDefined()
 
     // `$bvModal.msgBoxOk`
     expect(wrapper.vm.$bvModal).toBeDefined()
@@ -96,13 +97,13 @@ describe('$bvModal', () => {
     expect(modal).toBeDefined()
     expect(modal).not.toEqual(null)
     const $modal = createWrapper(modal)
-    expect($modal.is('div')).toBe(true)
+    expect($modal.element.tagName).toBe('DIV')
 
     // Find the OK button and click it
     expect($modal.findAll('button').length).toBe(1)
     const $button = $modal.find('button')
     expect($button.text()).toEqual('OK')
-    $button.trigger('click')
+    await $button.trigger('click')
 
     // Promise should now resolve
     const result = await p
@@ -120,17 +121,17 @@ describe('$bvModal', () => {
   })
 
   it('$bvModal.msgBoxConfirm() works', async () => {
-    const App = localVue.extend({
+    const App = {
       render(h) {
         return h('div', 'app')
       }
-    })
+    }
     const wrapper = mount(App, {
-      attachToDocument: true,
-      localVue: localVue
+      attachTo: createContainer(),
+      localVue
     })
 
-    expect(wrapper.isVueInstance()).toBe(true)
+    expect(wrapper.vm).toBeDefined()
 
     // `$bvModal.msgBoxConfirm`
     expect(wrapper.vm.$bvModal).toBeDefined()
@@ -158,14 +159,14 @@ describe('$bvModal', () => {
     expect(modal).toBeDefined()
     expect(modal).not.toEqual(null)
     const $modal = createWrapper(modal)
-    expect($modal.is('div')).toBe(true)
+    expect($modal.element.tagName).toBe('DIV')
 
     // Find the CANCEL button and click it
     expect($modal.findAll('button').length).toBe(2)
     const $buttons = $modal.findAll('button')
     expect($buttons.at(0).text()).toEqual('Cancel')
     expect($buttons.at(1).text()).toEqual('OK')
-    $buttons.at(0).trigger('click')
+    await $buttons.at(0).trigger('click')
 
     // Promise should now resolve
     const result = await p

@@ -1,5 +1,5 @@
 import { mount } from '@vue/test-utils'
-import { waitNT, waitRAF } from '../../../tests/utils'
+import { createContainer, waitNT, waitRAF } from '../../../tests/utils'
 import { BOverlay } from './overlay'
 
 describe('overlay', () => {
@@ -10,13 +10,13 @@ describe('overlay', () => {
       }
     })
 
-    expect(wrapper.isVueInstance()).toBe(true)
+    expect(wrapper.vm).toBeDefined()
     await waitNT(wrapper.vm)
     await waitRAF()
     await waitNT(wrapper.vm)
     await waitRAF()
 
-    expect(wrapper.is('div')).toBe(true)
+    expect(wrapper.element.tagName).toBe('DIV')
     expect(wrapper.classes()).toContain('b-overlay-wrap')
     expect(wrapper.classes()).toContain('position-relative')
     expect(wrapper.attributes('aria-busy')).not.toBe('true')
@@ -37,13 +37,13 @@ describe('overlay', () => {
       }
     })
 
-    expect(wrapper.isVueInstance()).toBe(true)
+    expect(wrapper.vm).toBeDefined()
     await waitNT(wrapper.vm)
     await waitRAF()
     await waitNT(wrapper.vm)
     await waitRAF()
 
-    expect(wrapper.is('div')).toBe(true)
+    expect(wrapper.element.tagName).toBe('DIV')
     expect(wrapper.classes()).toContain('b-overlay-wrap')
     expect(wrapper.classes()).toContain('position-relative')
     expect(wrapper.attributes('aria-busy')).toBe('true')
@@ -74,12 +74,7 @@ describe('overlay', () => {
 
   it('responds to changes in the `show` prop', async () => {
     const wrapper = mount(BOverlay, {
-      attachToDocument: true,
-      stubs: {
-        // Disable the use of transitionStub fake transition
-        // as it doesn't run transition hooks
-        transition: false
-      },
+      attachTo: createContainer(),
       propsData: {
         show: false
       },
@@ -88,13 +83,13 @@ describe('overlay', () => {
       }
     })
 
-    expect(wrapper.isVueInstance()).toBe(true)
+    expect(wrapper.vm).toBeDefined()
     await waitNT(wrapper.vm)
     await waitRAF()
     await waitNT(wrapper.vm)
     await waitRAF()
 
-    expect(wrapper.is('div')).toBe(true)
+    expect(wrapper.element.tagName).toBe('DIV')
     expect(wrapper.classes()).toContain('b-overlay-wrap')
     expect(wrapper.classes()).toContain('position-relative')
     expect(wrapper.attributes('aria-busy')).not.toBe('true')
@@ -105,7 +100,7 @@ describe('overlay', () => {
     expect(wrapper.emitted('shown')).toBeUndefined()
     expect(wrapper.emitted('hidden')).toBeUndefined()
 
-    wrapper.setProps({
+    await wrapper.setProps({
       show: true
     })
     await waitNT(wrapper.vm)
@@ -113,7 +108,7 @@ describe('overlay', () => {
     await waitNT(wrapper.vm)
     await waitRAF()
 
-    expect(wrapper.is('div')).toBe(true)
+    expect(wrapper.element.tagName).toBe('DIV')
     expect(wrapper.classes()).toContain('b-overlay-wrap')
     expect(wrapper.classes()).toContain('position-relative')
     expect(wrapper.attributes('aria-busy')).toBe('true')
@@ -125,7 +120,7 @@ describe('overlay', () => {
     expect(wrapper.emitted('hidden')).toBeUndefined()
     expect(wrapper.emitted('shown').length).toBe(1)
 
-    wrapper.setProps({
+    await wrapper.setProps({
       show: false
     })
     await waitNT(wrapper.vm)
@@ -133,7 +128,7 @@ describe('overlay', () => {
     await waitNT(wrapper.vm)
     await waitRAF()
 
-    expect(wrapper.is('div')).toBe(true)
+    expect(wrapper.element.tagName).toBe('DIV')
     expect(wrapper.classes()).toContain('b-overlay-wrap')
     expect(wrapper.classes()).toContain('position-relative')
     expect(wrapper.attributes('aria-busy')).not.toBe('true')
@@ -145,7 +140,7 @@ describe('overlay', () => {
     expect(wrapper.emitted('shown').length).toBe(1)
     expect(wrapper.emitted('hidden').length).toBe(1)
 
-    wrapper.setProps({
+    await wrapper.setProps({
       show: true
     })
     await waitNT(wrapper.vm)
@@ -156,7 +151,7 @@ describe('overlay', () => {
     expect(wrapper.emitted('shown').length).toBe(2)
     expect(wrapper.emitted('hidden').length).toBe(1)
 
-    wrapper.setProps({
+    await wrapper.setProps({
       show: false
     })
     await waitNT(wrapper.vm)
@@ -170,6 +165,39 @@ describe('overlay', () => {
     wrapper.destroy()
   })
 
+  it('emits event when overlay clicked', async () => {
+    const wrapper = mount(BOverlay, {
+      propsData: {
+        show: true
+      },
+      slots: {
+        default: '<span>foobar</span>'
+      }
+    })
+
+    expect(wrapper.vm).toBeDefined()
+    await waitNT(wrapper.vm)
+    await waitRAF()
+    await waitNT(wrapper.vm)
+    await waitRAF()
+
+    expect(wrapper.element.tagName).toBe('DIV')
+    expect(wrapper.classes()).toContain('b-overlay-wrap')
+
+    const $overlay = wrapper.find('.b-overlay')
+    expect($overlay.exists()).toBe(true)
+
+    expect(wrapper.emitted('click')).not.toBeDefined()
+
+    await $overlay.trigger('click')
+    expect(wrapper.emitted('click')).toBeDefined()
+    expect(wrapper.emitted('click').length).toBe(1)
+    expect(wrapper.emitted('click')[0][0]).toBeInstanceOf(Event)
+    expect(wrapper.emitted('click')[0][0].type).toEqual('click')
+
+    wrapper.destroy()
+  })
+
   it('has expected default structure when `no-wrap` is set', async () => {
     const wrapper = mount(BOverlay, {
       propsData: {
@@ -177,13 +205,13 @@ describe('overlay', () => {
       }
     })
 
-    expect(wrapper.isVueInstance()).toBe(true)
+    expect(wrapper.vm).toBeDefined()
     await waitNT(wrapper.vm)
     await waitRAF()
     await waitNT(wrapper.vm)
     await waitRAF()
 
-    expect(wrapper.is('div')).toBe(undefined)
+    expect(wrapper.find('div').exists()).toBe(false)
 
     wrapper.destroy()
   })
@@ -196,13 +224,13 @@ describe('overlay', () => {
       }
     })
 
-    expect(wrapper.isVueInstance()).toBe(true)
+    expect(wrapper.vm).toBeDefined()
     await waitNT(wrapper.vm)
     await waitRAF()
     await waitNT(wrapper.vm)
     await waitRAF()
 
-    expect(wrapper.is('div')).toBe(true)
+    expect(wrapper.element.tagName).toBe('DIV')
     expect(wrapper.classes()).toContain('b-overlay')
     expect(wrapper.classes()).toContain('position-absolute')
     expect(wrapper.classes()).not.toContain('b-overlay-wrap')

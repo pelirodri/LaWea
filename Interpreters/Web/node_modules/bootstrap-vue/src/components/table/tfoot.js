@@ -1,17 +1,23 @@
 import Vue from '../../utils/vue'
+import attrsMixin from '../../mixins/attrs'
+import listenersMixin from '../../mixins/listeners'
 import normalizeSlotMixin from '../../mixins/normalize-slot'
 
 export const props = {
   footVariant: {
-    type: String, // supported values: 'lite', 'dark', or null
+    type: String, // Supported values: 'lite', 'dark', or null
     default: null
   }
 }
 
+// TODO:
+//   In Bootstrap v5, we won't need "sniffing" as table element variants properly inherit
+//   to the child elements, so this can be converted to a functional component
 // @vue/component
 export const BTfoot = /*#__PURE__*/ Vue.extend({
   name: 'BTfoot',
-  mixins: [normalizeSlotMixin],
+  // Mixin order is important!
+  mixins: [attrsMixin, listenersMixin, normalizeSlotMixin],
   inheritAttrs: false,
   provide() {
     return {
@@ -21,6 +27,7 @@ export const BTfoot = /*#__PURE__*/ Vue.extend({
   inject: {
     bvTable: {
       // Sniffed by <b-tr> / <b-td> / <b-th>
+      /* istanbul ignore next */
       default() /* istanbul ignore next */ {
         return {}
       }
@@ -32,7 +39,7 @@ export const BTfoot = /*#__PURE__*/ Vue.extend({
       // Sniffed by <b-tr> / <b-td> / <b-th>
       return true
     },
-    isDark() /* istanbul ignore next: Not currently sniffed in tests */ {
+    isDark() {
       // Sniffed by <b-tr> / <b-td> / <b-th>
       return this.bvTable.dark
     },
@@ -55,7 +62,7 @@ export const BTfoot = /*#__PURE__*/ Vue.extend({
       // background color inheritance with Bootstrap v4 table CSS
       return !this.isStacked && this.bvTable.stickyHeader
     },
-    tableVariant() /* istanbul ignore next: Not currently sniffed in tests */ {
+    tableVariant() {
       // Sniffed by <b-tr> / <b-td> / <b-th>
       return this.bvTable.tableVariant
     },
@@ -63,7 +70,7 @@ export const BTfoot = /*#__PURE__*/ Vue.extend({
       return [this.footVariant ? `thead-${this.footVariant}` : null]
     },
     tfootAttrs() {
-      return { role: 'rowgroup', ...this.$attrs }
+      return { role: 'rowgroup', ...this.bvAttrs }
     }
   },
   render(h) {
@@ -73,7 +80,7 @@ export const BTfoot = /*#__PURE__*/ Vue.extend({
         class: this.tfootClasses,
         attrs: this.tfootAttrs,
         // Pass down any native listeners
-        on: this.$listeners
+        on: this.bvListeners
       },
       this.normalizeSlot('default')
     )

@@ -1,33 +1,36 @@
-import Vue from '../../utils/vue'
 import { mergeData } from 'vue-functional-data-merge'
-
-import prefixPropName from '../../utils/prefix-prop-name'
-import copyProps from '../../utils/copy-props'
+import Vue from '../../utils/vue'
 import { htmlOrText } from '../../utils/html'
+import { copyProps, prefixPropName } from '../../utils/props'
 import cardMixin from '../../mixins/card'
+
+// --- Props ---
 
 export const props = {
   ...copyProps(cardMixin.props, prefixPropName.bind(null, 'footer')),
   footer: {
-    type: String,
-    default: null
+    type: String
+    // default: null
   },
   footerHtml: {
-    type: String,
-    default: null
+    type: String
+    // default: null
   },
   footerClass: {
-    type: [String, Object, Array],
-    default: null
+    type: [String, Object, Array]
+    // default: null
   }
 }
 
+// --- Main component ---
 // @vue/component
 export const BCardFooter = /*#__PURE__*/ Vue.extend({
   name: 'BCardFooter',
   functional: true,
   props,
   render(h, { props, data, children }) {
+    const { footerBgVariant, footerBorderVariant, footerTextVariant } = props
+
     return h(
       props.footerTag,
       mergeData(data, {
@@ -35,13 +38,14 @@ export const BCardFooter = /*#__PURE__*/ Vue.extend({
         class: [
           props.footerClass,
           {
-            [`bg-${props.footerBgVariant}`]: props.footerBgVariant,
-            [`border-${props.footerBorderVariant}`]: props.footerBorderVariant,
-            [`text-${props.footerTextVariant}`]: props.footerTextVariant
+            [`bg-${footerBgVariant}`]: footerBgVariant,
+            [`border-${footerBorderVariant}`]: footerBorderVariant,
+            [`text-${footerTextVariant}`]: footerTextVariant
           }
-        ]
+        ],
+        domProps: children ? {} : htmlOrText(props.footerHtml, props.footer)
       }),
-      children || [h('div', { domProps: htmlOrText(props.footerHtml, props.footer) })]
+      children
     )
   }
 })

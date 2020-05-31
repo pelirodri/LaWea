@@ -1,5 +1,5 @@
-import { mount, createLocalVue as CreateLocalVue } from '@vue/test-utils'
-import { waitNT, waitRAF } from '../../../tests/utils'
+import { mount } from '@vue/test-utils'
+import { createContainer, waitNT, waitRAF } from '../../../tests/utils'
 import { VBPopover } from './popover'
 import { BVPopover } from '../../components/popover/helpers/bv-popover'
 
@@ -23,7 +23,7 @@ describe('v-b-popover directive', () => {
         ownerDocument: document
       }
     })
-    // Mock getBCR so that the isVisible(el) test returns true
+    // Mock `getBoundingClientRect()` so that the `isVisible(el)` test returns `true`
     // Needed for visibility checks of trigger element, etc.
     Element.prototype.getBoundingClientRect = jest.fn(() => ({
       width: 24,
@@ -43,21 +43,19 @@ describe('v-b-popover directive', () => {
 
   it('should have BVPopover Vue instance', async () => {
     jest.useFakeTimers()
-    const localVue = new CreateLocalVue()
 
-    const App = localVue.extend({
+    const App = {
       directives: {
         bPopover: VBPopover
       },
       template: `<button v-b-popover="'content'" title="foobar">button</button>`
-    })
+    }
 
     const wrapper = mount(App, {
-      localVue: localVue,
-      attachToDocument: true
+      attachTo: createContainer()
     })
 
-    expect(wrapper.isVueInstance()).toBe(true)
+    expect(wrapper.vm).toBeDefined()
     await waitNT(wrapper.vm)
     await waitRAF()
     await waitNT(wrapper.vm)
@@ -68,7 +66,7 @@ describe('v-b-popover directive', () => {
     await waitNT(wrapper.vm)
     await waitRAF()
 
-    expect(wrapper.is('button')).toBe(true)
+    expect(wrapper.element.tagName).toBe('BUTTON')
     const $button = wrapper.find('button')
 
     // Should have instance of popover class on it
@@ -80,22 +78,20 @@ describe('v-b-popover directive', () => {
 
   it('should work', async () => {
     jest.useFakeTimers()
-    const localVue = new CreateLocalVue()
 
-    const App = localVue.extend({
+    const App = {
       directives: {
         bPopover: VBPopover
       },
       template: `<button v-b-popover.click.html="'content'" title="<b>foobar</b>">button</button>`
-    })
+    }
 
     const wrapper = mount(App, {
-      localVue: localVue,
-      attachToDocument: true
+      attachTo: createContainer()
     })
 
-    expect(wrapper.isVueInstance()).toBe(true)
-    expect(wrapper.is('button')).toBe(true)
+    expect(wrapper.vm).toBeDefined()
+    expect(wrapper.element.tagName).toBe('BUTTON')
     const $button = wrapper.find('button')
     await waitNT(wrapper.vm)
     await waitRAF()
@@ -114,12 +110,8 @@ describe('v-b-popover directive', () => {
     expect($button.attributes('aria-describedby')).not.toBeDefined()
 
     // Trigger click
-    $button.trigger('click')
-    await waitNT(wrapper.vm)
+    await $button.trigger('click')
     await waitRAF()
-    await waitNT(wrapper.vm)
-    await waitRAF()
-    await waitNT(wrapper.vm)
     await waitRAF()
     jest.runOnlyPendingTimers()
     await waitNT(wrapper.vm)
