@@ -313,8 +313,8 @@ void run_commands(const command_t *commands, size_t commands_count) {
                             utf16_buffer[1] = (tmp_char & 0x3FF) + 0xDC00;
                         }
 
-                        short utf16_len = cells[cur_cell] < 0x10000 ? 1 : 2;
-                        WriteConsoleW(GetStdHandle(STD_OUTPUT_HANDLE), utf16_buffer, utf16_len, NULL, NULL);
+                        short utf16_buffer_len = cells[cur_cell] < 0x10000 ? 1 : 2;
+                        WriteConsoleW(GetStdHandle(STD_OUTPUT_HANDLE), utf16_buffer, utf16_buffer_len, NULL, NULL);
                     #endif
                 } else {
                     printf("%s", "\uFFFD");
@@ -346,16 +346,16 @@ void run_commands(const command_t *commands, size_t commands_count) {
                 #else
                     wmemset(utf16_buffer, L'\0', 4);
 
-                    ULONG read_characters_count;
-                    ReadConsoleW(GetStdHandle(STD_INPUT_HANDLE), utf16_buffer, 5, &read_characters_count, NULL);
+                    ULONG read_char_count;
+                    ReadConsoleW(GetStdHandle(STD_INPUT_HANDLE), utf16_buffer, 5, &read_char_count, NULL);
 
                     if (utf16_buffer[wcslen(utf16_buffer) - 1] != L'\n') {
                         while (getchar() != '\n') {}
                         cells[cur_cell] = U'\0';
                     } else {
-                        if (read_characters_count == 3) {
+                        if (read_char_count == 3) {
                             cells[cur_cell] = utf16_buffer[0];
-                        } else if (read_characters_count == 4) {
+                        } else if (read_char_count == 4) {
                             utf16_buffer[0] = (utf16_buffer[0] - 0xD800) * 0x400;
                             utf16_buffer[1] -= 0xDC00;
 
@@ -422,8 +422,16 @@ void exit_interpreter(const char *err_msg) {
         #else
             LPWSTR utf16_buffer[(utf8_strlen((const uint_least8_t *)err_msg) + 1)];
 
-            short utf16_len = MultiByteToWideChar(CP_UTF8, 0, err_msg, strlen(err_msg), utf16_buffer, sizeof(utf16_buffer));
-            utf16_buffer[utf16_len] = L'\n';
+            short utf16_buffer_len = MultiByteToWideChar(
+                CP_UTF8,
+                0,
+                err_msg,
+                strlen(err_msg),
+                utf16_buffer,
+                sizeof(utf16_buffer)
+            );
+
+            utf16_buffer[utf16_buffer_len] = L'\n';
 
             HANDLE error_handle = GetStdHandle(STD_ERROR_HANDLE);
 
@@ -433,7 +441,7 @@ void exit_interpreter(const char *err_msg) {
             WORD saved_attributes = console_info.wAttributes;
 
             SetConsoleTextAttribute(error_handle, FOREGROUND_INTENSITY | FOREGROUND_RED);
-            WriteConsoleW(error_handle, utf16_buffer, utf16_len + 1, NULL, NULL);
+            WriteConsoleW(error_handle, utf16_buffer, utf16_buffer_len + 1, NULL, NULL);
             SetConsoleTextAttribute(error_handle, saved_attributes);
         #endif
     }
@@ -451,7 +459,7 @@ uint_least32_t *get_code(const char *file_path) {
         #if !defined(_WIN64)
             fd = open(file_path, O_RDONLY);
         #else
-            errno = _sopen_s(&fd, file_path, _O_RDONLY, _SH_DENYWR, 0);
+            errno = _sopen_s(&fd, file_path, _O_BINARY | _O_RDONLY, _SH_DENYWR, _S_IREAD);
         #endif
 
         if (fd == -1) {
@@ -498,7 +506,7 @@ uint_least32_t *get_code(const char *file_path) {
         _read(fd, utf8_code, utf8_code_len);
         _close(fd);
     #else
-        fread(utf8_code, sizeof(char), utf8_code_len + 1, fp);
+        fread(utf8_code, sizeof(char), utf8_code_len, fp);
         fclose(fp);
     #endif
 
@@ -513,7 +521,7 @@ uint_least32_t *get_code(const char *file_path) {
 }
 
 void file_not_found_exit() {
-    char msg[26];
+    char msg[27];
 
     if (errno == ENOENT) {
         char src[] = "No existe la weá, poh, wn";
@@ -521,7 +529,7 @@ void file_not_found_exit() {
         #if !defined(_WIN64)
             strcpy(msg, src);
         #else
-            strcpy_s(msg, 26, src);
+            strcpy_s(msg, 27, src);
         #endif
     }
 

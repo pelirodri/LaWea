@@ -143,7 +143,7 @@ void la_weá_interpreter::run_commands(const std::vector<command_t> &commands) {
 	std::string char_input;
 
 	#if defined(_WIN64)
-		LPWSTR utf16_buffer[5];
+		WCHAR utf16_buffer[5];
 	#endif
 
 	for (long long i = 0; i < commands.size(); i++) {
@@ -210,8 +210,8 @@ void la_weá_interpreter::run_commands(const std::vector<command_t> &commands) {
 	                        utf16_buffer[1] = (tmp_char & 0x3FF) + 0xDC00;
 	                    }
 
-	                    short utf16_len = cells[cur_cell] < 0x10000 ? 1 : 2;
-	                    WriteConsoleW(GetStdHandle(STD_OUTPUT_HANDLE), utf16_buffer, utf16_len, NULL, NULL);
+	                    short utf16_buffer_len = cells[cur_cell] < 0x10000 ? 1 : 2;
+	                    WriteConsoleW(GetStdHandle(STD_OUTPUT_HANDLE), utf16_buffer, utf16_buffer_len, NULL, NULL);
 					#endif
 				} else {
 					std::cout << "\uFFFD";
@@ -231,16 +231,16 @@ void la_weá_interpreter::run_commands(const std::vector<command_t> &commands) {
 				#else
 					wmemset(utf16_buffer, L'\0', 5);
 
-                    ULONG r;
-                    ReadConsoleW(GetStdHandle(STD_INPUT_HANDLE), utf16_buffer, 4, &r, NULL);
+                    ULONG read_char_count;
+                    ReadConsoleW(GetStdHandle(STD_INPUT_HANDLE), utf16_buffer, 4, &read_char_count, NULL);
 
                     if (utf16_buffer[wcslen(utf16_buffer) - 1] != L'\n') {
                         while (getchar() != '\n') {}
                         cells[cur_cell] = U'\0';
                     } else {
-                        if (r == 3) {
+                        if (read_char_count == 3) {
                             cells[cur_cell] = utf16_buffer[0];
-                        } else if (r == 4) {
+                        } else if (read_char_count == 4) {
                             utf16_buffer[0] = (utf16_buffer[0] - 0xD800) * 0x400;
                             utf16_buffer[1] -= 0xDC00;
 
@@ -296,9 +296,9 @@ void la_weá_interpreter::exit_interpreter(const std::string &err_msg) {
 		#if !defined(_WIN64)
 			std::cerr << "\x1b[1;31m" << err_msg << "\x1b[0m\n";
 		#else
-			LPWSTR utf16_buffer[err_msg.length() + 1];
+			WCHAR utf16_buffer[err_msg.length() + 1];
 
-            short utf16_len = MultiByteToWideChar(
+            short utf16_buffer_len = MultiByteToWideChar(
             	CP_UTF8,
             	0,
             	err_msg.c_str(),
@@ -307,7 +307,7 @@ void la_weá_interpreter::exit_interpreter(const std::string &err_msg) {
             	sizeof(utf16_buffer)
             );
 
-            utf16_buffer[utf16_len] = L'\n';
+            utf16_buffer[utf16_buffer_len] = L'\n';
 
             HANDLE error_handle = GetStdHandle(STD_ERROR_HANDLE);
 
@@ -317,7 +317,7 @@ void la_weá_interpreter::exit_interpreter(const std::string &err_msg) {
             WORD saved_attributes = console_info.wAttributes;
 
             SetConsoleTextAttribute(error_handle, FOREGROUND_INTENSITY | FOREGROUND_RED);
-            WriteConsoleW(error_handle, utf16_buffer, utf16_len + 1, NULL, NULL);
+            WriteConsoleW(error_handle, utf16_buffer, utf16_buffer_len + 1, NULL, NULL);
             SetConsoleTextAttribute(error_handle, saved_attributes);
 		#endif
 	}
@@ -342,7 +342,11 @@ std::u32string la_weá_interpreter::get_code(const char *file_path) {
 	return cvt.from_bytes(code);
 }
 
-la_weá_interpreter::command_t la_weá_interpreter::get_command(const std::u32string &cmd_name, long long line, long long col) {
+la_weá_interpreter::command_t la_weá_interpreter::get_command(
+	const std::u32string &cmd_name,
+	long long line,
+	long long col
+) {
 	for (long long cmd = 0; cmd < command_names.size(); cmd++) {
 		if (cmd_name == command_names[cmd]) {
 			if (static_cast<command_t>(cmd) == pichula) {
