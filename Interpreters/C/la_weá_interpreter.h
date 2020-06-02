@@ -88,14 +88,14 @@ void interpret_la_weá(const char *file_path);
  * @param commands_count a pointer to store the number of commands found
  * @return The commands found
  */
-command_t *get_commands(const uint_least32_t *code, int *commands_count);
+command_t *get_commands(const uint_least32_t *code, size_t *commands_count);
 
 /**
  * Runs the code by interpreting the commands.
  * @param commands the commands to run
  * @param commands_count the number of commands to run
  */
-void run_commands(const command_t *commands, int commands_count);
+void run_commands(const command_t *commands, size_t commands_count);
 
 /**
  * A utility function that prints an error message and exits the program abnormally.

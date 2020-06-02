@@ -103,16 +103,16 @@ class la_weá_interpreter {
 		 */
 		void exit_interpreter(const std::string &err_msg);
 	private:
-		int loop_starts_count = 0;
-		int loop_ends_count = 0;
+		long long loop_starts_count = 0;
+		long long loop_ends_count = 0;
 
 		static const std::vector<std::u32string> command_names;
 
 		std::u32string get_code(const char *);
-		command_t get_command(const std::u32string &, size_t, size_t);
+		command_t get_command(const std::u32string &, long long, long long);
 
-		int find_loop_start(const std::vector<command_t> &, int);
-		int find_loop_end(const std::vector<command_t> &, int);
+		long long find_loop_start(const std::vector<command_t> &, long long);
+		long long find_loop_end(const std::vector<command_t> &, long long);
 };
 
 #endif

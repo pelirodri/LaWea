@@ -78,7 +78,7 @@ static void run_commands_worker(char *data, int size) {
             case chucha:
                 if (!cur_cell) {
                     free(cells);
-                    exit_interpreter_worker("Te saliste pa’ la izquierda, aweonao", 36, true);
+                    exit_interpreter_worker("Te saliste pa’ la izquierda, aweonao", 39, true);
 
                     return;
                 }
@@ -129,7 +129,8 @@ static void run_commands_worker(char *data, int size) {
                 if (cells[cur_cell] >= 0x0 && cells[cur_cell] <= 0x10FFFF) {
                     memcpy(response_data + (1 + sizeof(bool)), &cells[cur_cell], sizeof(int64_t));
                 } else {
-                    memset(response_data + (1 + sizeof(bool)), '?', sizeof(char));
+                    memcpy(response_data + (1 + sizeof(bool)), L"\uFFFD", 8);
+                    memset(response_data + ((1 + sizeof(bool)) + 8), 0, sizeof(int64_t) - 8);
                 } 
 
                 emscripten_worker_respond_provisionally((char *)response_data, response_size);
@@ -200,18 +201,18 @@ static void run_commands_worker(char *data, int size) {
                     free(response_data);
 
                     if (worker_data.input_len <= 22) {
-                        uint_least8_t *utf8_char_input = utf32_str_to_utf8(worker_data.input);
+                        uint_least8_t *utf8_input = utf32_str_to_utf8(worker_data.input);
 
                         for (int j = 0; j < worker_data.input_len; j++) {
-                            if (!isdigit(utf8_char_input[j]) && !(!j && utf8_char_input[j] == '-')) {
-                                utf8_char_input[0] = '\0';
+                            if (!isdigit(utf8_input[j]) && !(!j && utf8_input[j] == '-')) {
+                                utf8_input[0] = '\0';
                                 break;
                             }
                         }
 
-                        cells[cur_cell] = strtoll((const char *)utf8_char_input, NULL, 10);
+                        cells[cur_cell] = strtoll((const char *)utf8_input, NULL, 10);
 
-                        free(utf8_char_input);
+                        free(utf8_input);
 
                         if (errno == ERANGE) {
                             cells[cur_cell] = 0;

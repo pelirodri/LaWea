@@ -183,9 +183,7 @@ open class LaWeáInterpreter {
         var cellValueCopy = 0
         
         var i = 0
-        
-        let stdout = FileHandle.standardOutput
-        
+                
         while i < commands.count {
             switch commands[i] {
             case .maricón:
@@ -222,9 +220,9 @@ open class LaWeáInterpreter {
                 i = findLoopEnd(commands: commands, i: i)
             case .ctm:
                 if let unicodeScalar = UnicodeScalar(cells[currentCell]) {
-                    stdout.write(String(unicodeScalar).data(using: .utf8)!)
+                    FileHandle.standardOutput.write(String(unicodeScalar).data(using: .utf8)!)
                 } else {
-                    stdout.write("?".data(using: .utf8)!)
+                    FileHandle.standardOutput.write("\u{FFFD}".data(using: .utf8)!)
                 }
             case .quéweá:
                 if let line = readLine(), line.count == 1 {
@@ -233,7 +231,7 @@ open class LaWeáInterpreter {
                     cells[currentCell] = 0
                 }
             case .chúpala:
-                stdout.write(String(cells[currentCell]).data(using: .utf8)!)
+                FileHandle.standardOutput.write(String(cells[currentCell]).data(using: .utf8)!)
             case .brígido:
                 if let line = readLine(), line.count > 0, let newCellValue = Int(String(line)) {
                     cells[currentCell] = newCellValue

@@ -58,10 +58,10 @@ std::vector<la_weá_interpreter::command_t> la_weá_interpreter::get_commands(co
 	std::vector<command_t> commands;
 	std::u32string cmd_name = U"";
 
-	size_t line = 1, col = 1;
+	long long line = 1, col = 1;
 	bool is_comment = false;
 
-	for (long i = 0; i <= code.length(); i++) {
+	for (long long i = 0; i <= code.length(); i++) {
 		if (i < code.length() && code[i] == U'#') {
 			is_comment = true;
 		}
@@ -135,7 +135,7 @@ void la_weá_interpreter::run_commands(const std::vector<command_t> &commands) {
 	std::cout.setf(std::ios::unitbuf);
 
 	std::vector<int64_t> cells (8);
-	int cur_cell = 0;
+	long long cur_cell = 0;
 
 	bool copy_set = false;
 	int64_t cell_value_copy;
@@ -143,10 +143,10 @@ void la_weá_interpreter::run_commands(const std::vector<command_t> &commands) {
 	std::string char_input;
 
 	#if defined(_WIN64)
-		WCHAR utf16_buffer[5];
+		LPWSTR utf16_buffer[5];
 	#endif
 
-	for (int i = 0; i < commands.size(); i++) {
+	for (long long i = 0; i < commands.size(); i++) {
 		switch (commands[i]) {
 			case maricón:
 				cells[cur_cell]--;
@@ -210,11 +210,11 @@ void la_weá_interpreter::run_commands(const std::vector<command_t> &commands) {
 	                        utf16_buffer[1] = (tmp_char & 0x3FF) + 0xDC00;
 	                    }
 
-	                    INT utf16_len = cells[cur_cell] < 0x10000 ? 1 : 2;
+	                    short utf16_len = cells[cur_cell] < 0x10000 ? 1 : 2;
 	                    WriteConsoleW(GetStdHandle(STD_OUTPUT_HANDLE), utf16_buffer, utf16_len, NULL, NULL);
 					#endif
 				} else {
-					putchar(cells[cur_cell]);
+					std::cout << "\uFFFD";
 				}
 
 				break;
@@ -258,7 +258,7 @@ void la_weá_interpreter::run_commands(const std::vector<command_t> &commands) {
 			case brígido:
 				std::getline(std::cin, (char_input = u8""));
 
-                for (int j = 0; j < char_input.length(); j++) {
+                for (short j = 0; j < char_input.length(); j++) {
                     if (!std::isdigit(char_input[j]) && !(!j && char_input[j] == '-')) {
                         char_input.clear();
                         break;
@@ -296,9 +296,9 @@ void la_weá_interpreter::exit_interpreter(const std::string &err_msg) {
 		#if !defined(_WIN64)
 			std::cerr << "\x1b[1;31m" << err_msg << "\x1b[0m\n";
 		#else
-			WCHAR utf16_buffer[err_msg.length() + 1];
+			LPWSTR utf16_buffer[err_msg.length() + 1];
 
-            INT utf16_len = MultiByteToWideChar(
+            short utf16_len = MultiByteToWideChar(
             	CP_UTF8,
             	0,
             	err_msg.c_str(),
@@ -342,8 +342,8 @@ std::u32string la_weá_interpreter::get_code(const char *file_path) {
 	return cvt.from_bytes(code);
 }
 
-la_weá_interpreter::command_t la_weá_interpreter::get_command(const std::u32string &cmd_name, size_t line, size_t col) {
-	for (int cmd = 0; cmd < command_names.size(); cmd++) {
+la_weá_interpreter::command_t la_weá_interpreter::get_command(const std::u32string &cmd_name, long long line, long long col) {
+	for (long long cmd = 0; cmd < command_names.size(); cmd++) {
 		if (cmd_name == command_names[cmd]) {
 			if (static_cast<command_t>(cmd) == pichula) {
 				loop_starts_count++;
@@ -376,8 +376,8 @@ la_weá_interpreter::command_t la_weá_interpreter::get_command(const std::u32st
 	return static_cast<command_t>(-1);
 }
 
-int la_weá_interpreter::find_loop_start(const std::vector<command_t> &commands, int i) {
-	for (int j = i - 1, loop_level = 1; j >= 0; j--) {
+long long la_weá_interpreter::find_loop_start(const std::vector<command_t> &commands, long long i) {
+	for (long long j = i - 1, loop_level = 1; j >= 0; j--) {
 		if (commands[j] == tula) {
 			loop_level++;
 		} else if (commands[j] == pichula) {
@@ -392,8 +392,8 @@ int la_weá_interpreter::find_loop_start(const std::vector<command_t> &commands,
 	return -1;
 }
 
-int la_weá_interpreter::find_loop_end(const std::vector<command_t> &commands, int i) {
-	for (int j = i + 1, loop_level = 1; j < commands.size(); j++) {
+long long la_weá_interpreter::find_loop_end(const std::vector<command_t> &commands, long long i) {
+	for (long long j = i + 1, loop_level = 1; j < commands.size(); j++) {
 		if (commands[j] == pichula) {
 			loop_level++;
 		} else if (commands[j] == tula) {

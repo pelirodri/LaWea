@@ -38,7 +38,7 @@
     #endif
 #endif
 
-static int loop_starts_count = 0, loop_ends_count = 0;
+static long long loop_starts_count = 0, loop_ends_count = 0;
 
 static const uint_least32_t command_names[][8 * sizeof(uint_least32_t)] = { 
     U"maricón",
@@ -62,15 +62,15 @@ static const uint_least32_t command_names[][8 * sizeof(uint_least32_t)] = {
 static uint_least32_t *get_code(const char *);
 static void file_not_found_exit();
 
-static command_t get_command(const uint_least32_t *, size_t, size_t);
+static command_t get_command(const uint_least32_t *, long long, long long);
 
-static int find_loop_start(const command_t *, int);
-static int find_loop_end(const command_t *, int, int);
+static long long find_loop_start(const command_t *, long long);
+static long long find_loop_end(const command_t *, size_t, long long);
 
 void interpret_la_weá(const char *file_path) {
     uint_least32_t *code = get_code(file_path);
 
-    int commands_count = 0;
+    size_t commands_count = 0;
     command_t *commands = get_commands(code, &commands_count);
 
     free(code);
@@ -79,10 +79,10 @@ void interpret_la_weá(const char *file_path) {
     free(commands);
 }
 
-command_t *get_commands(const uint_least32_t *code, int *commands_count) {
+command_t *get_commands(const uint_least32_t *code, size_t *commands_count) {
     size_t code_len = utf32_strlen(code);
 
-    size_t commands_size = (size_t)(code_len / 7) * sizeof(command_t);
+    size_t commands_size = (size_t)(code_len / 3) * sizeof(command_t);
     command_t *commands = (command_t *)malloc(commands_size);
 
     if (!commands) {
@@ -91,12 +91,12 @@ command_t *get_commands(const uint_least32_t *code, int *commands_count) {
 
     uint_least32_t cmd_name[8 * sizeof(uint_least32_t)] = {'\0'};
 
-    int i = 0, j = -1;
-    size_t line = 1, col = 1;
+    long long i = 0, j = -1;
+    long long line = 1, col = 1;
 
     bool is_comment = false;
 
-    for (size_t k = 0; k <= code_len; k++) {
+    for (long long k = 0; k <= code_len; k++) {
         if (code[k] == U'#') {
             is_comment = true;
         }
@@ -108,7 +108,7 @@ command_t *get_commands(const uint_least32_t *code, int *commands_count) {
                 if ((int)cmd == -1) {
                     free(commands);
 
-                    int col_len = log10(col - utf32_strlen(cmd_name)) + 1;
+                    size_t col_len = log10(col - utf32_strlen(cmd_name)) + 1;
                     char msg[68 + (int)utf32_strlen(cmd_name) + (int)(log10(line) + 1) + col_len];
 
                     uint_least8_t *utf8_cmd_name = utf32_str_to_utf8(cmd_name);
@@ -119,7 +119,7 @@ command_t *get_commands(const uint_least32_t *code, int *commands_count) {
 
                     sprintf(
                         msg,
-                        "'%s' no es un comando válido, poh, saco de weas (línea: %zu, columna: %zu)",
+                        "'%s' no es un comando válido, poh, saco de weas (línea: %lld, columna: %lld)",
                         utf8_cmd_name,
                         line,
                         col - utf32_strlen(cmd_name)
@@ -161,7 +161,7 @@ command_t *get_commands(const uint_least32_t *code, int *commands_count) {
 
                     sprintf(
                         msg,
-                        "'%s' no es parte de La Weá, tonto qlo (línea: %zu, columna: %zu)",
+                        "'%s' no es parte de La Weá, tonto qlo (línea: %lld, columna: %lld)",
                         utf8_char,
                         line,
                         col
@@ -179,7 +179,7 @@ command_t *get_commands(const uint_least32_t *code, int *commands_count) {
 
                     sprintf(
                         msg,
-                        "¿Voh creís que yo soy weón, CTM? Te gustan largos, parece (línea: %zu, columna: %zu)",
+                        "¿Voh creís que yo soy weón, CTM? Te gustan largos, parece (línea: %lld, columna: %lld)",
                         line,
                         col - utf32_strlen(cmd_name)
                     );
@@ -211,7 +211,7 @@ command_t *get_commands(const uint_least32_t *code, int *commands_count) {
     return commands;
 }
 
-void run_commands(const command_t *commands, int commands_count) {
+void run_commands(const command_t *commands, size_t commands_count) {
     #if !defined(_WIN64)
         setbuf(stdout, NULL);
     #else
@@ -225,20 +225,20 @@ void run_commands(const command_t *commands, int commands_count) {
         exit_interpreter("");
     }
 
-    int cur_cell = 0;
+    long long cur_cell = 0;
 
     bool copy_set = false;
     int64_t cell_value_copy;
 
     #if !defined(_WIN64)
-        uint_least8_t utf8_char_input[6];
+        uint_least8_t utf8_input[6] = {'\0'};
     #else
-        WCHAR utf16_buffer[5];
+        LPWSTR utf16_buffer[5] = {L'\0'};
     #endif
 
-    char char_input[22];
+    char char_input[22] = {0};
 
-    for (int i = 0; i < commands_count; i++) {
+    for (long long i = 0; i < commands_count; i++) {
         switch (commands[i]) {
             case maricón:
                 cells[cur_cell]--;
@@ -296,17 +296,9 @@ void run_commands(const command_t *commands, int commands_count) {
                 i = find_loop_end(commands, commands_count, i);
                 break;
             case ctm:
-                if (cells[cur_cell] < 0x0 || cells[cur_cell] > 0x10FFFF) {
-                    putchar(cells[cur_cell]);
-                } else {
+                if (cells[cur_cell] >= 0 && cells[cur_cell] <= 0x10FFFF) {
                     #if !defined(_WIN64)
                         uint_least8_t *utf8_output = utf32_char_to_utf8(cells[cur_cell]);
-
-                        if (!utf8_output) {
-                            free(cells);
-                            exit_interpreter("");
-                        }
-
                         printf("%s", (const char *)utf8_output);
                         free(utf8_output);
                     #else
@@ -321,47 +313,49 @@ void run_commands(const command_t *commands, int commands_count) {
                             utf16_buffer[1] = (tmp_char & 0x3FF) + 0xDC00;
                         }
 
-                        INT utf16_len = cells[cur_cell] < 0x10000 ? 1 : 2;
+                        short utf16_len = cells[cur_cell] < 0x10000 ? 1 : 2;
                         WriteConsoleW(GetStdHandle(STD_OUTPUT_HANDLE), utf16_buffer, utf16_len, NULL, NULL);
                     #endif
+                } else {
+                    printf("%s", "\uFFFD");
                 }
 
                 break;
             case quéweá:
                 #if !defined(_WIN64)
-                    memset(utf8_char_input, '\0', 6);
+                    memset(utf8_input, '\0', 5);
 
-                    if (fgets((char *)utf8_char_input, 5, stdin)[strlen((const char *)utf8_char_input) - 1] != '\n') {
+                    if (fgets((char *)utf8_input, 6, stdin)[strlen((const char *)utf8_input) - 1] != '\n') {
                         while (getchar() != '\n') {}
                         cells[cur_cell] = U'\0';
                     } else {
-                        if (utf8_strlen(utf8_char_input) == 2) {
-                            uint_least32_t *utf32_char_input = utf8_str_to_utf32(utf8_char_input);
+                        if (utf8_strlen(utf8_input) == 2) {
+                            uint_least32_t *utf32_input = utf8_str_to_utf32(utf8_input);
 
-                            if (!utf32_char_input) {
+                            if (!utf32_input) {
                                 free(cells);
                                 exit_interpreter("");
                             }
 
-                            cells[cur_cell] = utf32_char_input[0];
-                            free(utf32_char_input);
+                            cells[cur_cell] = utf32_input[0];
+                            free(utf32_input);
                         } else {
                             cells[cur_cell] = U'\0';
                         }
                     }
                 #else
-                    wmemset(utf16_buffer, L'\0', 5);
+                    wmemset(utf16_buffer, L'\0', 4);
 
-                    ULONG r;
-                    ReadConsoleW(GetStdHandle(STD_INPUT_HANDLE), utf16_buffer, 4, &r, NULL);
+                    ULONG read_characters_count;
+                    ReadConsoleW(GetStdHandle(STD_INPUT_HANDLE), utf16_buffer, 5, &read_characters_count, NULL);
 
                     if (utf16_buffer[wcslen(utf16_buffer) - 1] != L'\n') {
                         while (getchar() != '\n') {}
                         cells[cur_cell] = U'\0';
                     } else {
-                        if (r == 3) {
+                        if (read_characters_count == 3) {
                             cells[cur_cell] = utf16_buffer[0];
-                        } else if (r == 4) {
+                        } else if (read_characters_count == 4) {
                             utf16_buffer[0] = (utf16_buffer[0] - 0xD800) * 0x400;
                             utf16_buffer[1] -= 0xDC00;
 
@@ -377,10 +371,10 @@ void run_commands(const command_t *commands, int commands_count) {
                 printf("%lld", cells[cur_cell]);
                 break;
             case brígido:
-                memset(char_input, 0, 22);
+                memset(char_input, 0, 21);
 
                 if (fgets(char_input, 22, stdin)[strlen(char_input) - 1] == '\n') {
-                    for (int j = 0; j < strlen(char_input) - 1; j++) {
+                    for (short j = 0; j < strlen(char_input) - 1; j++) {
                         if (!isdigit(char_input[j]) && !(!j && char_input[j] == '-')) {
                             char_input[0] = '\0';
                             break;
@@ -426,9 +420,9 @@ void exit_interpreter(const char *err_msg) {
         #if !defined(_WIN64)
             fprintf(stderr, "\x1b[1;31m%s\x1b[0m\n", err_msg);
         #else
-            WCHAR utf16_buffer[(utf8_strlen((const uint_least8_t *)err_msg) + 1)];
+            LPWSTR utf16_buffer[(utf8_strlen((const uint_least8_t *)err_msg) + 1)];
 
-            INT utf16_len = MultiByteToWideChar(CP_UTF8, 0, err_msg, strlen(err_msg), utf16_buffer, sizeof(utf16_buffer));
+            short utf16_len = MultiByteToWideChar(CP_UTF8, 0, err_msg, strlen(err_msg), utf16_buffer, sizeof(utf16_buffer));
             utf16_buffer[utf16_len] = L'\n';
 
             HANDLE error_handle = GetStdHandle(STD_ERROR_HANDLE);
@@ -534,10 +528,10 @@ void file_not_found_exit() {
     exit_interpreter(msg);
 }
 
-command_t get_command(const uint_least32_t *cmd_name, size_t line, size_t col) {
+command_t get_command(const uint_least32_t *cmd_name, long long line, long long col) {
     size_t command_names_len = sizeof(command_names) / sizeof(*command_names);
 
-    for (int cmd = 0; cmd < command_names_len; cmd++) {
+    for (long long cmd = 0; cmd < command_names_len; cmd++) {
         if (!utf32_strcmp(cmd_name, command_names[cmd])) {
             if ((command_t)cmd == pichula) {
                 loop_starts_count++;               
@@ -547,7 +541,7 @@ command_t get_command(const uint_least32_t *cmd_name, size_t line, size_t col) {
 
                     sprintf(
                         msg,
-                        "Se encontró una tula sin su respectiva pichula en la línea: %zu, columna: %zu",
+                        "Se encontró una tula sin su respectiva pichula en la línea: %lld, columna: %lld",
                         line,
                         col
                     );
@@ -559,7 +553,7 @@ command_t get_command(const uint_least32_t *cmd_name, size_t line, size_t col) {
             } else if ((command_t)cmd == pico) {
                 if (loop_starts_count == loop_ends_count) {
                     char msg[52 + (int)(log10(line) + 1) + (int)(log10(col) + 1)];
-                    sprintf(msg, "No debiste meter ese pico en la línea: %zu, columna: %zu", line, col);
+                    sprintf(msg, "No debiste meter ese pico en la línea: %lld, columna: %lld", line, col);
 
                     exit_interpreter(msg);
                 }
@@ -572,8 +566,8 @@ command_t get_command(const uint_least32_t *cmd_name, size_t line, size_t col) {
     return (command_t)-1;
 }
 
-int find_loop_start(const command_t *commands, int i) {
-    for (int j = i - 1, loop_level = 1; j >= 0; j--) {
+long long find_loop_start(const command_t *commands, long long i) {
+    for (long long j = i - 1, loop_level = 1; j >= 0; j--) {
         if (commands[j] == tula) {
             loop_level++;
         } else if (commands[j] == pichula) {
@@ -588,8 +582,8 @@ int find_loop_start(const command_t *commands, int i) {
     return -1;
 }
 
-int find_loop_end(const command_t *commands, int commands_count, int i) {
-    for (int j = i + 1, loop_level = 1; j < commands_count; j++) {
+long long find_loop_end(const command_t *commands, size_t commands_count, long long i) {
+    for (long long j = i + 1, loop_level = 1; j < commands_count; j++) {
         if (commands[j] == pichula) {
             loop_level++;
         } else if (commands[j] == tula) {

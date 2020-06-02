@@ -151,6 +151,8 @@ uint_least8_t *utf32_char_to_utf8(uint_least32_t utf32_char) {
 			utf8_char[j++] = 0x80 | (utf32_char & 0x3F);
 
 			break;
+		default:
+			return NULL;
 	}
 
 	utf8_char[j] = '\0';
@@ -168,8 +170,14 @@ uint_least32_t *utf8_str_to_utf32(const uint_least8_t *utf8_str) {
 	int i = 0, j = 0;
 
 	while (utf8_str[i]) {
+		size_t utf8_code_point_len = utf8_byte_utf8_code_point_len(utf8_str[i]);
+
+		if (!utf8_code_point_len) {
+			return NULL;
+		}
+
 		utf32_str[j++] = utf8_char_to_utf32(utf8_str + i);
-		i += utf8_byte_utf8_code_point_len(utf8_str[i]);
+		i += utf8_code_point_len;
 	}
 
 	utf32_str[j] = U'\0';
@@ -211,6 +219,8 @@ uint_least8_t *utf32_str_to_utf8(const uint_least32_t *utf32_str) {
 				utf8_str[j++] = utf8_char[3];
 
 				break;
+			default:
+				return NULL;
 		}
 
 		free(utf8_char);
