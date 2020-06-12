@@ -111,17 +111,17 @@ open class LaWeáInterpreter {
         
         for i in 0...code.count {
             var char: Character!
+            var spacesRange: Range<String.Index>?
             
             if i < code.count {
                 char = code[code.index(code.startIndex, offsetBy: i)]
+                spacesRange = String(char).rangeOfCharacter(from: CharacterSet.whitespacesAndNewlines)
                 
                 if char == "#" {
                     isComment = true
                 }
             }
-            
-            let spacesRange = String(char).rangeOfCharacter(from: CharacterSet.whitespacesAndNewlines)
-            
+                        
             if i == code.count || spacesRange != nil || char == "#" {
                 if !commandName.isEmpty {
                     let command = getCommand(from: commandName, line: line, col: col - commandName.count)
