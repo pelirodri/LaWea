@@ -101,7 +101,7 @@ class la_weá_interpreter {
 		 * A utility function that prints an error message and exits the program abnormally.
 		 * @param err_msg the error message to print
 		 */
-		void exit_interpreter(const std::string &err_msg);
+		void exit_interpreter(const std::u8string &err_msg);
 	private:
 		long long loop_starts_count = 0;
 		long long loop_ends_count = 0;

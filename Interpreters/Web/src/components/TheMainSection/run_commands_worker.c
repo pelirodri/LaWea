@@ -201,7 +201,7 @@ static void run_commands_worker(char *data, int size) {
                     free(response_data);
 
                     if (worker_data.input_len <= 22) {
-                        uint_least8_t *utf8_input = utf32_str_to_utf8(worker_data.input);
+                        unsigned char *utf8_input = utf32_str_to_utf8(worker_data.input);
 
                         for (int j = 0; j < worker_data.input_len; j++) {
                             if (!isdigit(utf8_input[j]) && !(!j && utf8_input[j] == '-')) {

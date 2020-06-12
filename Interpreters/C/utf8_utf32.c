@@ -19,7 +19,7 @@
 
 #include "utf8_utf32.h"
 
-size_t utf8_byte_utf8_code_point_len(uint_least8_t utf8_byte) {
+size_t utf8_byte_utf8_code_point_len(unsigned char utf8_byte) {
 	if ((utf8_byte & 0x80) == 0x0) {
 		return 1;
 	} else if ((utf8_byte & 0xE0) == 0xC0) {
@@ -47,7 +47,7 @@ size_t utf32_char_utf8_code_point_len(uint_least32_t utf32_char) {
 	}
 }
 
-size_t utf8_strlen(const uint_least8_t *utf8_str) {
+size_t utf8_strlen(const unsigned char *utf8_str) {
 	size_t str_len = 0;
 
 	for (int i = 0; utf8_str[i]; i += utf8_byte_utf8_code_point_len(utf8_str[i])) {
@@ -100,7 +100,7 @@ uint_least32_t *utf32_strchr(const uint_least32_t *str, uint_least32_t c) {
 	return (uint_least32_t *)str;
 }
 
-uint_least32_t utf8_char_to_utf32(const uint_least8_t *utf8_char) {
+uint_least32_t utf8_char_to_utf32(const unsigned char *utf8_char) {
 	switch (utf8_byte_utf8_code_point_len(utf8_char[0])) {
 		case 1:
 			return utf8_char[0]; 
@@ -119,9 +119,9 @@ uint_least32_t utf8_char_to_utf32(const uint_least8_t *utf8_char) {
 	}
 }
 
-uint_least8_t *utf32_char_to_utf8(uint_least32_t utf32_char) {
+unsigned char *utf32_char_to_utf8(uint_least32_t utf32_char) {
 	size_t code_point_len = utf32_char_utf8_code_point_len(utf32_char);
-	uint_least8_t *utf8_char = (uint_least8_t *)malloc((code_point_len + 1) * sizeof(uint_least8_t));
+	unsigned char *utf8_char = (unsigned char *)malloc((code_point_len + 1) * sizeof(unsigned char));
 
 	if (!utf8_char) {
 		return NULL;
@@ -160,7 +160,7 @@ uint_least8_t *utf32_char_to_utf8(uint_least32_t utf32_char) {
 	return utf8_char;
 }
 
-uint_least32_t *utf8_str_to_utf32(const uint_least8_t *utf8_str) {
+uint_least32_t *utf8_str_to_utf32(const unsigned char *utf8_str) {
 	uint_least32_t *utf32_str = (uint_least32_t *)malloc((utf8_strlen(utf8_str) + 1) * sizeof(uint_least32_t));
 
 	if (!utf32_str) {
@@ -185,8 +185,8 @@ uint_least32_t *utf8_str_to_utf32(const uint_least8_t *utf8_str) {
 	return utf32_str;
 }
 
-uint_least8_t *utf32_str_to_utf8(const uint_least32_t *utf32_str) {
-	uint_least8_t *utf8_str = (uint_least8_t *)malloc((utf32_str_utf8_strlen(utf32_str) + 1) * sizeof(uint_least8_t));
+unsigned char *utf32_str_to_utf8(const uint_least32_t *utf32_str) {
+	unsigned char *utf8_str = (unsigned char *)malloc((utf32_str_utf8_strlen(utf32_str) + 1) * sizeof(unsigned char));
 
 	if (!utf8_str) {
 		return NULL;
@@ -195,7 +195,7 @@ uint_least8_t *utf32_str_to_utf8(const uint_least32_t *utf32_str) {
 	int j = 0;
 
 	for (int i = 0; utf32_str[i]; i++) {
-		uint_least8_t *utf8_char = utf32_char_to_utf8(utf32_str[i]);
+		unsigned char *utf8_char = utf32_char_to_utf8(utf32_str[i]);
 
 		switch (utf32_char_utf8_code_point_len(utf32_str[i])) {
 			case 1:

@@ -33,7 +33,7 @@ int main(int argc, char **argv) {
 
 	if (argc != 2) {
 		interpreter.exit_interpreter(u8"Tenís que pasar la ruta del archivo con el código, poh, aweonao qlo");
-	} else if (!strstr(argv[1], u8".lw")) {
+	} else if (!strstr(argv[1], ".lw")) {
 		interpreter.exit_interpreter(u8"El archivo qlo tiene que tener la extensión .lw");
 	}
 

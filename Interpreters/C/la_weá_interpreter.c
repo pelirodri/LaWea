@@ -111,7 +111,7 @@ command_t *get_commands(const uint_least32_t *code, size_t *commands_count) {
                     size_t col_len = log10(col - utf32_strlen(cmd_name)) + 1;
                     char msg[68 + (int)utf32_strlen(cmd_name) + (int)(log10(line) + 1) + col_len];
 
-                    uint_least8_t *utf8_cmd_name = utf32_str_to_utf8(cmd_name);
+                    unsigned char *utf8_cmd_name = utf32_str_to_utf8(cmd_name);
 
                     if (!utf8_cmd_name) {
                         exit_interpreter("");
@@ -153,7 +153,7 @@ command_t *get_commands(const uint_least32_t *code, size_t *commands_count) {
 
                     char msg[59 + sizeof(uint_least32_t) + (int)(log10(line) + 1) + (int)(log10(col) + 1)];
 
-                    uint_least8_t *utf8_char = utf32_char_to_utf8(code[k]);
+                    unsigned char *utf8_char = utf32_char_to_utf8(code[k]);
 
                     if (!utf8_char) {
                         exit_interpreter("");
@@ -231,9 +231,9 @@ void run_commands(const command_t *commands, size_t commands_count) {
     int64_t cell_value_copy;
 
     #if !defined(_WIN64)
-        uint_least8_t utf8_input[6] = {'\0'};
+        unsigned char utf8_input[6] = {'\0'};
     #else
-        LPWSTR utf16_buffer[5] = {L'\0'};
+        LPWSTR utf16_buffer[5] = {u'\0'};
     #endif
 
     char char_input[22] = {0};
@@ -298,11 +298,11 @@ void run_commands(const command_t *commands, size_t commands_count) {
             case ctm:
                 if (cells[cur_cell] >= 0 && cells[cur_cell] <= 0x10FFFF) {
                     #if !defined(_WIN64)
-                        uint_least8_t *utf8_output = utf32_char_to_utf8(cells[cur_cell]);
+                        unsigned char *utf8_output = utf32_char_to_utf8(cells[cur_cell]);
                         printf("%s", (const char *)utf8_output);
                         free(utf8_output);
                     #else
-                        wmemset(utf16_buffer, L'\0', 2);
+                        wmemset(utf16_buffer, u'\0', 2);
 
                         if (cells[cur_cell] < 0x10000) {
                             utf16_buffer[0] = cells[cur_cell];
@@ -344,12 +344,12 @@ void run_commands(const command_t *commands, size_t commands_count) {
                         }
                     }
                 #else
-                    wmemset(utf16_buffer, L'\0', 4);
+                    wmemset(utf16_buffer, u'\0', 4);
 
                     ULONG read_char_count;
                     ReadConsoleW(GetStdHandle(STD_INPUT_HANDLE), utf16_buffer, 5, &read_char_count, NULL);
 
-                    if (utf16_buffer[wcslen(utf16_buffer) - 1] != L'\n') {
+                    if (utf16_buffer[wcslen(utf16_buffer) - 1] != u'\n') {
                         while (getchar() != '\n') {}
                         cells[cur_cell] = U'\0';
                     } else {
@@ -420,7 +420,7 @@ void exit_interpreter(const char *err_msg) {
         #if !defined(_WIN64)
             fprintf(stderr, "\x1b[1;31m%s\x1b[0m\n", err_msg);
         #else
-            LPWSTR utf16_buffer[(utf8_strlen((const uint_least8_t *)err_msg) + 1)];
+            LPWSTR utf16_buffer[(utf8_strlen((const unsigned char *)err_msg) + 1)];
 
             short utf16_buffer_len = MultiByteToWideChar(
                 CP_UTF8,
@@ -431,7 +431,7 @@ void exit_interpreter(const char *err_msg) {
                 sizeof(utf16_buffer)
             );
 
-            utf16_buffer[utf16_buffer_len] = L'\n';
+            utf16_buffer[utf16_buffer_len] = u'\n';
 
             HANDLE error_handle = GetStdHandle(STD_ERROR_HANDLE);
 
@@ -510,7 +510,7 @@ uint_least32_t *get_code(const char *file_path) {
         fclose(fp);
     #endif
 
-    uint_least32_t *utf32_code = utf8_str_to_utf32((uint_least8_t *)utf8_code);
+    uint_least32_t *utf32_code = utf8_str_to_utf32((unsigned char *)utf8_code);
     free(utf8_code);
 
     if (!utf32_code) {

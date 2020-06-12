@@ -1,5 +1,5 @@
 CXX = clang++
-CXXFLAGS = -std=c++17 -Ofast
+CXXFLAGS = -std=c++2a -Ofast
 
 laweá++ : *.cpp
 	$(CXX) -o $@ *.cpp $(CXXFLAGS)

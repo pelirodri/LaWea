@@ -18,15 +18,13 @@
 //
 
 #include "la_weá_interpreter.hpp"
+#include "utf8_utf32_utility.hpp"
 
 #include <iostream>
 #include <fstream>
-#include <codecvt>
 
 #if defined(_WIN64)
 	#include <windows.h>
-
-	std::locale::id std::codecvt<char32_t, char, std::mbstate_t>::id;
 #endif
 
 const std::vector<std::u32string> la_weá_interpreter::command_names = {
@@ -47,8 +45,6 @@ const std::vector<std::u32string> la_weá_interpreter::command_names = {
 	U"perkin",
 	U"mierda"
 };
-
-static std::wstring_convert<std::codecvt_utf8<char32_t>, char32_t> cvt;
 
 void la_weá_interpreter::interpret(const char *file_path) {
 	run_commands(get_commands(get_code(file_path)));
@@ -73,11 +69,11 @@ std::vector<la_weá_interpreter::command_t> la_weá_interpreter::get_commands(co
 				if (static_cast<int>(cmd) == -1) {
 					exit_interpreter(
 						u8"'" +
-						cvt.to_bytes(cmd_name) +
+						utf8_utf32_utility::utf32_str_to_utf8(cmd_name) +
 						u8"' no es un comando válido, poh, saco de weas (línea: " +
-						std::to_string(line) +
+						std::u8string((const char8_t *)std::to_string(line).data()) +
 						u8", columna: " +
-						std::to_string(col - cmd_name.length()) +
+						std::u8string((const char8_t *)std::to_string(col - cmd_name.length()).data()) +
 						u8")"
 					);
 				}
@@ -87,15 +83,14 @@ std::vector<la_weá_interpreter::command_t> la_weá_interpreter::get_commands(co
 			}
 		} else {
 			if (!is_comment) {
-				if (std::u32string (U"abcdeghiklmnopqrtuwáéíóú").find(code[i]) == std::string::npos) {
+				if (std::u32string (U"abcdeghiklmnopqrtuwáéíóú").find(code[i]) == std::u32string::npos) {
 					exit_interpreter(
 						u8"'" +
-						cvt.to_bytes(std::u32string (1, code[i])) +
-						u8"'" +
-						u8" no es parte de La Weá, tonto qlo (línea: " +
-						std::to_string(line) +
+						utf8_utf32_utility::utf32_str_to_utf8(std::u32string (1, code[i])) +
+						u8"' no es parte de La Weá, tonto qlo (línea: " +
+						std::u8string((const char8_t *)std::to_string(line).data()) +
 						u8", columna: " +
-						std::to_string(col) +
+						std::u8string((const char8_t *)std::to_string(col).data()) +
 						u8")"
 					);
 				}
@@ -103,9 +98,9 @@ std::vector<la_weá_interpreter::command_t> la_weá_interpreter::get_commands(co
 				if (cmd_name.length() == 7) {
 					exit_interpreter(
 						u8"¿Voh creís que yo soy weón, CTM? Te gustan largos, parece (línea: " +
-						std::to_string(line) +
+						std::u8string((const char8_t *)std::to_string(line).data()) +
 						u8", columna: " +
-						std::to_string(col - cmd_name.length()) +
+						std::u8string((const char8_t *)std::to_string(col - cmd_name.length()).data()) +
 						u8")"
 					);
 				}
@@ -197,14 +192,16 @@ void la_weá_interpreter::run_commands(const std::vector<command_t> &commands) {
 			case ctm:
 				if (cells[cur_cell] >= 0x0 && cells[cur_cell] <= 0x10FFFF) {
 					#if !defined(_WIN64)
-						std::cout << cvt.to_bytes(std::u32string (1, cells[cur_cell]));
+						std::cout << (const char *)utf8_utf32_utility::utf32_str_to_utf8(
+							std::u32string (1, cells[cur_cell])
+						).c_str();
 					#else
 						wmemset(utf16_buffer, L'\0', 2);
 
 	                    if (cells[cur_cell] < 0x10000) {
 	                        utf16_buffer[0] = cells[cur_cell];
 	                    } else {
-	                        uint_least32_t tmp_char = cells[cur_cell] - 0x10000;
+	                        char32_t tmp_char = cells[cur_cell] - 0x10000;
 
 	                        utf16_buffer[0] = (tmp_char >> 10) + 0xD800;
 	                        utf16_buffer[1] = (tmp_char & 0x3FF) + 0xDC00;
@@ -220,10 +217,13 @@ void la_weá_interpreter::run_commands(const std::vector<command_t> &commands) {
 				break;
 			case quéweá:
 				#if !defined(_WIN64)
-					std::getline(std::cin, (char_input = u8""));
+					std::getline(std::cin, (char_input = ""));
 
 					if (char_input.length() >= 1 && char_input.length() <= 4) {
-						std::u32string utf32_str = cvt.from_bytes(char_input);
+						std::u32string utf32_str = utf8_utf32_utility::utf8_str_to_utf32(
+							std::u8string((const char8_t *)char_input.data())
+						);
+
 						cells[cur_cell] = utf32_str.length() == 1 ? utf32_str[0] : U'\0';
 					} else {
 						cells[cur_cell] = U'\0';
@@ -256,7 +256,7 @@ void la_weá_interpreter::run_commands(const std::vector<command_t> &commands) {
 				std::cout << cells[cur_cell];
 				break;
 			case brígido:
-				std::getline(std::cin, (char_input = u8""));
+				std::getline(std::cin, (char_input = ""));
 
                 for (short j = 0; j < char_input.length(); j++) {
                     if (!std::isdigit(char_input[j]) && !(!j && char_input[j] == '-')) {
@@ -266,7 +266,7 @@ void la_weá_interpreter::run_commands(const std::vector<command_t> &commands) {
                 }
 
 				try {
-					cells[cur_cell] = std::stoll(char_input);
+					cells[cur_cell] = std::strtoll((const char *)char_input.c_str(), nullptr, 10);
 				} catch (...) {
 					cells[cur_cell] = 0;
 				}
@@ -289,12 +289,12 @@ void la_weá_interpreter::run_commands(const std::vector<command_t> &commands) {
 	}
 }
 
-void la_weá_interpreter::exit_interpreter(const std::string &err_msg) {
+void la_weá_interpreter::exit_interpreter(const std::u8string &err_msg) {
 	if (!err_msg.length()) {
 		std::cerr << "\x1b[1;31mError interno\x1b[0m\n";
 	} else {
 		#if !defined(_WIN64)
-			std::cerr << "\x1b[1;31m" << err_msg << "\x1b[0m\n";
+			std::cerr << "\x1b[1;31m" << (const char *)err_msg.c_str() << "\x1b[0m\n";
 		#else
 			WCHAR utf16_buffer[err_msg.length() + 1];
 
@@ -339,7 +339,7 @@ std::u32string la_weá_interpreter::get_code(const char *file_path) {
 	std::string code (code_len, ' ');
 	is.read(&code[0], code_len);
 
-	return cvt.from_bytes(code);
+	return utf8_utf32_utility::utf8_str_to_utf32(std::u8string((const char8_t *)code.data()));
 }
 
 la_weá_interpreter::command_t la_weá_interpreter::get_command(
@@ -355,9 +355,9 @@ la_weá_interpreter::command_t la_weá_interpreter::get_command(
 				if (loop_ends_count == loop_starts_count) {
 					exit_interpreter(
 						u8"Se encontró una tula sin su respectiva pichula en la línea: " +
-						std::to_string(line) +
+						std::u8string((const char8_t *)std::to_string(line).data()) +
 						u8", columna: " +
-						std::to_string(col)
+						std::u8string((const char8_t *)std::to_string(col).data())
 					);
 				}
 
@@ -366,9 +366,9 @@ la_weá_interpreter::command_t la_weá_interpreter::get_command(
 				if (loop_starts_count == loop_ends_count) {
 					exit_interpreter(
 						u8"No debiste meter ese pico en la línea: " +
-						std::to_string(line) +
+						std::u8string((const char8_t *)std::to_string(line).data()) +
 						u8", columna: " +
-						std::to_string(col)
+						std::u8string((const char8_t *)std::to_string(col).data())
 					);
 				}
 			}
