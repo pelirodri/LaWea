@@ -176,11 +176,11 @@ open class LaWeáInterpreter {
      - Parameter commands: The commands to run.
      */
     open func runCommands(_ commands: [Command]) {
-        var cells = [Int](repeating: 0, count: 8)
+        var cells = [Int64](repeating: 0, count: 8)
         var currentCell = 0
         
         var isCopySet = false
-        var cellValueCopy = 0
+        var cellValueCopy: Int64 = 0
         
         var i = 0
                 
@@ -203,8 +203,8 @@ open class LaWeáInterpreter {
                 
                 currentCell -= 1
             case .puta:
-                if currentCell == cells.capacity - 1 {
-                    cells.append(contentsOf: repeatElement(0, count: cells.capacity))
+                if currentCell == cells.count - 1 {
+                    cells.append(contentsOf: repeatElement(0, count: cells.count))
                 }
                 
                 currentCell += 1
@@ -219,21 +219,21 @@ open class LaWeáInterpreter {
             case .pico:
                 i = findLoopEnd(commands: commands, i: i)
             case .ctm:
-                if let unicodeScalar = UnicodeScalar(cells[currentCell]) {
+                if let unicodeScalar = UnicodeScalar(UInt32(cells[currentCell])) {
                     FileHandle.standardOutput.write(String(unicodeScalar).data(using: .utf8)!)
                 } else {
                     FileHandle.standardOutput.write("\u{FFFD}".data(using: .utf8)!)
                 }
             case .quéweá:
                 if let line = readLine(), line.count == 1 {
-                    cells[currentCell] = Int(line.first!.unicodeScalars.first!.value)
+                    cells[currentCell] = Int64(line.first!.unicodeScalars.first!.value)
                 } else {
                     cells[currentCell] = 0
                 }
             case .chúpala:
                 FileHandle.standardOutput.write(String(cells[currentCell]).data(using: .utf8)!)
             case .brígido:
-                if let line = readLine(), line.count > 0, let newCellValue = Int(String(line)) {
+                if let line = readLine(), line.count > 0, let newCellValue = Int64(String(line)) {
                     cells[currentCell] = newCellValue
                 } else {
                     cells[currentCell] = 0
