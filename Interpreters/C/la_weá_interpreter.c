@@ -233,7 +233,7 @@ void run_commands(const command_t *commands, size_t commands_count) {
     #if !defined(_WIN64)
         unsigned char utf8_input[6] = {'\0'};
     #else
-        LPWSTR utf16_buffer[5] = {u'\0'};
+        WCHAR utf16_buffer[5] = {u'\0'};
     #endif
 
     char char_input[22] = {0};
@@ -420,7 +420,7 @@ void exit_interpreter(const char *err_msg) {
         #if !defined(_WIN64)
             fprintf(stderr, "\x1b[1;31m%s\x1b[0m\n", err_msg);
         #else
-            LPWSTR utf16_buffer[(utf8_strlen((const unsigned char *)err_msg) + 1)];
+            WCHAR utf16_buffer[(utf8_strlen((const unsigned char *)err_msg) + 1)];
 
             short utf16_buffer_len = MultiByteToWideChar(
                 CP_UTF8,

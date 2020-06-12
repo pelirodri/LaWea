@@ -301,7 +301,7 @@ void la_weá_interpreter::exit_interpreter(const std::u8string &err_msg) {
             short utf16_buffer_len = MultiByteToWideChar(
             	CP_UTF8,
             	0,
-            	err_msg.c_str(),
+            	(const char *)err_msg.c_str(),
             	err_msg.length(),
             	utf16_buffer,
             	sizeof(utf16_buffer)
