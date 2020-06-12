@@ -87,7 +87,9 @@ open class LaWeáInterpreter {
             let code = try String(contentsOfFile: filePath)
             runCommands(getCommands(from: code))
         } catch {
-            if (error as NSError).code == NSFileReadNoSuchFileError {
+            let errorCode = (error as NSError).code
+            
+            if errorCode == NSFileReadNoSuchFileError || errorCode == ENOENT {
                 exitInterpreter(with: "No existe la weá, poh, wn")
             }
         }
