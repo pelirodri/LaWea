@@ -89,7 +89,7 @@ command_t *get_commands(const uint_least32_t *code, size_t *commands_count) {
         exit_interpreter("");
     }
 
-    uint_least32_t cmd_name[8 * sizeof(uint_least32_t)] = {'\0'};
+    uint_least32_t cmd_name[8 * sizeof(uint_least32_t)] = {U'\0'};
 
     long long i = 0, j = -1;
     long long line = 1, col = 1;

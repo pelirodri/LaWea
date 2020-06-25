@@ -169,7 +169,7 @@ export default class TheMainSection extends Vue implements LaWeáInterpreter {
 				this.$bvModal.show("error-modal");
 			}
 
-			console.log(errorMessage);
+			console.error(errorMessage);
 		}
 
 		this.stopRunningCommands();
