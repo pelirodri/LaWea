@@ -72,8 +72,13 @@ open class LaWeáInterpreter {
         case mierda
     }
     
-    private var loopStartsCount = 0
-    private var loopEndsCount = 0
+    private var loopStartsCount: Int
+    private var loopEndsCount: Int
+
+	public init() {
+		loopStartsCount = 0
+		loopEndsCount = 0
+	}
     
     /**
      The entry point for interpreting the code.
