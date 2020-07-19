@@ -66,6 +66,12 @@ class Generate extends Command_1.ClientCommand {
                             throw new Error("Error loading schema");
                         write = () => {
                             project.validate();
+                            for (const document of this.project.documents) {
+                                if (document.syntaxErrors.length) {
+                                    const errors = document.syntaxErrors.map(e => `Syntax error in ${document.source.name}: ${e.message}\n`);
+                                    throw new Error(errors.toString());
+                                }
+                            }
                             const operations = Object.values(this.project.operations);
                             const fragments = Object.values(this.project.fragments);
                             if (!operations.length && !fragments.length) {

@@ -32,12 +32,8 @@ const formatChange = (change) => {
     if (change.severity === graphqlTypes_1.ChangeSeverity.FAILURE) {
         color = chalk_1.default.red;
     }
-    if (change.severity === graphqlTypes_1.ChangeSeverity.WARNING) {
-        color = chalk_1.default.yellow;
-    }
     const changeDictionary = {
         [graphqlTypes_1.ChangeSeverity.FAILURE]: "FAIL",
-        [graphqlTypes_1.ChangeSeverity.WARNING]: "WARN",
         [graphqlTypes_1.ChangeSeverity.NOTICE]: "PASS"
     };
     return {
@@ -170,9 +166,10 @@ class ServiceCheck extends Command_1.ProjectCommand {
                                 queryCountThreshold: flags.queryCountThreshold,
                                 queryCountThresholdPercentage: flags.queryCountThresholdPercentage
                             });
+                            const gitInfoFromEnv = await git_1.gitInfo(this.log);
                             const { compositionValidationResult, checkSchemaResult } = await project.engine.checkPartialSchema(Object.assign(Object.assign({ id: graphID, graphVariant: graphVariant, implementingServiceName: serviceName, partialSchema: {
                                     sdl
-                                }, frontend: flags.frontend || config.engine.frontend }, (historicParameters && { historicParameters })), { gitContext: await git_1.gitInfo(this.log) }));
+                                } }, (historicParameters && { historicParameters })), { gitContext: Object.assign(Object.assign(Object.assign({}, gitInfoFromEnv), (flags.author ? { committer: flags.author } : undefined)), (flags.branch ? { branch: flags.branch } : undefined)) }));
                             task.title = `Found ${utils_1.pluralize(compositionValidationResult.errors.length, "graph composition error")} for service ${chalk_1.default.cyan(serviceName)} on graph ${chalk_1.default.cyan(graphSpecifier)}`;
                             if (compositionValidationResult.errors.length > 0) {
                                 taskOutput.compositionErrors = compositionValidationResult.errors
@@ -219,7 +216,10 @@ class ServiceCheck extends Command_1.ProjectCommand {
                                 queryCountThresholdPercentage: flags.queryCountThresholdPercentage
                             });
                             task.output = "Validating schema";
-                            const variables = Object.assign(Object.assign({ id: graphID, tag: config.variant, gitContext: await git_1.gitInfo(this.log), frontend: flags.frontend || config.engine.frontend }, (historicParameters && { historicParameters })), schemaCheckSchemaVariables);
+                            const gitInfoFromEnv = await git_1.gitInfo(this.log);
+                            const variables = Object.assign(Object.assign({ id: graphID, tag: config.variant, gitContext: Object.assign(Object.assign(Object.assign({}, gitInfoFromEnv), (flags.committer
+                                    ? { committer: flags.committer }
+                                    : undefined)), (flags.branch ? { branch: flags.branch } : undefined)) }, (historicParameters && { historicParameters })), schemaCheckSchemaVariables);
                             const { schema: _ } = variables, restVariables = __rest(variables, ["schema"]);
                             this.debug("Variables sent to Apollo Graph Manager:");
                             this.debug(restVariables);
@@ -371,6 +371,10 @@ ServiceCheck.flags = Object.assign(Object.assign({}, Command_1.ProjectCommand.fl
     }), graph: command_1.flags.string({
         char: "g",
         description: "The ID of the graph in Apollo Graph Manager to check your proposed schema changes against. Overrides config file if set."
+    }), branch: command_1.flags.string({
+        description: "The branch name to associate with this check"
+    }), author: command_1.flags.string({
+        description: "The author to associate with this proposed schema"
     }), validationPeriod: command_1.flags.string({
         description: "The size of the time window with which to validate the schema against. You may provide a number (in seconds), or an ISO8601 format duration for more granularity (see: https://en.wikipedia.org/wiki/ISO_8601#Durations)"
     }), queryCountThreshold: command_1.flags.integer({

@@ -17,7 +17,6 @@ export default class ServicePush extends ProjectCommand {
         endpoint: flags.IOptionFlag<string | undefined>;
         key: flags.IOptionFlag<string | undefined>;
         engine: flags.IOptionFlag<string | undefined>;
-        frontend: flags.IOptionFlag<string | undefined>;
     };
     run(): Promise<void>;
 }

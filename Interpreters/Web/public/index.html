@@ -20,17 +20,12 @@
 		<meta property="og:url" content="https://laweainterpreter.firebaseapp.com/" />
 		<meta property="og:description" content="WebAssembly-based La Weá online interpreter." />
 
-		<script async src="https://www.googletagmanager.com/gtag/js?id=UA-126657181-1"></script>
+		<script src="/__/firebase/7.16.1/firebase-app.js"></script>
+		<script src="/__/firebase/7.16.1/firebase-analytics.js"></script>
+		<script src="/__/firebase/init.js"></script>
 
 		<script>
-			window.dataLayer = window.dataLayer || [];
-
-		  	function gtag() {
-		  		dataLayer.push(arguments);
-		  	}
-
-		  	gtag("js", new Date());
-		  	gtag("config", "UA-126657181-1");
+			firebase.analytics();
 		</script>
 	</head>
 

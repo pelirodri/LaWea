@@ -17,7 +17,6 @@ export default class ClientPush extends ClientCommand {
         endpoint: import("@oclif/command/lib/flags").IOptionFlag<string | undefined>;
         key: import("@oclif/command/lib/flags").IOptionFlag<string | undefined>;
         engine: import("@oclif/command/lib/flags").IOptionFlag<string | undefined>;
-        frontend: import("@oclif/command/lib/flags").IOptionFlag<string | undefined>;
     };
     run(): Promise<void>;
 }

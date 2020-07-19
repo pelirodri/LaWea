@@ -73,8 +73,7 @@ class ProjectCommand extends command_1.default {
         config.setDefaults({
             engine: {
                 apiKey: flags.key,
-                endpoint: flags.engine,
-                frontend: flags.frontend
+                endpoint: flags.engine
             }
         });
         if (flags.endpoint) {
@@ -173,7 +172,7 @@ ProjectCommand.flags = {
             const value = header.substring(separatorIndex + 1).trim();
             return JSON.stringify({ [key]: value });
         },
-        description: "Additional header to send to server for introspectionQuery. May be used multiple times to add multiple headers. NOTE: The `--endpoint` flag is REQUIRED if using the `--header` flag."
+        description: "Additional header to send during introspection. May be used multiple times to add multiple headers. NOTE: The `--endpoint` flag is REQUIRED if using the `--header` flag."
     }),
     endpoint: command_1.flags.string({
         description: "The URL for the CLI use to introspect your service"
@@ -184,10 +183,6 @@ ProjectCommand.flags = {
     }),
     engine: command_1.flags.string({
         description: "URL for a custom Apollo Graph Manager deployment",
-        hidden: true
-    }),
-    frontend: command_1.flags.string({
-        description: "URL for a custom Apollo Graph Manager frontend",
         hidden: true
     })
 };

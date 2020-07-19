@@ -16,5 +16,14 @@ module.exports = {
         `${browser.launch_url}/fixtures/log-src-in-microtask.js`
       )
       .end()
+  },
+  'use it as a polyfill': function (browser) {
+    browser
+      .url(`${browser.launch_url}/fixtures/test-polyfill.html`)
+      .assert.containsText(
+        '#app',
+        'It works!'
+      )
+      .end()
   }
 }

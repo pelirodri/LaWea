@@ -13,7 +13,6 @@ export default class ServiceDownload extends ProjectCommand {
         endpoint: flags.IOptionFlag<string | undefined>;
         key: flags.IOptionFlag<string | undefined>;
         engine: flags.IOptionFlag<string | undefined>;
-        frontend: flags.IOptionFlag<string | undefined>;
     };
     static args: {
         name: string;

@@ -15,7 +15,6 @@ export interface Flags {
     localSchemaFile?: string;
     key?: string;
     engine?: string;
-    frontend?: string;
     tag?: string;
     variant?: string;
     graph?: string;
@@ -37,7 +36,6 @@ export declare abstract class ProjectCommand extends Command {
         endpoint: flags.IOptionFlag<string | undefined>;
         key: flags.IOptionFlag<string | undefined>;
         engine: flags.IOptionFlag<string | undefined>;
-        frontend: flags.IOptionFlag<string | undefined>;
     };
     project: GraphQLProject;
     tasks: ListrTask[];
@@ -68,7 +66,6 @@ export declare abstract class ClientCommand extends ProjectCommand {
         endpoint: flags.IOptionFlag<string | undefined>;
         key: flags.IOptionFlag<string | undefined>;
         engine: flags.IOptionFlag<string | undefined>;
-        frontend: flags.IOptionFlag<string | undefined>;
     };
     project: GraphQLClientProject;
     constructor(argv: any, config: any);

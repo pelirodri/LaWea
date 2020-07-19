@@ -24,6 +24,8 @@ yarn add @endemolshinegroup/cosmiconfig-typescript-loader
 
 ## Usage
 
+With cosmiconfig 5.x
+
 ```typescript
 import cosmiconfig from 'cosmiconfig';
 import TypeScriptLoader from '@endemolshinegroup/cosmiconfig-typescript-loader';

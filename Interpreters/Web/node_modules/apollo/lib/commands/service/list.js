@@ -8,7 +8,6 @@ const Command_1 = require("../../Command");
 const lodash_sortby_1 = __importDefault(require("lodash.sortby"));
 const table_1 = require("table");
 const moment_1 = __importDefault(require("moment"));
-const apollo_language_server_1 = require("apollo-language-server");
 const chalk_1 = __importDefault(require("chalk"));
 const sharedMessages_1 = require("../../utils/sharedMessages");
 const formatImplementingService = (implementingService, effectiveDate = new Date()) => {
@@ -18,7 +17,7 @@ const formatImplementingService = (implementingService, effectiveDate = new Date
         updatedAt: `${moment_1.default(implementingService.updatedAt).format("D MMMM YYYY")} (${moment_1.default(implementingService.updatedAt).from(effectiveDate)})`
     };
 };
-function formatHumanReadable({ implementingServices, graphName, frontendUrl }) {
+function formatHumanReadable({ implementingServices, graphName, frontendUrlRoot }) {
     let result = "";
     if (!implementingServices ||
         implementingServices.__typename === "NonFederatedImplementingService") {
@@ -41,7 +40,7 @@ function formatHumanReadable({ implementingServices, graphName, frontendUrl }) {
                 .filter(Boolean)
         ]));
         const serviceListUrlEnding = `/graph/${graphName}/service-list`;
-        const targetUrl = `${frontendUrl}${serviceListUrlEnding}`;
+        const targetUrl = `${frontendUrlRoot}${serviceListUrlEnding}`;
         result += `\nView full details at: ${chalk_1.default.cyan(targetUrl)}\n`;
     }
     return result;
@@ -62,12 +61,14 @@ class ServiceList extends Command_1.ProjectCommand {
                     {
                         title: `Fetching list of services for graph ${chalk_1.default.cyan(graphID + "@" + graphVariant)}`,
                         task: async (ctx, task) => {
-                            const { implementingServices } = await project.engine.listServices({
+                            const { frontendUrlRoot, service } = await project.engine.listServices({
                                 id: graphID,
                                 graphVariant: graphVariant
                             });
+                            const { implementingServices } = service;
                             const newContext = {
                                 implementingServices,
+                                frontendUrlRoot,
                                 config
                             };
                             Object.assign(ctx, newContext);
@@ -87,7 +88,7 @@ class ServiceList extends Command_1.ProjectCommand {
         this.log(formatHumanReadable({
             implementingServices: taskOutput.implementingServices,
             graphName: taskOutput.config.graph,
-            frontendUrl: taskOutput.config.engine.frontend || apollo_language_server_1.DefaultEngineConfig.frontend
+            frontendUrlRoot: taskOutput.frontendUrlRoot
         }));
     }
 }
