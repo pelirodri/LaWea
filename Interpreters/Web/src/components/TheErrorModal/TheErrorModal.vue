@@ -10,7 +10,9 @@
 		:ok-only="true"
 		centered
 	>
-		<div class="text-danger">{{ errorMessage }}</div>
+		<div class="text-danger">
+			<slot name="error-message"></slot>
+		</div>
 	</b-modal>
 </template>
 

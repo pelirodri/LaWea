@@ -15,7 +15,11 @@
 			@enterButtonClicked="runCommands(true)"
 		/>
 
-		<TheErrorModal :errorMessage="errorMessage" />
+		<TheErrorModal>
+			<template #error-message>
+				{{ errorMessage }}
+			</template>
+		</TheErrorModal>
 	</main>
 </template>
 

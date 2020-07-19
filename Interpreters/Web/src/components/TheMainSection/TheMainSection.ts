@@ -163,16 +163,20 @@ export default class TheMainSection extends Vue implements LaWeáInterpreter {
 	}
 
 	exitInterpreter(errorMessage: string, shouldDisplayError = true): void {
-		if (errorMessage !== "\n") {
+		if (errorMessage) {
 			if (shouldDisplayError) {
 				this.errorMessage = errorMessage;
 				this.$bvModal.show("error-modal");
 			}
 
 			console.error(errorMessage);
+
+			throw new Error(errorMessage);
 		}
 
 		this.stopRunningCommands();
+
+		throw new Error();
 	}
 
 	private getCommand(commandName: string, line: number, col: number): Command {
