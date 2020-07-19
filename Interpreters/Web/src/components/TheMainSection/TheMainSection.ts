@@ -74,8 +74,6 @@ export default class TheMainSection extends Vue implements LaWeáInterpreter {
 							String(col - commandName.length) +
 							")"
 						);
-
-						return;
 					}
 
 					this.commands.push(command!);
@@ -93,8 +91,6 @@ export default class TheMainSection extends Vue implements LaWeáInterpreter {
 							", columna: " +
 							String(col) + ")"
 						);
-
-						return;
 					}
 					
 					if (commandName.length === 7) {
@@ -105,8 +101,6 @@ export default class TheMainSection extends Vue implements LaWeáInterpreter {
 							String(col - commandName.length) +
 							")"
 						);
-
-						return;
 					}
 					
 					commandName += code[i];
@@ -125,7 +119,6 @@ export default class TheMainSection extends Vue implements LaWeáInterpreter {
 
 		if (this.loopStartsCount !== this.loopEndsCount) {
 			this.exitInterpreter("O te sobran pichulas o te faltan tulas");
-			return;
 		}	
 	}
 
@@ -192,8 +185,6 @@ export default class TheMainSection extends Vue implements LaWeáInterpreter {
 							", columna: " +
 							String(col)
 						);
-
-						return -1 as Command;
 					}
 
 					this.loopEndsCount++;
@@ -205,8 +196,6 @@ export default class TheMainSection extends Vue implements LaWeáInterpreter {
 							", columna: " +
 							String(col)
 						);
-
-						return -1 as Command;
 					}
 				}
 
