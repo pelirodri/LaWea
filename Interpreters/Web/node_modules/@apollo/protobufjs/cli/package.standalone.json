@@ -15,7 +15,7 @@
     "pbts": "bin/pbts"
   },
   "peerDependencies": {
-    "@apollo/protobufjs": "~1.0.4"
+    "@apollo/protobufjs": "~1.0.5"
   },
   "dependencies": {
     "chalk": "^1.1.3",

@@ -1,3 +1,10 @@
+# [3.2.0](https://github.com/oclif/plugin-help/compare/v3.1.0...v3.2.0) (2020-08-03)
+
+
+### Features
+
+* support src/command/index cmd ([#112](https://github.com/oclif/plugin-help/issues/112)) ([8957336](https://github.com/oclif/plugin-help/commit/8957336f3c35675bb243ac90c49c298fbef23e59))
+
 ## [2.1.4](https://github.com/oclif/plugin-help/compare/v2.1.3...v2.1.4) (2018-11-12)
 
 

@@ -146,49 +146,47 @@ command_t *get_commands(const uint_least32_t *code, size_t *commands_count) {
                 memset(cmd_name, U'\0', 7 * sizeof(uint_least32_t));
                 j = -1;
             }
-        } else {
-            if (!is_comment) {
-                if (!utf32_strchr(U"abcdeghiklmnopqrtuwáéíóú", code[k])) {
-                    free(commands);
+        } else if (!is_comment) {
+            if (!utf32_strchr(U"abcdeghiklmnopqrtuwáéíóú", code[k])) {
+                free(commands);
 
-                    char msg[59 + sizeof(uint_least32_t) + (int)(log10(line) + 1) + (int)(log10(col) + 1)];
+                char msg[59 + sizeof(uint_least32_t) + (int)(log10(line) + 1) + (int)(log10(col) + 1)];
 
-                    unsigned char *utf8_char = utf32_char_to_utf8(code[k]);
+                unsigned char *utf8_char = utf32_char_to_utf8(code[k]);
 
-                    if (!utf8_char) {
-                        exit_interpreter("");
-                    }
-
-                    sprintf(
-                        msg,
-                        "'%s' no es parte de La Weá, tonto qlo (línea: %lld, columna: %lld)",
-                        utf8_char,
-                        line,
-                        col
-                    );
-
-                    free(utf8_char);
-
-                    exit_interpreter(msg);
+                if (!utf8_char) {
+                    exit_interpreter("");
                 }
 
-                if (++j == 7) {
-                    free(commands);
+                sprintf(
+                    msg,
+                    "'%s' no es parte de La Weá, tonto qlo (línea: %lld, columna: %lld)",
+                    utf8_char,
+                    line,
+                    col
+                );
 
-                    char msg[79 + (int)(log10(line) + 1) + (int)(log10(col - utf32_strlen(cmd_name)) + 1)];
+                free(utf8_char);
 
-                    sprintf(
-                        msg,
-                        "¿Voh creís que yo soy weón, CTM? Te gustan largos, parece (línea: %lld, columna: %lld)",
-                        line,
-                        col - utf32_strlen(cmd_name)
-                    );
-
-                    exit_interpreter(msg);
-                }
-
-                cmd_name[j] = code[k];
+                exit_interpreter(msg);
             }
+
+            if (++j == 7) {
+                free(commands);
+
+                char msg[79 + (int)(log10(line) + 1) + (int)(log10(col - utf32_strlen(cmd_name)) + 1)];
+
+                sprintf(
+                    msg,
+                    "¿Voh creís que yo soy weón, CTM? Te gustan largos, parece (línea: %lld, columna: %lld)",
+                    line,
+                    col - utf32_strlen(cmd_name)
+                );
+
+                exit_interpreter(msg);
+            }
+
+            cmd_name[j] = code[k];
         }
 
         if (code[k] == U'\n') {

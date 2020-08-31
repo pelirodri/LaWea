@@ -237,6 +237,7 @@ ReactDOM.render(
 - `url: string` : url that the client will connect to, starts with `ws://` or `wss://`
 - `options?: Object` : optional, object to modify default client behavior
   * `timeout?: number` : how long the client should wait in ms for a keep-alive message from the server (default 30000 ms), this parameter is ignored if the server does not send keep-alive messages. This will also be used to calculate the max connection time per connect/reconnect
+  * `minTimeout?: number`: the minimum amount of time the client should wait for a connection to be made (default 1000 ms)
   * `lazy?: boolean` : use to set lazy mode - connects only when first subscription created, and delay the socket initialization
   * `connectionParams?: Object | Function | Promise<Object>` : object that will be available as first argument of `onConnect` (in server side), if passed a function - it will call it and send the return value, if function returns as promise - it will wait until it resolves and send the resolved value.
   * `reconnect?: boolean` : automatic reconnect in case of connection error
@@ -262,12 +263,12 @@ ReactDOM.render(
 - => Returns an `off` method to cancel the event subscription.
 
 #### `onConnected(callback, thisContext) => Function` - shorthand for `.on('connected', ...)`
-- `callback: Function`: function to be called when websocket connects and initialized, after ACK message returned from the server
+- `callback: Function(payload)`: function to be called when websocket connects and initialized, after ACK message returned from the server. Includes payload from server, if any.
 - `thisContext: any`: `this` context to use when calling the callback function.
 - => Returns an `off` method to cancel the event subscription.
 
 #### `onReconnected(callback, thisContext) => Function` - shorthand for `.on('reconnected', ...)`
-- `callback: Function`: function to be called when websocket reconnects and initialized, after ACK message returned from the server
+- `callback: Function(payload)`: function to be called when websocket reconnects and initialized, after ACK message returned from the server. Includes payload from server, if any.
 - `thisContext: any`: `this` context to use when calling the callback function.
 - => Returns an `off` method to cancel the event subscription.
 
@@ -277,7 +278,7 @@ ReactDOM.render(
 - => Returns an `off` method to cancel the event subscription.
 
 #### `onReconnecting(callback, thisContext) => Function` - shorthand for `.on('reconnecting', ...)`
-- `callback: Function`: function to be called when websocket starts it's reconnection 
+- `callback: Function`: function to be called when websocket starts it's reconnection
 - `thisContext: any`: `this` context to use when calling the callback function.
 - => Returns an `off` method to cancel the event subscription.
 
@@ -306,7 +307,7 @@ ReactDOM.render(
   * `schema?: GraphQLSchema` : GraphQL schema object. If not provided, you have to return the schema as a property on the object returned from `onOperation`.
   * `execute?: (schema, document, rootValue, contextValue, variableValues, operationName) => Promise<ExecutionResult> | AsyncIterator<ExecutionResult>` : GraphQL `execute` function, provide the default one from `graphql` package. Return value of `AsyncItrator` is also valid since this package also support reactive `execute` methods.
   * `subscribe?: (schema, document, rootValue, contextValue, variableValues, operationName) => Promise<ExecutionResult | AsyncIterator<ExecutionResult>>` : GraphQL `subscribe` function, provide the default one from `graphql` package.
-  * `onOperation?: (message: SubscribeMessage, params: SubscriptionOptions, webSocket: WebSocket)` : optional method to create custom params that will be used when resolving this operation. It can also be used to dynamically resolve the schema that will be used for the particular operation.
+  * `onOperation?: (message: SubscribeMessage, params: ExecutionParams, webSocket: WebSocket)` : optional method to create custom params that will be used when resolving this operation. It can also be used to dynamically resolve the schema that will be used for the particular operation.
   * `onOperationComplete?: (webSocket: WebSocket, opId: string)` : optional method that called when a GraphQL operation is done (for query and mutation it's immediately, and for subscriptions when unsubscribing)
   * `onConnect?: (connectionParams: Object, webSocket: WebSocket, context: ConnectionContext)` : optional method that called when a client connects to the socket, called with the `connectionParams` from the client, if the return value is an object, its elements will be added to the context. return `false` or throw an exception to reject the connection. May return a Promise.
   * `onDisconnect?: (webSocket: WebSocket, context: ConnectionContext)` : optional method that called when a client disconnects

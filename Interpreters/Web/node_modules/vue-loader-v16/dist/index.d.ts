@@ -1,0 +1,13 @@
+import webpack from 'webpack';
+import { TemplateCompiler, CompilerOptions, SFCTemplateCompileOptions } from '@vue/compiler-sfc';
+import VueLoaderPlugin from './plugin';
+export { VueLoaderPlugin };
+export interface VueLoaderOptions {
+    transformAssetUrls?: SFCTemplateCompileOptions['transformAssetUrls'];
+    compiler?: TemplateCompiler | string;
+    compilerOptions?: CompilerOptions;
+    hotReload?: boolean;
+    exposeFilename?: boolean;
+    appendExtension?: boolean;
+}
+export default function loader(this: webpack.loader.LoaderContext, source: string): string | void;

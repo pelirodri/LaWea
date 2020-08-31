@@ -10,7 +10,7 @@ export as namespace protobuf;
  * @param name Short name as in `google/protobuf/[name].proto` or full file name
  * @param json JSON definition within `google.protobuf` if a short name, otherwise the file's root definition
  */
-export function common(name: string, json: { [k: string]: any }): void;
+export function common(name: string, json: { [k: string]: any | undefined }): void;
 
 export namespace common {
 
@@ -38,7 +38,7 @@ export namespace common {
 
     /** Properties of a google.protobuf.Struct message. */
     interface IStruct {
-        fields?: { [k: string]: IValue };
+        fields?: { [k: string]: IValue | undefined };
     }
 
     /** Properties of a google.protobuf.Value message. */
@@ -163,19 +163,19 @@ export class Enum extends ReflectionObject {
      * @param [comment] The comment for this enum
      * @param [comments] The value comments for this enum
      */
-    constructor(name: string, values?: { [k: string]: number }, options?: { [k: string]: any }, comment?: string, comments?: { [k: string]: string });
+    constructor(name: string, values?: { [k: string]: number | undefined }, options?: { [k: string]: any | undefined }, comment?: string, comments?: { [k: string]: string | undefined });
 
     /** Enum values by id. */
-    public valuesById: { [k: number]: string };
+    public valuesById: { [k: number]: string | undefined };
 
     /** Enum values by name. */
-    public values: { [k: string]: number };
+    public values: { [k: string]: number | undefined };
 
     /** Enum comment text. */
     public comment: (string|null);
 
     /** Value comment texts, if any. */
-    public comments: { [k: string]: string };
+    public comments: { [k: string]: string | undefined };
 
     /** Reserved ranges, if any. */
     public reserved: (number[]|string)[];
@@ -235,10 +235,10 @@ export class Enum extends ReflectionObject {
 export interface IEnum {
 
     /** Enum values */
-    values: { [k: string]: number };
+    values: { [k: string]: number | undefined };
 
     /** Enum options */
-    options?: { [k: string]: any };
+    options?: { [k: string]: any | undefined };
 }
 
 /** Reflected message field. */
@@ -253,7 +253,7 @@ export class Field extends FieldBase {
      * @param [extend] Extended type if different from parent
      * @param [options] Declared options
      */
-    constructor(name: string, id: number, type: string, rule?: (string|{ [k: string]: any }), extend?: (string|{ [k: string]: any }), options?: { [k: string]: any });
+    constructor(name: string, id: number, type: string, rule?: (string|{ [k: string]: any | undefined }), extend?: (string|{ [k: string]: any | undefined }), options?: { [k: string]: any | undefined });
 
     /**
      * Constructs a field from a field descriptor.
@@ -300,7 +300,7 @@ export class FieldBase extends ReflectionObject {
      * @param [options] Declared options
      * @param [comment] Comment associated with this field
      */
-    constructor(name: string, id: number, type: string, rule?: (string|{ [k: string]: any }), extend?: (string|{ [k: string]: any }), options?: { [k: string]: any }, comment?: string);
+    constructor(name: string, id: number, type: string, rule?: (string|{ [k: string]: any | undefined }), extend?: (string|{ [k: string]: any | undefined }), options?: { [k: string]: any | undefined }, comment?: string);
 
     /** Field rule, if any. */
     public rule?: string;
@@ -384,7 +384,7 @@ export interface IField {
     id: number;
 
     /** Field options */
-    options?: { [k: string]: any };
+    options?: { [k: string]: any | undefined };
 }
 
 /** Extension field descriptor. */
@@ -462,7 +462,7 @@ export class MapField extends FieldBase {
      * @param [options] Declared options
      * @param [comment] Comment associated with this field
      */
-    constructor(name: string, id: number, keyType: string, type: string, options?: { [k: string]: any }, comment?: string);
+    constructor(name: string, id: number, keyType: string, type: string, options?: { [k: string]: any | undefined }, comment?: string);
 
     /** Key type. */
     public keyType: string;
@@ -530,7 +530,7 @@ export class Message<T extends object = object> {
      * @param [properties] Properties to set
      * @returns Message instance
      */
-    public static create<T extends Message<T>>(this: Constructor<T>, properties?: { [k: string]: any }): Message<T>;
+    public static create<T extends Message<T>>(this: Constructor<T>, properties?: { [k: string]: any | undefined }): Message<T>;
 
     /**
      * Encodes a message of this type.
@@ -538,7 +538,7 @@ export class Message<T extends object = object> {
      * @param [writer] Writer to use
      * @returns Writer
      */
-    public static encode<T extends Message<T>>(this: Constructor<T>, message: (T|{ [k: string]: any }), writer?: Writer): Writer;
+    public static encode<T extends Message<T>>(this: Constructor<T>, message: (T|{ [k: string]: any | undefined }), writer?: Writer): Writer;
 
     /**
      * Encodes a message of this type preceeded by its length as a varint.
@@ -546,7 +546,7 @@ export class Message<T extends object = object> {
      * @param [writer] Writer to use
      * @returns Writer
      */
-    public static encodeDelimited<T extends Message<T>>(this: Constructor<T>, message: (T|{ [k: string]: any }), writer?: Writer): Writer;
+    public static encodeDelimited<T extends Message<T>>(this: Constructor<T>, message: (T|{ [k: string]: any | undefined }), writer?: Writer): Writer;
 
     /**
      * Decodes a message of this type.
@@ -567,14 +567,14 @@ export class Message<T extends object = object> {
      * @param message Plain object to verify
      * @returns `null` if valid, otherwise the reason why it is not
      */
-    public static verify(message: { [k: string]: any }): (string|null);
+    public static verify(message: { [k: string]: any | undefined }): (string|null);
 
     /**
      * Creates a new message of this type from a plain object. Also converts values to their respective internal types.
      * @param object Plain object
      * @returns Message instance
      */
-    public static fromObject<T extends Message<T>>(this: Constructor<T>, object: { [k: string]: any }): T;
+    public static fromObject<T extends Message<T>>(this: Constructor<T>, object: { [k: string]: any | undefined }): T;
 
     /**
      * Creates a plain object from a message of this type. Also converts values to other types if specified.
@@ -582,13 +582,13 @@ export class Message<T extends object = object> {
      * @param [options] Conversion options
      * @returns Plain object
      */
-    public static toObject<T extends Message<T>>(this: Constructor<T>, message: T, options?: IConversionOptions): { [k: string]: any };
+    public static toObject<T extends Message<T>>(this: Constructor<T>, message: T, options?: IConversionOptions): { [k: string]: any | undefined };
 
     /**
      * Converts this message to JSON.
      * @returns JSON object
      */
-    public toJSON(): { [k: string]: any };
+    public toJSON(): { [k: string]: any | undefined };
 }
 
 /** Reflected service method. */
@@ -605,7 +605,7 @@ export class Method extends ReflectionObject {
      * @param [options] Declared options
      * @param [comment] The comment for this method
      */
-    constructor(name: string, type: (string|undefined), requestType: string, responseType: string, requestStream?: (boolean|{ [k: string]: any }), responseStream?: (boolean|{ [k: string]: any }), options?: { [k: string]: any }, comment?: string);
+    constructor(name: string, type: (string|undefined), requestType: string, responseType: string, requestStream?: (boolean|{ [k: string]: any | undefined }), responseStream?: (boolean|{ [k: string]: any | undefined }), options?: { [k: string]: any | undefined }, comment?: string);
 
     /** Method type. */
     public type: string;
@@ -667,7 +667,7 @@ export interface IMethod {
     responseStream?: boolean;
 
     /** Method options */
-    options?: { [k: string]: any };
+    options?: { [k: string]: any | undefined };
 }
 
 /** Reflected namespace. */
@@ -678,7 +678,7 @@ export class Namespace extends NamespaceBase {
      * @param name Namespace name
      * @param [options] Declared options
      */
-    constructor(name: string, options?: { [k: string]: any });
+    constructor(name: string, options?: { [k: string]: any | undefined });
 
     /**
      * Constructs a namespace from JSON.
@@ -687,7 +687,7 @@ export class Namespace extends NamespaceBase {
      * @returns Created namespace
      * @throws {TypeError} If arguments are invalid
      */
-    public static fromJSON(name: string, json: { [k: string]: any }): Namespace;
+    public static fromJSON(name: string, json: { [k: string]: any | undefined }): Namespace;
 
     /**
      * Converts an array of reflection objects to JSON.
@@ -695,7 +695,7 @@ export class Namespace extends NamespaceBase {
      * @param [toJSONOptions] JSON conversion options
      * @returns JSON object or `undefined` when array is empty
      */
-    public static arrayToJSON(array: ReflectionObject[], toJSONOptions?: IToJSONOptions): ({ [k: string]: any }|undefined);
+    public static arrayToJSON(array: ReflectionObject[], toJSONOptions?: IToJSONOptions): ({ [k: string]: any | undefined }|undefined);
 
     /**
      * Tests if the specified id is reserved.
@@ -718,7 +718,7 @@ export class Namespace extends NamespaceBase {
 export abstract class NamespaceBase extends ReflectionObject {
 
     /** Nested objects by name. */
-    public nested?: { [k: string]: ReflectionObject };
+    public nested?: { [k: string]: ReflectionObject | undefined };
 
     /** Nested objects of this namespace as an array for iteration. */
     public readonly nestedArray: ReflectionObject[];
@@ -735,7 +735,7 @@ export abstract class NamespaceBase extends ReflectionObject {
      * @param nestedJson Any nested object descriptors
      * @returns `this`
      */
-    public addJSON(nestedJson: { [k: string]: AnyNestedObject }): Namespace;
+    public addJSON(nestedJson: { [k: string]: AnyNestedObject | undefined }): Namespace;
 
     /**
      * Gets the nested object of the specified name.
@@ -751,7 +751,7 @@ export abstract class NamespaceBase extends ReflectionObject {
      * @returns Enum values
      * @throws {Error} If there is no such enum
      */
-    public getEnum(name: string): { [k: string]: number };
+    public getEnum(name: string): { [k: string]: number | undefined };
 
     /**
      * Adds a nested object to this namespace.
@@ -843,10 +843,10 @@ export abstract class NamespaceBase extends ReflectionObject {
 export interface INamespace {
 
     /** Namespace options */
-    options?: { [k: string]: any };
+    options?: { [k: string]: any | undefined };
 
     /** Nested object descriptors */
-    nested?: { [k: string]: AnyNestedObject };
+    nested?: { [k: string]: AnyNestedObject | undefined };
 }
 
 /** Any extension field descriptor. */
@@ -859,7 +859,7 @@ type AnyNestedObject = (IEnum|IType|IService|AnyExtensionField|INamespace);
 export abstract class ReflectionObject {
 
     /** Options. */
-    public options?: { [k: string]: any };
+    public options?: { [k: string]: any | undefined };
 
     /** Unique name within its namespace. */
     public name: string;
@@ -886,7 +886,7 @@ export abstract class ReflectionObject {
      * Converts this reflection object to its descriptor representation.
      * @returns Descriptor
      */
-    public toJSON(): { [k: string]: any };
+    public toJSON(): { [k: string]: any | undefined };
 
     /**
      * Called when this object is added to a parent.
@@ -928,7 +928,7 @@ export abstract class ReflectionObject {
      * @param [ifNotSet] Sets an option only if it isn't currently set
      * @returns `this`
      */
-    public setOptions(options: { [k: string]: any }, ifNotSet?: boolean): ReflectionObject;
+    public setOptions(options: { [k: string]: any | undefined }, ifNotSet?: boolean): ReflectionObject;
 
     /**
      * Converts this instance to its string representation.
@@ -947,7 +947,7 @@ export class OneOf extends ReflectionObject {
      * @param [options] Declared options
      * @param [comment] Comment associated with this field
      */
-    constructor(name: string, fieldNames?: (string[]|{ [k: string]: any }), options?: { [k: string]: any }, comment?: string);
+    constructor(name: string, fieldNames?: (string[]|{ [k: string]: any | undefined }), options?: { [k: string]: any | undefined }, comment?: string);
 
     /** Field names that belong to this oneof. */
     public oneof: string[];
@@ -1003,7 +1003,7 @@ export interface IOneOf {
     oneof: string[];
 
     /** Oneof options */
-    options?: { [k: string]: any };
+    options?: { [k: string]: any | undefined };
 }
 
 /**
@@ -1220,7 +1220,7 @@ export class Root extends NamespaceBase {
      * Constructs a new root namespace instance.
      * @param [options] Top level options
      */
-    constructor(options?: { [k: string]: any });
+    constructor(options?: { [k: string]: any | undefined });
 
     /** Deferred extension fields. */
     public deferred: Field[];
@@ -1283,7 +1283,7 @@ export class Root extends NamespaceBase {
  * This is where pbjs stores generated structures (the option `-r, --root` specifies a name).
  * Can also be used manually to make roots available accross modules.
  */
-export let roots: { [k: string]: Root };
+export let roots: { [k: string]: Root | undefined };
 
 /** Streaming RPC helpers. */
 export namespace rpc {
@@ -1368,10 +1368,10 @@ export class Service extends NamespaceBase {
      * @param [options] Service options
      * @throws {TypeError} If arguments are invalid
      */
-    constructor(name: string, options?: { [k: string]: any });
+    constructor(name: string, options?: { [k: string]: any | undefined });
 
     /** Service methods. */
-    public methods: { [k: string]: Method };
+    public methods: { [k: string]: Method | undefined };
 
     /**
      * Constructs a service from a service descriptor.
@@ -1406,7 +1406,7 @@ export class Service extends NamespaceBase {
 export interface IService extends INamespace {
 
     /** Method descriptors */
-    methods: { [k: string]: IMethod };
+    methods: { [k: string]: IMethod | undefined };
 }
 
 /**
@@ -1491,13 +1491,13 @@ export class Type extends NamespaceBase {
      * @param name Message name
      * @param [options] Declared options
      */
-    constructor(name: string, options?: { [k: string]: any });
+    constructor(name: string, options?: { [k: string]: any | undefined });
 
     /** Message fields. */
-    public fields: { [k: string]: Field };
+    public fields: { [k: string]: Field | undefined };
 
     /** Oneofs declared within this namespace, if any. */
-    public oneofs: { [k: string]: OneOf };
+    public oneofs: { [k: string]: OneOf | undefined };
 
     /** Extension ranges, if any. */
     public extensions: number[][];
@@ -1506,7 +1506,7 @@ export class Type extends NamespaceBase {
     public reserved: (number[]|string)[];
 
     /** Message fields by id. */
-    public readonly fieldsById: { [k: number]: Field };
+    public readonly fieldsById: { [k: number]: Field | undefined };
 
     /** Fields of this message as an array for iteration. */
     public readonly fieldsArray: Field[];
@@ -1579,7 +1579,7 @@ export class Type extends NamespaceBase {
      * @param [properties] Properties to set
      * @returns Message instance
      */
-    public create(properties?: { [k: string]: any }): Message<{}>;
+    public create(properties?: { [k: string]: any | undefined }): Message<{}>;
 
     /**
      * Sets up {@link Type#encode|encode}, {@link Type#decode|decode} and {@link Type#verify|verify}.
@@ -1593,7 +1593,7 @@ export class Type extends NamespaceBase {
      * @param [writer] Writer to encode to
      * @returns writer
      */
-    public encode(message: (Message<{}>|{ [k: string]: any }), writer?: Writer): Writer;
+    public encode(message: (Message<{}>|{ [k: string]: any | undefined }), writer?: Writer): Writer;
 
     /**
      * Encodes a message of this type preceeded by its byte length as a varint. Does not implicitly {@link Type#verify|verify} messages.
@@ -1601,7 +1601,7 @@ export class Type extends NamespaceBase {
      * @param [writer] Writer to encode to
      * @returns writer
      */
-    public encodeDelimited(message: (Message<{}>|{ [k: string]: any }), writer?: Writer): Writer;
+    public encodeDelimited(message: (Message<{}>|{ [k: string]: any | undefined }), writer?: Writer): Writer;
 
     /**
      * Decodes a message of this type.
@@ -1627,14 +1627,14 @@ export class Type extends NamespaceBase {
      * @param message Plain object to verify
      * @returns `null` if valid, otherwise the reason why it is not
      */
-    public verify(message: { [k: string]: any }): (null|string);
+    public verify(message: { [k: string]: any | undefined }): (null|string);
 
     /**
      * Creates a new message of this type from a plain object. Also converts values to their respective internal types.
      * @param object Plain object to convert
      * @returns Message instance
      */
-    public fromObject(object: { [k: string]: any }): Message<{}>;
+    public fromObject(object: { [k: string]: any | undefined }): Message<{}>;
 
     /**
      * Creates a plain object from a message of this type. Also converts values to other types if specified.
@@ -1642,7 +1642,7 @@ export class Type extends NamespaceBase {
      * @param [options] Conversion options
      * @returns Plain object
      */
-    public toObject(message: Message<{}>, options?: IConversionOptions): { [k: string]: any };
+    public toObject(message: Message<{}>, options?: IConversionOptions): { [k: string]: any | undefined };
 
     /**
      * Type decorator (TypeScript).
@@ -1656,10 +1656,10 @@ export class Type extends NamespaceBase {
 export interface IType extends INamespace {
 
     /** Oneof descriptors */
-    oneofs?: { [k: string]: IOneOf };
+    oneofs?: { [k: string]: IOneOf | undefined };
 
     /** Field descriptors */
-    fields: { [k: string]: IField };
+    fields: { [k: string]: IField | undefined };
 
     /** Extension ranges */
     extensions?: number[][];
@@ -2013,7 +2013,7 @@ export namespace util {
      * @param [ifNotSet=false] Merges only if the key is not already set
      * @returns Destination object
      */
-    function merge(dst: { [k: string]: any }, src: { [k: string]: any }, ifNotSet?: boolean): { [k: string]: any };
+    function merge(dst: { [k: string]: any | undefined }, src: { [k: string]: any | undefined }, ifNotSet?: boolean): { [k: string]: any | undefined };
 
     /**
      * Converts the first character of a string to lower case.
@@ -2037,7 +2037,7 @@ export namespace util {
          * @param message Error message
          * @param [properties] Additional properties
          */
-        constructor(message: string, properties?: { [k: string]: any });
+        constructor(message: string, properties?: { [k: string]: any | undefined });
 
         /** So far decoded message instance. */
         public instance: Message<T>;
@@ -2075,21 +2075,21 @@ export namespace util {
     let toJSONOptions: IConversionOptions;
 
     /** Node's fs module if available. */
-    let fs: { [k: string]: any };
+    let fs: { [k: string]: any | undefined };
 
     /**
      * Converts an object's values to an array.
      * @param object Object to convert
      * @returns Converted array
      */
-    function toArray(object: { [k: string]: any }): any[];
+    function toArray(object: { [k: string]: any | undefined }): any[];
 
     /**
      * Converts an array of keys immediately followed by their respective value to an object, omitting undefined values.
      * @param array Array to convert
      * @returns Converted object
      */
-    function toObject(array: any[]): { [k: string]: any };
+    function toObject(array: any[]): { [k: string]: any | undefined };
 
     /**
      * Tests whether the specified name is a reserved word in JS.
@@ -2416,14 +2416,14 @@ export namespace util {
 export function verifier(mtype: Type): Codegen;
 
 /** Wrappers for common types. */
-export const wrappers: { [k: string]: IWrapper };
+export const wrappers: { [k: string]: IWrapper | undefined };
 
 /**
  * From object converter part of an {@link IWrapper}.
  * @param object Plain object
  * @returns Message instance
  */
-type WrapperFromObjectConverter = (this: Type, object: { [k: string]: any }) => Message<{}>;
+type WrapperFromObjectConverter = (this: Type, object: { [k: string]: any | undefined }) => Message<{}>;
 
 /**
  * To object converter part of an {@link IWrapper}.
@@ -2431,7 +2431,7 @@ type WrapperFromObjectConverter = (this: Type, object: { [k: string]: any }) => 
  * @param [options] Conversion options
  * @returns Plain object
  */
-type WrapperToObjectConverter = (this: Type, message: Message<{}>, options?: IConversionOptions) => { [k: string]: any };
+type WrapperToObjectConverter = (this: Type, message: Message<{}>, options?: IConversionOptions) => { [k: string]: any | undefined };
 
 /** Common type wrapper part of {@link wrappers}. */
 export interface IWrapper {
@@ -2644,7 +2644,7 @@ type asPromiseCallback = (error: (Error|null), ...params: any[]) => void;
  * @returns Itself or the generated function if finished
  * @throws {Error} If format parameter counts do not match
  */
-type Codegen = (formatStringOrScope?: (string|{ [k: string]: any }), ...formatParams: any[]) => (Codegen|Function);
+type Codegen = (formatStringOrScope?: (string|{ [k: string]: any | undefined }), ...formatParams: any[]) => (Codegen|Function);
 
 /**
  * Event listener as used by {@link util.EventEmitter}.

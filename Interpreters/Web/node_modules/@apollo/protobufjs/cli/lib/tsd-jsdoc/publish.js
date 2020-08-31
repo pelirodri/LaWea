@@ -286,9 +286,9 @@ function getTypeOf(element) {
         return $1 + "[]";
     });
 
-    // Replace Object.<string,number> with { [k: string]: number }
+    // Replace Object.<string,number> with { [k: string]: number | undefined }
     name = replaceRecursive(name, /\bObject\.?<([^,]*), *([^>]*)>/gi, function($0, $1, $2) {
-        return "{ [k: " + $1 + "]: " + $2 + " }";
+        return "{ [k: " + $1 + "]: " + $2 + " | undefined }";
     });
 
     // Replace functions (there are no signatures) with Function

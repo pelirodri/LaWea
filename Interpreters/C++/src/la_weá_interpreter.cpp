@@ -81,32 +81,30 @@ std::vector<la_weá_interpreter::command_t> la_weá_interpreter::get_commands(co
 				commands.push_back(cmd);
 				cmd_name = U"";
 			}
-		} else {
-			if (!is_comment) {
-				if (std::u32string (U"abcdeghiklmnopqrtuwáéíóú").find(code[i]) == std::u32string::npos) {
-					exit_interpreter(
-						u8"'" +
-						utf8_utf32_utility::utf32_str_to_utf8(std::u32string (1, code[i])) +
-						u8"' no es parte de La Weá, tonto qlo (línea: " +
-						std::u8string((const char8_t *)std::to_string(line).data()) +
-						u8", columna: " +
-						std::u8string((const char8_t *)std::to_string(col).data()) +
-						u8")"
-					);
-				}
-
-				if (cmd_name.length() == 7) {
-					exit_interpreter(
-						u8"¿Voh creís que yo soy weón, CTM? Te gustan largos, parece (línea: " +
-						std::u8string((const char8_t *)std::to_string(line).data()) +
-						u8", columna: " +
-						std::u8string((const char8_t *)std::to_string(col - cmd_name.length()).data()) +
-						u8")"
-					);
-				}
-
-				cmd_name += code[i];
+		} else if (!is_comment) {
+			if (std::u32string (U"abcdeghiklmnopqrtuwáéíóú").find(code[i]) == std::u32string::npos) {
+				exit_interpreter(
+					u8"'" +
+					utf8_utf32_utility::utf32_str_to_utf8(std::u32string (1, code[i])) +
+					u8"' no es parte de La Weá, tonto qlo (línea: " +
+					std::u8string((const char8_t *)std::to_string(line).data()) +
+					u8", columna: " +
+					std::u8string((const char8_t *)std::to_string(col).data()) +
+					u8")"
+				);
 			}
+
+			if (cmd_name.length() == 7) {
+				exit_interpreter(
+					u8"¿Voh creís que yo soy weón, CTM? Te gustan largos, parece (línea: " +
+					std::u8string((const char8_t *)std::to_string(line).data()) +
+					u8", columna: " +
+					std::u8string((const char8_t *)std::to_string(col - cmd_name.length()).data()) +
+					u8")"
+				);
+			}
+
+			cmd_name += code[i];
 		}
 
 		if (code[i] == U'\n') {

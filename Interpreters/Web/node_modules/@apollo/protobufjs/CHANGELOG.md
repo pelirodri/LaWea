@@ -1,3 +1,8 @@
+# [1.0.5](https://github.com/apollographql/protobuf.js/releases/tag/1.0.5)
+
+## Other
+[:hash:](https://github.com/apollographql/protobuf.js/commit/68a467e01363bd3d8140a495d4ed4edeaca4f180) Map field TypeScript types shouldn't imply all keys exist<br />
+
 # [1.0.4](https://github.com/apollographql/protobuf.js/releases/tag/1.0.4)
 
 ## New

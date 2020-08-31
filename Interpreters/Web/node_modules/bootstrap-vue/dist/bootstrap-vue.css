@@ -151,7 +151,7 @@
   text-align: center;
   overflow: visible;
   position: relative;
-  transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+  transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
 }
 
 .b-avatar:focus {
@@ -965,6 +965,14 @@ input[type="color"].form-control:disabled {
   pointer-events: none;
 }
 
+.b-form-tags .b-form-tags-list {
+  margin-top: -0.25rem;
+}
+
+.b-form-tags .b-form-tags-list .b-form-tag {
+  margin-top: 0.25rem;
+}
+
 .b-form-tags.focus {
   color: #495057;
   background-color: #fff;
@@ -991,6 +999,7 @@ input[type="color"].form-control:disabled {
   font-size: 75%;
   font-weight: normal;
   line-height: 1.5;
+  margin-right: 0.25rem;
 }
 
 .b-form-tag.disabled {
@@ -1002,6 +1011,7 @@ input[type="color"].form-control:disabled {
   font-size: 125%;
   line-height: 1;
   float: none;
+  margin-left: 0.25rem;
 }
 
 .form-control-sm .b-form-tag {
@@ -1476,7 +1486,6 @@ input[type="color"].form-control:disabled {
   height: 100vh;
   width: 320px;
   max-width: 100% !important;
-  height: 100vh !important;
   margin: 0 !important;
   outline: 0;
   -webkit-transform: translateX(0);

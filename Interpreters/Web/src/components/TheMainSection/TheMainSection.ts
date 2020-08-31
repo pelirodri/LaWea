@@ -79,32 +79,30 @@ export default class TheMainSection extends Vue implements LaWeáInterpreter {
 					this.commands.push(command!);
 					commandName = "";
 				}
-			} else {
-				if (!isComment) {
-					if ("abcdeghiklmnopqrtuwáéíóú".indexOf(code[i]) === -1) {
-						this.exitInterpreter(
-							"'" +
-							code[i] +
-							"'" +
-							" no es parte de La Weá, tonto qlo (línea: " +
-							String(line) +
-							", columna: " +
-							String(col) + ")"
-						);
-					}
-					
-					if (commandName.length === 7) {
-						this.exitInterpreter(
-							"¿Voh creís que yo soy weón, CTM? Te gustan largos, parece (línea: " +
-							String(line) +
-							", columna: " +
-							String(col - commandName.length) +
-							")"
-						);
-					}
-					
-					commandName += code[i];
+			} else if (!isComment) {
+				if ("abcdeghiklmnopqrtuwáéíóú".indexOf(code[i]) === -1) {
+					this.exitInterpreter(
+						"'" +
+						code[i] +
+						"'" +
+						" no es parte de La Weá, tonto qlo (línea: " +
+						String(line) +
+						", columna: " +
+						String(col) + ")"
+					);
 				}
+				
+				if (commandName.length === 7) {
+					this.exitInterpreter(
+						"¿Voh creís que yo soy weón, CTM? Te gustan largos, parece (línea: " +
+						String(line) +
+						", columna: " +
+						String(col - commandName.length) +
+						")"
+					);
+				}
+				
+				commandName += code[i];
 			}
 			
 			if (code[i] === "\n") {

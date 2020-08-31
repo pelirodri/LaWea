@@ -144,23 +144,21 @@ open class LaWeáInterpreter {
                     commands.append(command!)
                     commandName = ""
                 }
-            } else {
-                if !isComment {
-                    if !"abcdeghiklmnopqrtuwáéíóú".contains(char) {
-                        let subMessage = "' no es parte de La Weá, tonto qlo (línea: "
-                        exitInterpreter(with: "'\(char!)\(subMessage)\(line), columna: \(col))")
-                    }
-                    
-                    if commandName.count == 7 {
-                        let subMessage = "¿Voh creís que yo soy weón, CTM? Te gustan largos, parece (línea: "
-                        exitInterpreter(with: "\(subMessage)\(line), columna: \(col - commandName.count))")
-                    }
-                    
-                    commandName.append(char)
+            } else if !isComment {
+                if !"abcdeghiklmnopqrtuwáéíóú".contains(char) {
+                    let subMessage = "' no es parte de La Weá, tonto qlo (línea: "
+                    exitInterpreter(with: "'\(char!)\(subMessage)\(line), columna: \(col))")
                 }
+                
+                if commandName.count == 7 {
+                    let subMessage = "¿Voh creís que yo soy weón, CTM? Te gustan largos, parece (línea: "
+                    exitInterpreter(with: "\(subMessage)\(line), columna: \(col - commandName.count))")
+                }
+                
+                commandName.append(char)
             }
             
-            if char == "\n" {
+            if char == "\n" || char == "\r\n" {
                 line += 1
                 col = 0
                 
