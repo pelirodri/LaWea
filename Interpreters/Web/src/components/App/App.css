@@ -1,9 +1,13 @@
+:root {
+	--background-color: #272822;
+}
+
 body {
-	background: #272822 !important;
+	background: var(--background-color) !important;
 }
 
 #output, #input {
-	background: #272822;
+	background: var(--background-color);
 }
 
 *:focus, *:active {

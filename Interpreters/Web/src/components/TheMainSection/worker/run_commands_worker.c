@@ -6,7 +6,6 @@
 #include <string.h>
 #include <ctype.h>
 #include <errno.h>
-#include <math.h>
 #include <emscripten.h>
 
 static size_t cells_size;
@@ -174,7 +173,9 @@ static void run_commands_worker(char *data, int size) {
                 
                 break;
             case chúpala: {
-                char num_str[(int)(log10(cells[cur_cell]) + 1) + 1];
+                int num_size = snprintf(NULL, 0, "%lld", cells[cur_cell]);
+                char num_str[num_size + 1];
+
                 sprintf(num_str, "%lld", cells[cur_cell]);
 
                 size_t response_size = 1 + sizeof(bool) + sizeof(int64_t);

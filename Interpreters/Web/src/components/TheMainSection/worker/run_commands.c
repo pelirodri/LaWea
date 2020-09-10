@@ -6,7 +6,6 @@
 #include <string.h>
 #include <stdbool.h>
 #include <uchar.h>
-#include <math.h>
 #include <emscripten.h>
 
 static worker_handle worker = -1;
@@ -66,7 +65,9 @@ void callback(char *data, int size, void *arg) {
 
 				((append_to_output *)append_to_output_ptr)((int)char_str, false);
 			} else {
-				char num_str[(int)(log10(response.content_to_append) + 1) + 1];
+				int num_size = snprintf(NULL, 0, "%lld", response.content_to_append);
+				char num_str[num_size + 1];
+
 	        	sprintf(num_str, "%lld", response.content_to_append);
 
 				((append_to_output *)append_to_output_ptr)((int)num_str, true);
@@ -80,7 +81,14 @@ void callback(char *data, int size, void *arg) {
 			break;
 		case exit_interpreter_op:
 			memcpy(&response.should_display_err, (void *)data + 1, sizeof(bool));
-			((exit_interpreter *)exit_interpreter_ptr)(data + (1 + sizeof(bool)), response.should_display_err);
+
+			char *err_msg;
+
+			if (sizeof(data) > 1 + sizeof(bool)) {
+				err_msg = data + (1 + sizeof(bool));
+			}
+
+			((exit_interpreter *)exit_interpreter_ptr)(err_msg, response.should_display_err);
 
 			break;
 	}

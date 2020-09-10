@@ -5,8 +5,7 @@ import TheOutputManager from "../TheOutputManager/TheOutputManager.vue";
 import TheInputManager from "../TheInputManager/TheInputManager.vue";
 import TheErrorModal from "../TheErrorModal/TheErrorModal.vue";
 
-import { LaWeáInterpreter } from "./LaWeáInterpreter";
-import { Command } from "./LaWeáInterpreter";
+import { LaWeáInterpreter, Command } from "./LaWeáInterpreter";
 
 import Module from "./run_commands";
 
@@ -154,20 +153,18 @@ export default class TheMainSection extends Vue implements LaWeáInterpreter {
 	}
 
 	exitInterpreter(errorMessage: string, shouldDisplayError = true): void {
-		if (errorMessage) {
+		this.stopRunningCommands();
+
+		if (errorMessage.length > 1) {
 			if (shouldDisplayError) {
 				this.errorMessage = errorMessage;
 				this.$bvModal.show("error-modal");
 			}
-
+			
 			console.error(errorMessage);
 
 			throw new Error(errorMessage);
 		}
-
-		this.stopRunningCommands();
-
-		throw new Error();
 	}
 
 	private getCommand(commandName: string, line: number, col: number): Command {
