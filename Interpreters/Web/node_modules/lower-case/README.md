@@ -2,9 +2,12 @@
 
 [![NPM version][npm-image]][npm-url]
 [![NPM downloads][downloads-image]][downloads-url]
-[![Bundle size][bundlephobia-image]][bundlephobia-url]
+[![Build status][travis-image]][travis-url]
+[![Test coverage][coveralls-image]][coveralls-url]
 
-> Transforms the string to lower case.
+Lower case a string.
+
+Supports Unicode (non-ASCII characters) and non-string entities, such as objects with a `toString` property, numbers and booleans. Empty values (`null` and `undefined`) will result in an empty string.
 
 ## Installation
 
@@ -15,13 +18,18 @@ npm install lower-case --save
 ## Usage
 
 ```js
-import { lowerCase, localeLowerCase } from "lower-case";
+var lowerCase = require('lower-case')
 
-lowerCase("string"); //=> "string"
-lowerCase("PascalCase"); //=> "pascalcase"
+lowerCase(null)           //=> ""
+lowerCase('STRING')       //=> "string"
+lowerCase('STRING', 'tr') //=> "strıng"
 
-localeLowerCase("STRING", "tr"); //=> "strıng"
+lowerCase({ toString: function () { return 'TEST' } }) //=> "test"
 ```
+
+## Typings
+
+Includes a [TypeScript definition](lower-case.d.ts).
 
 ## License
 
@@ -31,5 +39,7 @@ MIT
 [npm-url]: https://npmjs.org/package/lower-case
 [downloads-image]: https://img.shields.io/npm/dm/lower-case.svg?style=flat
 [downloads-url]: https://npmjs.org/package/lower-case
-[bundlephobia-image]: https://img.shields.io/bundlephobia/minzip/lower-case.svg
-[bundlephobia-url]: https://bundlephobia.com/result?p=lower-case
+[travis-image]: https://img.shields.io/travis/blakeembrey/lower-case.svg?style=flat
+[travis-url]: https://travis-ci.org/blakeembrey/lower-case
+[coveralls-image]: https://img.shields.io/coveralls/blakeembrey/lower-case.svg?style=flat
+[coveralls-url]: https://coveralls.io/r/blakeembrey/lower-case?branch=master

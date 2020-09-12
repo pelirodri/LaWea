@@ -1,1 +1,0 @@
-{"version":3,"file":"download-schema.d.ts","sourceRoot":"","sources":["../../../src/commands/client/download-schema.ts"],"names":[],"mappings":"AACA,OAAO,EAAE,aAAa,EAAE,MAAM,eAAe,CAAC;AAK9C,MAAM,CAAC,OAAO,OAAO,cAAe,SAAQ,aAAa;IACvD,MAAM,CAAC,WAAW,SAC0E;IAE5F,MAAM,CAAC,KAAK;;;;;;;;;;;;;;;;MAEV;IAEF,MAAM,CAAC,IAAI;;;;;QAQT;IAEI,GAAG;CAwBV"}

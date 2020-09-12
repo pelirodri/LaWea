@@ -203,7 +203,7 @@ open class LaWeáInterpreter {
                 cells[currentCell] = 0
             case .chucha:
                 if currentCell == 0 {
-                    exitInterpreter(with: "Te saliste pa’ la izquierda, aweonao")
+                    exitInterpreter(with: "Te saliste pa’ la izquierda, aweona’o")
                 }
                 
                 currentCell -= 1

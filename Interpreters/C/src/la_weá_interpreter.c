@@ -256,7 +256,7 @@ void run_commands(const command_t *commands, size_t commands_count) {
             case chucha:
                 if (!cur_cell) {
                     free(cells);
-                    exit_interpreter("Te saliste pa’ la izquierda, aweonao");
+                    exit_interpreter("Te saliste pa’ la izquierda, aweona’o");
                 }
 
                 cur_cell--;

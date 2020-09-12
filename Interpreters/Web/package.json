@@ -7,11 +7,9 @@
 		"build": "vue-cli-service build"
 	},
 	"dependencies": {
-		"@vue/cli": "^4.5.4",
 		"bootstrap": "^4.5.0",
 		"bootstrap-vue": "^2.15.0",
 		"codemirror": "^5.54.0",
-		"global": "^4.4.0",
 		"vue": "^2.6.11",
 		"vue-class-component": "^7.2.3",
 		"vue-property-decorator": "^8.4.2"

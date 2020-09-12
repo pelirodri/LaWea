@@ -158,7 +158,7 @@ void la_weá_interpreter::run_commands(const std::vector<command_t> &commands) {
 				break;
 			case chucha:
 				if (!cur_cell) {
-					exit_interpreter(u8"Te saliste pa’ la izquierda, aweonao");
+					exit_interpreter(u8"Te saliste pa’ la izquierda, aweona’o");
 				}
 
 				--cur_cell;
