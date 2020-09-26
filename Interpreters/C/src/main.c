@@ -30,7 +30,7 @@ int main(int argc, char **argv) {
     setlocale(LC_CTYPE, "");
 
     if (argc != 2) {
-        exit_interpreter(u8"Tenís que pasar la ruta del archivo con el código, poh, aweonao qlo");
+        exit_interpreter(u8"Tenís que pasar la ruta del archivo con el código, poh, aweona’o qlo");
     } else if (!strstr(argv[1], ".lw")) {
     	exit_interpreter(u8"El archivo qlo tiene que tener la extensión .lw");
     }

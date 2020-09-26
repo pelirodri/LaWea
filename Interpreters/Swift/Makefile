@@ -1,5 +1,5 @@
 SWIFTC := swiftc
-SWIFTFLAGS := -Ounchecked
+SWIFTFLAGS := -Ounchecked -parse-as-library
 
 NAME := laweáswift
 BUILD_DIR := ./build
@@ -17,7 +17,7 @@ $(BUILD_DIR)/main.o: $(SRC_DIR)/main.swift $(BUILD_DIR)/LaWeáInterpreter.swiftm
 
 $(BUILD_DIR)/LaWeáInterpreter.o: $(SRC_DIR)/LaWeáInterpreter.swift
 	mkdir -p $(@D)
-	$(SWIFTC) $(SWIFTFLAGS) -c $< -parse-as-library -o $@
+	$(SWIFTC) $(SWIFTFLAGS) -c $< -o $@
 
 $(BUILD_DIR)/LaWeáInterpreter.swiftmodule: $(SRC_DIR)/LaWeáInterpreter.swift
 	$(SWIFTC) $< -emit-module -emit-module-path $(@D) 

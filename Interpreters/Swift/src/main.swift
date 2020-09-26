@@ -19,12 +19,17 @@
 
 import LaWeáInterpreter
 
-let interpreter = LaWeáInterpreter()
+@main
+struct LaWeáMain {
+    static func main() {
+        let interpreter = LaWeáInterpreter()
 
-if CommandLine.arguments.count != 2 {
-    interpreter.exitInterpreter(with: "Tenís que pasar la ruta del archivo con el código, poh, aweonao qlo")
-} else if !CommandLine.arguments[1].hasSuffix(".lw") {
-    interpreter.exitInterpreter(with: "El archivo qlo tiene que tener la extensión .lw")
+        if CommandLine.arguments.count != 2 {
+            interpreter.exitInterpreter(with: "Tenís que pasar la ruta del archivo con el código, poh, aweona’o qlo")
+        } else if !CommandLine.arguments[1].hasSuffix(".lw") {
+            interpreter.exitInterpreter(with: "El archivo qlo tiene que tener la extensión .lw")
+        }
+
+        interpreter.interpret(filePath: CommandLine.arguments[1])
+    }
 }
-
-interpreter.interpret(filePath: CommandLine.arguments[1])

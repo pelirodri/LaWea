@@ -1,0 +1,12 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/Users/pelirodri/Documents/La Weá/Interpreters/C++/src/libs/utf8_utf32_utility/utf8_utf32_utility.cpp
+utf8_utf32_utility.hpp
+/Users/pelirodri/Documents/La Weá/Interpreters/C++/src/libs/utf8_utf32_utility/utf8_utf32_utility.hpp
+
