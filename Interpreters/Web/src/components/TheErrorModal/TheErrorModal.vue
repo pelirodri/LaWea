@@ -1,4 +1,4 @@
-<template>
+<template functional>
 	<b-modal
 		id="error-modal"
 		content-class="bg-dark"

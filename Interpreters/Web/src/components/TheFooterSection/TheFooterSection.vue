@@ -6,7 +6,7 @@
 			</b-link>
 		</div>
 		
-		<p class="text-secondary mt-4 mb-4">Rodrigo Pelissier (pelirodri)</p>
+		<p class="text-secondary mt-4">Rodrigo Pelissier (pelirodri)</p>
 	</footer>
 </template>
 

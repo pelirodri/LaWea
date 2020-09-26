@@ -1,5 +1,5 @@
 <template>
-	<b-container fluid>
+	<b-container class="d-flex flex-column justify-content-around" fluid>
 		<TheHeaderSection />
 		<TheMainSection />
 		<TheFooterSection />

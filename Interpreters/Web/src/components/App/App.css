@@ -1,13 +1,9 @@
-:root {
-	--background-color: #272822;
+body, #output, #input {
+	background: #272822 !important;
 }
 
-body {
-	background: var(--background-color) !important;
-}
-
-#output, #input {
-	background: var(--background-color);
+.container-fluid {
+	min-height: 100vh;
 }
 
 *:focus, *:active {

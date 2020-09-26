@@ -1,5 +1,5 @@
 <template>
-	<main class="mt-4">
+	<main class="d-flex flex-column justify-content-around flex-grow-1 mt-4">
 		<TheCodeEditor
 			:isStopButtonDisabled="isStopButtonDisabled"
 			@runButtonClicked="interpretLaWeá($event)"

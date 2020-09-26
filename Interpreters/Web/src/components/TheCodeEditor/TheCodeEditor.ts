@@ -49,7 +49,7 @@ export default class CodeEditor extends Vue {
 		this.editor.setValue("");
 	}
 
-	mounted(): void {
+	private mounted(): void {
 		CodeMirror.defineSimpleMode("laweá", {
 			start: [
 				{ regex: /[abcdeghiklmnopqrtuwáéíóú\s]/, token: "keyword" },

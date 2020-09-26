@@ -208,7 +208,7 @@ export default class TheMainSection extends Vue implements LaWeáInterpreter {
 		this.isInputDisabled = true;
 	}
 
-	mounted(): void {
+	private mounted(): void {
 		this.appendToOutputPtr = Module.addFunction((stringPtr: number, isNumber: number) => {
 			this.output += Boolean(isNumber) ? Module.UTF8ToString(stringPtr) : Module.UTF32ToString(stringPtr);
 		})
