@@ -1,11 +1,4 @@
-file(GLOB CHILDREN RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}  libs/*)
-
-foreach(CHILD ${CHILDREN})
-	if(IS_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/${CHILD})
-		add_subdirectory(${CHILD})
-	endif()
-endforeach()
-
+add_subdirectory(libs)
 add_executable(lawea++ main.cpp)
 
 target_include_directories(lawea++ PRIVATE ${PROJECT_SOURCE_DIR}/include)
