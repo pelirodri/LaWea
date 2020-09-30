@@ -191,7 +191,7 @@ command_t *get_commands(const uint_least32_t *code, size_t *commands_count) {
 
         if (code[k] == U'\n') {
             line++;
-            col = 0;
+            col = 1;
 
             is_comment = false;
         } else {
@@ -300,7 +300,7 @@ void run_commands(const command_t *commands, size_t commands_count) {
                         printf("%s", (const char *)utf8_output);
                         free(utf8_output);
                     #else
-                        wmemset(utf16_buffer, u'\0', 2);
+                        wmemset(utf16_buffer, L'\0', 2);
 
                         if (cells[cur_cell] < 0x10000) {
                             utf16_buffer[0] = cells[cur_cell];
@@ -342,12 +342,12 @@ void run_commands(const command_t *commands, size_t commands_count) {
                         }
                     }
                 #else
-                    wmemset(utf16_buffer, u'\0', 4);
+                    wmemset(utf16_buffer, L'\0', 4);
 
                     ULONG read_char_count;
                     ReadConsoleW(GetStdHandle(STD_INPUT_HANDLE), utf16_buffer, 5, &read_char_count, NULL);
 
-                    if (utf16_buffer[wcslen(utf16_buffer) - 1] != u'\n') {
+                    if (utf16_buffer[wcslen(utf16_buffer) - 1] != L'\n') {
                         while (getchar() != '\n') {}
                         cells[cur_cell] = U'\0';
                     } else {
@@ -429,7 +429,7 @@ void exit_interpreter(const char *err_msg) {
                 sizeof(utf16_buffer)
             );
 
-            utf16_buffer[utf16_buffer_len] = u'\n';
+            utf16_buffer[utf16_buffer_len] = L'\n';
 
             HANDLE error_handle = GetStdHandle(STD_ERROR_HANDLE);
 
@@ -547,7 +547,7 @@ command_t get_command(const uint_least32_t *cmd_name, long long line, long long 
 
                     sprintf(
                         msg,
-                        "Se encontró una tula sin su respectiva pichula en la línea: %lld, columna: %lld",
+                        "Se encontró una tula sin su respectiva pichula en la línea %lld, columna %lld",
                         line,
                         col
                     );
@@ -559,7 +559,7 @@ command_t get_command(const uint_least32_t *cmd_name, long long line, long long 
             } else if ((command_t)cmd == pico) {
                 if (loop_starts_count == loop_ends_count) {
                     char msg[52 + (int)(log10(line) + 1) + (int)(log10(col) + 1)];
-                    sprintf(msg, "No debiste meter ese pico en la línea: %lld, columna: %lld", line, col);
+                    sprintf(msg, "No debiste meter ese pico en la línea %lld, columna %lld", line, col);
 
                     exit_interpreter(msg);
                 }

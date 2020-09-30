@@ -88,7 +88,7 @@ open class LaWeáInterpreter {
      - Note: The file must have the .lw extension.
      */
     open func interpret(filePath: String) {
-        do {
+        do {            
             let code = try String(contentsOfFile: filePath)
             runCommands(getCommands(from: code))
         } catch {
@@ -117,12 +117,12 @@ open class LaWeáInterpreter {
         var isComment = false
         
         for i in 0...code.count {
-            var char: Character!
+            var char: Character?
             var spacesRange: Range<String.Index>?
             
             if i < code.count {
                 char = code[code.index(code.startIndex, offsetBy: i)]
-                spacesRange = String(char).rangeOfCharacter(from: CharacterSet.whitespacesAndNewlines)
+                spacesRange = String(char!).rangeOfCharacter(from: CharacterSet.whitespacesAndNewlines)
                 
                 if char == "#" {
                     isComment = true
@@ -134,10 +134,10 @@ open class LaWeáInterpreter {
                     let command = getCommand(from: commandName, line: line, col: col - commandName.count)
                     
                     if command == nil {
-                        let subMessage = " no es un comando válido, poh, saco de weas (línea: "
+                        let subMessage = "'\(commandName)' no es un comando válido, poh, saco de weas"
                         
                         exitInterpreter(
-                            with: "'\(commandName)'\(subMessage)\(line), columna: \(col - commandName.count))"
+                            with: "\(subMessage) (línea: \(line), columna: \(col - commandName.count))"
                         )
                     }
                     
@@ -145,22 +145,22 @@ open class LaWeáInterpreter {
                     commandName = ""
                 }
             } else if !isComment {
-                if !"abcdeghiklmnopqrtuwáéíóú".contains(char) {
-                    let subMessage = "' no es parte de La Weá, tonto qlo (línea: "
-                    exitInterpreter(with: "'\(char!)\(subMessage)\(line), columna: \(col))")
+                if !"abcdeghiklmnopqrtuwáéíóú".contains(char!) {
+                    let subMessage = "'\(char!)' no es parte de La Weá, tonto qlo"
+                    exitInterpreter(with: "\(subMessage) (línea: \(line), columna: \(col))")
                 }
                 
                 if commandName.count == 7 {
-                    let subMessage = "¿Voh creís que yo soy weón, CTM? Te gustan largos, parece (línea: "
-                    exitInterpreter(with: "\(subMessage)\(line), columna: \(col - commandName.count))")
+                    let subMessage = "¿Voh creís que yo soy weón, CTM? Te gustan largos, parece"
+                    exitInterpreter(with: "\(subMessage) (línea: \(line), columna: \(col - commandName.count))")
                 }
                 
-                commandName.append(char)
+                commandName.append(char!)
             }
             
             if char == "\n" || char == "\r\n" {
                 line += 1
-                col = 0
+                col = 1
                 
                 isComment = false
             } else {
@@ -276,14 +276,14 @@ open class LaWeáInterpreter {
                     loopStartsCount += 1
                 } else if command == .tula {
                     if loopEndsCount == loopStartsCount {
-                        let subMessage = "Se encontró una tula sin su respectiva pichula en la línea: "
-                        exitInterpreter(with: "\(subMessage)\(line), columna: \(col)")
+                        let subMessage = "Se encontró una tula sin su respectiva pichula en la línea"
+                        exitInterpreter(with: "\(subMessage) \(line), columna \(col)")
                     }
                     
                     loopEndsCount += 1
                 } else if command == .pico {
                     if loopStartsCount == loopEndsCount {
-                        exitInterpreter(with: "No debiste meter ese pico en la línea: \(line), columna: \(col)")
+                        exitInterpreter(with: "No debiste meter ese pico en la línea \(line), columna \(col)")
                     }
                 }
                 

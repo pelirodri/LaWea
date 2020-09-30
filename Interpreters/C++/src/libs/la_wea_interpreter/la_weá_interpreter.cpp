@@ -109,7 +109,7 @@ std::vector<la_weá_interpreter::command_t> la_weá_interpreter::get_commands(co
 
 		if (code[i] == U'\n') {
 			line++;
-			col = 0;
+			col = 1;
 
 			is_comment = false;
 		} else {
@@ -352,9 +352,9 @@ la_weá_interpreter::command_t la_weá_interpreter::get_command(
 			} else if (static_cast<command_t>(cmd) == tula) {
 				if (loop_ends_count == loop_starts_count) {
 					exit_interpreter(
-						u8"Se encontró una tula sin su respectiva pichula en la línea: " +
+						u8"Se encontró una tula sin su respectiva pichula en la línea " +
 						std::u8string((const char8_t *)std::to_string(line).data()) +
-						u8", columna: " +
+						u8", columna " +
 						std::u8string((const char8_t *)std::to_string(col).data())
 					);
 				}
@@ -363,9 +363,9 @@ la_weá_interpreter::command_t la_weá_interpreter::get_command(
 			} else if (static_cast<command_t>(cmd) == pico) {
 				if (loop_starts_count == loop_ends_count) {
 					exit_interpreter(
-						u8"No debiste meter ese pico en la línea: " +
+						u8"No debiste meter ese pico en la línea " +
 						std::u8string((const char8_t *)std::to_string(line).data()) +
-						u8", columna: " +
+						u8", columna " +
 						std::u8string((const char8_t *)std::to_string(col).data())
 					);
 				}
