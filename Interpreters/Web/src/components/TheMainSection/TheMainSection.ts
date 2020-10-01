@@ -106,7 +106,7 @@ export default class TheMainSection extends Vue implements LaWeáInterpreter {
 			
 			if (code[i] === "\n") {
 				line++;
-				col = 0;
+				col = 1;
 				
 				isComment = false;
 			} else {
