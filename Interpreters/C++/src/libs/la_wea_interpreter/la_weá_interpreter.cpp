@@ -282,7 +282,6 @@ void la_weá_interpreter::run_commands(const std::vector<command_t> &commands) {
 				break;
 			case mierda:
 				std::exit(EXIT_SUCCESS);
-				break;
 		}
 	}
 }

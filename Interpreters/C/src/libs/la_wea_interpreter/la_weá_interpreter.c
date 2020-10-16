@@ -403,8 +403,6 @@ void run_commands(const command_t *commands, size_t commands_count) {
             case mierda:
                 free(cells);
                 exit(EXIT_SUCCESS);
-
-                break;
         }
     }
 
@@ -543,7 +541,7 @@ command_t get_command(const uint_least32_t *cmd_name, long long line, long long 
                 loop_starts_count++;               
             } else if ((command_t)cmd == tula) {
                 if (loop_ends_count == loop_starts_count) {
-                    char msg[74 + (int)(log10(line) + 1) + (int)(log10(col) + 1)];
+                    char msg[72 + (int)(log10(line) + 1) + (int)(log10(col) + 1)];
 
                     sprintf(
                         msg,
@@ -558,7 +556,7 @@ command_t get_command(const uint_least32_t *cmd_name, long long line, long long 
                 loop_ends_count++;
             } else if ((command_t)cmd == pico) {
                 if (loop_starts_count == loop_ends_count) {
-                    char msg[52 + (int)(log10(line) + 1) + (int)(log10(col) + 1)];
+                    char msg[50 + (int)(log10(line) + 1) + (int)(log10(col) + 1)];
                     sprintf(msg, "No debiste meter ese pico en la línea %lld, columna %lld", line, col);
 
                     exit_interpreter(msg);
