@@ -204,8 +204,9 @@ describe('utils/router', () => {
   describe('isRouterLink()', () => {
     it('works', async () => {
       expect(isRouterLink('a')).toBe(false)
-      expect(isRouterLink('div')).toBe(true)
-      expect(isRouterLink()).toBe(true)
+      expect(isRouterLink('router-link')).toBe(true)
+      expect(isRouterLink('nuxt-link')).toBe(true)
+      expect(isRouterLink()).toBe(false)
     })
   })
 

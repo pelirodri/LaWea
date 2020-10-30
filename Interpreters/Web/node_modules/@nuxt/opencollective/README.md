@@ -1,10 +1,7 @@
 # @nuxtjs/opencollective 🤝 Pretty opencollective stats on postinstall!
-[![npm (scoped with tag)](https://img.shields.io/npm/v/@nuxtjs/opencollective/latest.svg?style=flat-square)](https://npmjs.com/package/@nuxtjs/opencollective)
-[![npm](https://img.shields.io/npm/dt/@nuxtjs/opencollective.svg?style=flat-square)](https://npmjs.com/package/@nuxtjs/opencollective)
-[![CircleCI](https://img.shields.io/circleci/project/github/nuxt/opencollective.svg?style=flat-square)](https://circleci.com/gh/nuxt/opencollective)
-[![Codecov](https://img.shields.io/codecov/c/github/nuxt/opencollective.svg?style=flat-square)](https://codecov.io/gh/nuxt/opencollective)
-[![Dependencies](https://david-dm.org/nuxt/opencollective/status.svg?style=flat-square)](https://david-dm.org/nuxt/opencollective)
-[![js-standard-style](https://img.shields.io/badge/code_style-standard-brightgreen.svg?style=flat-square)](http://standardjs.com)
+[![npm version][npm-v-src]][npm-v-href]
+[![npm downloads][npm-d-src]][npm-d-href]
+[![status][github-actions-src]][github-actions-href]
 
 ![Showcase](https://i.imgur.com/PZqyT3x.jpg)
 
@@ -111,5 +108,14 @@ This project is heavily inspired by [opencollective-cli](https://github.com/open
 ## License
 
 [MIT License](./LICENSE)
+MIT. Made with 💖
 
-Copyright (c) Alexander Lichter <npm@lichter.io>
+<!-- Refs -->
+[npm-v-src]: https://img.shields.io/npm/v/@nuxtjs/opencollective?style=flat-square
+[npm-v-href]: https://npmjs.com/package/@nuxtjs/opencollective
+
+[npm-d-src]: https://img.shields.io/npm/dm/@nuxtjs/opencollective?style=flat-square
+[npm-d-href]: https://npmjs.com/package/@nuxtjs/opencollective
+
+[github-actions-src]: https://img.shields.io/github/workflow/status/nuxt-contrib/opencollective/ci/master?style=flat-square
+[github-actions-href]: https://github.com/nuxt-contrib/opencollective/actions?query=workflow%3Aci
