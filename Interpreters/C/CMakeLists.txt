@@ -8,6 +8,6 @@ set(CMAKE_C_COMPILER "/usr/bin/clang")
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/lib)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/bin)
 set(CMAKE_BUILD_TYPE Release)
+set(CMAKE_C_FLAGS_RELEASE -Ofast)
 
-add_compile_options(-Ofast) 
 add_subdirectory(${PROJECT_SOURCE_DIR}/src)
