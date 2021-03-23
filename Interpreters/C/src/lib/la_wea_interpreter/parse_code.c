@@ -65,14 +65,14 @@ static const uint_least32_t cmd_names[][8 * sizeof(uint_least32_t)] = {
 };
 
 void parse_code_char(uint_least32_t code_char) {
-    static bool is_mid_comment = false;
+    static bool is_mid_comment;
 
     if (code_char == U'#') {
         is_mid_comment = true;
     }
 
-    static uint_least32_t cmd_name[8 * sizeof(uint_least32_t)] = {U'\0'};
-    static long cmd_name_idx = 0;
+    static uint_least32_t cmd_name[8 * sizeof(uint_least32_t)];
+    static long cmd_name_idx;
 
     if (is_command_boundary(code_char)) {
         handle_potential_command(cmd_name, &cmd_name_idx);
