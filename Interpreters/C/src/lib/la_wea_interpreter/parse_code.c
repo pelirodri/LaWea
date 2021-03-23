@@ -24,8 +24,6 @@
 #include <string.h>
 #include <ctype.h>
 
-static const uint_least32_t valid_chars[] = U"abcdeghiklmnopqrtuwáéíóú";
-
 static long line = 1, col = 1;
 static long loop_open_cmds_count, loop_close_cmds_count;
 
@@ -217,7 +215,7 @@ void add_char_to_cmd(uint_least32_t *restrict cmd_name, long *restrict cmd_name_
 }
 
 void validate_cmd_char(uint_least32_t cmd_char) {
-    if (!utf32_strchr(valid_chars, cmd_char)) {
+    if (!utf32_strchr(U"abcdeghiklmnopqrtuwáéíóú", cmd_char)) {
         free(commands);
 
         int line_len = snprintf(NULL, 0, "%ld", line), col_len = snprintf(NULL, 0, "%ld", col);
