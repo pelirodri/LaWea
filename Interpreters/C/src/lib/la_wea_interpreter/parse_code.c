@@ -32,7 +32,7 @@ static void handle_potential_command(uint_least32_t *, long *);
 static void parse_command(const uint_least32_t *);
 static command_t get_command_from_name(const uint_least32_t *);
 static void found_invalid_command_exit(const uint_least32_t *);
-static void handle_loop_balancing(command_t, const uint_least32_t *);
+static void handle_loop_balancing(command_t);
 static void handle_pichula_command();
 static void handle_tula_command();
 static void handle_pico_command();
@@ -110,7 +110,7 @@ void parse_command(const uint_least32_t *cmd_name) {
         found_invalid_command_exit(cmd_name);
     }
 
-    handle_loop_balancing(cmd, cmd_name);
+    handle_loop_balancing(cmd);
 
     if ((commands_count * sizeof(command_t)) == commands_size) {
         double_commands_size();
@@ -152,7 +152,7 @@ void found_invalid_command_exit(const uint_least32_t *cmd_name) {
     la_weá_print_and_exit(msg);
 }
 
-void handle_loop_balancing(command_t cmd, const uint_least32_t *cmd_name) {
+void handle_loop_balancing(command_t cmd) {
     if ((command_t)cmd == pichula) {
         handle_pichula_command();  
     } else if ((command_t)cmd == tula) {
