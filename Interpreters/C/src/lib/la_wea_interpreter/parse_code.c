@@ -153,11 +153,11 @@ void found_invalid_command_exit(const uint_least32_t *cmd_name) {
 }
 
 void handle_loop_balancing(command_t cmd) {
-    if ((command_t)cmd == pichula) {
+    if (cmd == pichula) {
         handle_pichula_command();  
-    } else if ((command_t)cmd == tula) {
+    } else if (cmd == tula) {
         handle_tula_command();
-    } else if ((command_t)cmd == pico) {
+    } else if (cmd == pico) {
         handle_pico_command();
     }
 }
