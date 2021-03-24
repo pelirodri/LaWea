@@ -320,7 +320,7 @@ inline void execute_chúpala() {
 }
 
 void execute_brígido() {
-	char num_input[22] = {0};
+	char num_input[23] = {0};
 
     if (fgets(num_input, 22, stdin)[strlen(num_input) - 1] == '\n') {
         handle_full_line_num(num_input);
