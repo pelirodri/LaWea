@@ -50,13 +50,6 @@ static bool is_value_in_unicode_range(int64_t);
 static void print_char();
 static void execute_quéweá();
 static void read_char();
-
-#if !defined(_WIN64)
-	static void handle_full_line_char_unix(char *);
-#else
-	static void handle_full_line_char_windows(WCHAR *, ULONG);
-#endif
-
 static void handle_partial_line_input();
 static void execute_chúpala();
 static void execute_brígido();
@@ -272,18 +265,10 @@ void execute_quéweá() {
 		char utf8_input[6] = {'\0'};
 
         if (fgets(utf8_input, sizeof(utf8_input), stdin)[strlen(utf8_input) - 1] == '\n') {
-        	handle_full_line_char_unix(utf8_input);
-        } else {
-            handle_partial_line_input();
-        }
-	}
-
-	void handle_full_line_char_unix(char *utf8_input) {
-		if (utf8_strlen((unsigned char *)utf8_input) == 2) {
-			utf8_input[strcspn(utf8_input, "\n")] = '\0';
+        	utf8_input[strcspn(utf8_input, "\n")] = '\0';
             cells[cur_cell] = utf8_char_to_utf32((unsigned char *)utf8_input);
         } else {
-            cells[cur_cell] = U'\0';
+            handle_partial_line_input();
         }
 	}
 #else
@@ -294,18 +279,10 @@ void execute_quéweá() {
         ReadConsoleW(GetStdHandle(STD_INPUT_HANDLE), utf16_input, sizeof(utf16_input) / 2, &read_char_count, NULL);
 
         if (utf16_input[read_char_count - 1] == L'\n') {
-            handle_full_line_char_windows(utf16_input, read_char_count);
-        } else {
-            handle_partial_line_input();
-        }
-	}
-
-	void handle_full_line_char_windows(WCHAR *utf16_input, ULONG read_char_count) {
-		if (read_char_count >= 3 && read_char_count <= 4) {
-			utf16_input[wcscspn(utf16_input, L"\r")] = L'\0';
+            utf16_input[wcscspn(utf16_input, L"\r")] = L'\0';
             cells[cur_cell] = utf16_char_to_utf32(utf16_input);
         } else {
-            cells[cur_cell] = U'\0';
+            handle_partial_line_input();
         }
 	}
 #endif
@@ -322,7 +299,7 @@ inline void execute_chúpala() {
 void execute_brígido() {
 	char num_input[23] = {0};
 
-    if (fgets(num_input, 22, stdin)[strlen(num_input) - 1] == '\n') {
+    if (fgets(num_input, 23, stdin)[strlen(num_input) - 1] == '\n') {
         handle_full_line_num(num_input);
     } else {
         handle_partial_line_input();
