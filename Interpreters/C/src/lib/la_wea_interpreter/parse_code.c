@@ -30,9 +30,9 @@ static long loop_open_commands_count, loop_close_commands_count;
 static bool is_cmd_boundary(uint_least32_t);
 static void handle_potential_cmd(uint_least32_t *, long *);
 static void parse_cmd(const uint_least32_t *);
-static command_t get_cmd_from_name(const uint_least32_t *);
+static la_weá_command_t get_cmd_from_name(const uint_least32_t *);
 static void found_invalid_cmd_exit(const uint_least32_t *);
-static void handle_loop_balancing(command_t);
+static void handle_loop_balancing(la_weá_command_t);
 static void handle_pichula_cmd();
 static void handle_tula_cmd();
 static void handle_pico_cmd();
@@ -42,7 +42,7 @@ static void validate_cmd_char(uint_least32_t);
 static void validate_cmd_name_length(const uint_least32_t *, size_t);
 static void parsed_code_char(uint_least32_t, bool *);
 
-extern command_t *commands;
+extern la_weá_command_t *commands;
 extern size_t commands_size, commands_count;
 
 static const uint_least32_t cmd_names[][8 * sizeof(uint_least32_t)] = { 
@@ -104,7 +104,7 @@ void handle_potential_cmd(uint_least32_t *cmd_name, long *cmd_name_idx) {
 }
 
 void parse_cmd(const uint_least32_t *cmd_name) {
-    command_t cmd = get_cmd_from_name(cmd_name);
+    la_weá_command_t cmd = get_cmd_from_name(cmd_name);
 
     if ((int)cmd == -1) {
         found_invalid_cmd_exit(cmd_name);
@@ -112,23 +112,23 @@ void parse_cmd(const uint_least32_t *cmd_name) {
 
     handle_loop_balancing(cmd);
 
-    if ((commands_count * sizeof(command_t)) == commands_size) {
+    if ((commands_count * sizeof(la_weá_command_t)) == commands_size) {
         double_commands_size();
     }
 
     commands[commands_count++] = cmd;
 }
 
-command_t get_cmd_from_name(const uint_least32_t *cmd_name) {
+la_weá_command_t get_cmd_from_name(const uint_least32_t *cmd_name) {
     size_t cmd_names_len = sizeof(cmd_names) / sizeof(*cmd_names);
 
     for (int cmd = 0; cmd < cmd_names_len; cmd++) {
         if (utf32_strcmp(cmd_name, cmd_names[cmd]) == 0) {
-            return (command_t)cmd;
+            return (la_weá_command_t)cmd;
         }
     }
 
-    return (command_t)-1;
+    return (la_weá_command_t)-1;
 }
 
 void found_invalid_cmd_exit(const uint_least32_t *cmd_name) {
@@ -152,7 +152,7 @@ void found_invalid_cmd_exit(const uint_least32_t *cmd_name) {
     la_weá_exit_with_error_message(msg);
 }
 
-void handle_loop_balancing(command_t cmd) {
+void handle_loop_balancing(la_weá_command_t cmd) {
     if (cmd == pichula) {
         handle_pichula_cmd();  
     } else if (cmd == tula) {
@@ -197,7 +197,7 @@ void handle_pico_cmd() {
 }
 
 void double_commands_size() {
-    command_t *tmp = (command_t *)realloc(commands, (commands_size *= 2));
+    la_weá_command_t *tmp = (la_weá_command_t *)realloc(commands, (commands_size *= 2));
 
     if (!tmp) {
         free(commands);

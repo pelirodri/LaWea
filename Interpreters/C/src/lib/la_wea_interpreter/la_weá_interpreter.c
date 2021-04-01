@@ -32,7 +32,7 @@
 
 static void print_error_in_red(const char *);
 
-command_t *restrict commands;
+la_weá_command_t *restrict commands;
 size_t commands_size, commands_count;
 
 void la_weá_interpret(const char *file_path) {
@@ -48,8 +48,8 @@ void la_weá_interpret(const char *file_path) {
 void la_weá_parse_code(const uint_least32_t *code) {
     size_t code_len = utf32_strlen(code);
 
-    commands_size = (size_t)(code_len / 3) * sizeof(command_t);
-    commands = (command_t *)malloc(commands_size);
+    commands_size = (size_t)(code_len / 3) * sizeof(la_weá_command_t);
+    commands = (la_weá_command_t *)malloc(commands_size);
 
     if (!commands) {
         la_weá_exit_with_error_message(NULL);

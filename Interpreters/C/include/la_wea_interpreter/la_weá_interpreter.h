@@ -24,7 +24,7 @@
 	#include <stdbool.h>
 
 	/// All the valid commands.
-	typedef enum command_t {
+	typedef enum la_weá_command_t {
 		/// Decrements current cell value by 1.
 		maricón,
 
@@ -72,7 +72,7 @@
 
 		/// Terminates program.
 		mierda
-	} command_t;
+	} la_weá_command_t;
 
 	/**
 	 * The entry point for interpreting the code.

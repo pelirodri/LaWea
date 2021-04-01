@@ -31,7 +31,7 @@
     #include <windows.h>
 #endif
 
-static void interpret_command(command_t, long *);
+static void interpret_command(la_weá_command_t, long *);
 static void interpret_maricón();
 static void interpret_maraco();
 static void interpret_weón();
@@ -58,7 +58,7 @@ static bool is_valid_num_input(const char *);
 static void interpret_perkin();
 static void interpret_mierda();
 
-extern command_t *commands;
+extern la_weá_command_t *commands;
 extern size_t commands_count;
 
 static size_t cells_size = 8 * sizeof(int64_t);
@@ -81,7 +81,7 @@ void interpret_commands() {
     free(cells);
 }
 
-void interpret_command(command_t command, long *cmd_idx) {
+void interpret_command(la_weá_command_t command, long *cmd_idx) {
 	switch (command) {
         case maricón:
             interpret_maricón();
