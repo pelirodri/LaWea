@@ -88,7 +88,7 @@
 	void la_weá_parse_code(const uint_least32_t *code);
 
 	/**
-	 * Executes the commands found in the code.
+	 * Interprets the commands found in the code.
 	 */
 	void la_weá_run();
 

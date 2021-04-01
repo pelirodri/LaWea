@@ -17,7 +17,7 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 //
 
-#include "execute_commands.h"
+#include "interpret_commands.h"
 #include "la_weá_interpreter.h"
 #include "utf_utils.h"
 
@@ -31,32 +31,32 @@
     #include <windows.h>
 #endif
 
-static void execute_command(command_t, long *);
-static void execute_maricón();
-static void execute_maraco();
-static void execute_weón();
-static void execute_aweonao();
-static void execute_maraca();
-static void execute_chucha();
-static void execute_puta();
+static void interpret_command(command_t, long *);
+static void interpret_maricón();
+static void interpret_maraco();
+static void interpret_weón();
+static void interpret_aweonao();
+static void interpret_maraca();
+static void interpret_chucha();
+static void interpret_puta();
 static void double_cells_size();
-static void execute_pichula(long *);
+static void interpret_pichula(long *);
 static long find_loop_end(long);
-static void execute_tula(long *);
+static void interpret_tula(long *);
 static long find_loop_start(long);
-static void execute_pico(long *);
-static void execute_ctm();
+static void interpret_pico(long *);
+static void interpret_ctm();
 static bool is_value_in_unicode_range(int64_t);
 static void print_char();
-static void execute_quéweá();
+static void interpret_quéweá();
 static void read_char();
 static void handle_partial_line_input();
-static void execute_chúpala();
-static void execute_brígido();
+static void interpret_chúpala();
+static void interpret_brígido();
 static void handle_full_line_num(char *);
 static bool is_valid_num_input(const char *);
-static void execute_perkin();
-static void execute_mierda();
+static void interpret_perkin();
+static void interpret_mierda();
 
 extern command_t *commands;
 extern size_t commands_count;
@@ -65,7 +65,7 @@ static size_t cells_size = 8 * sizeof(int64_t);
 static int64_t *cells;
 static long cur_cell;
 
-void execute_commands() {
+void interpret_commands() {
     setvbuf(stdout, NULL, _IONBF, 0);
     
     cells = (int64_t *)calloc(8, sizeof(int64_t));    
@@ -75,86 +75,86 @@ void execute_commands() {
     }
 
     for (long i = 0; i < commands_count; i++) {
-        execute_command(commands[i], &i);
+        interpret_command(commands[i], &i);
     }
 
     free(cells);
 }
 
-void execute_command(command_t command, long *cmd_idx) {
+void interpret_command(command_t command, long *cmd_idx) {
 	switch (command) {
         case maricón:
-            execute_maricón();
+            interpret_maricón();
             break;
         case maraco:
-            execute_maraco();
+            interpret_maraco();
             break;
         case weón:
-            execute_weón();
+            interpret_weón();
             break;
         case aweonao:
-            execute_aweonao();
+            interpret_aweonao();
             break;
         case maraca:
-            execute_maraca();
+            interpret_maraca();
             break;
         case chucha:
-            execute_chucha();
+            interpret_chucha();
             break;
         case puta:
-            execute_puta();
+            interpret_puta();
             break;
         case pichula:
-            execute_pichula(cmd_idx);
+            interpret_pichula(cmd_idx);
             break;
         case tula:
-            execute_tula(cmd_idx);
+            interpret_tula(cmd_idx);
             break;
         case pico:
-            execute_pico(cmd_idx);
+            interpret_pico(cmd_idx);
             break;
         case ctm:
-            execute_ctm();
+            interpret_ctm();
             break;
         case quéweá:
-           	execute_quéweá();
+           	interpret_quéweá();
             break;
         case chúpala:
-            execute_chúpala();
+            interpret_chúpala();
             break;
         case brígido:
-            execute_brígido();
+            interpret_brígido();
             break;
         case perkin:
-           	execute_perkin();
+           	interpret_perkin();
             break;
         case mierda:
-            execute_mierda();
+            interpret_mierda();
             break;
     }
 }
 
-inline void execute_maricón() {
+inline void interpret_maricón() {
 	cells[cur_cell]--;
 }
 
-inline void execute_maraco() {
+inline void interpret_maraco() {
 	cells[cur_cell] -= 2;
 }
 
-inline void execute_weón() {
+inline void interpret_weón() {
 	cells[cur_cell]++;
 }
 
-inline void execute_aweonao() {
+inline void interpret_aweonao() {
 	cells[cur_cell] += 2;
 }
 
-inline void execute_maraca() {
+inline void interpret_maraca() {
 	cells[cur_cell] = 0;
 }
 
-void execute_chucha() {
+void interpret_chucha() {
 	if (cur_cell == 0) {
         free(cells);
         la_weá_exit_with_error("Te saliste pa’ la izquierda, aweona’o");
@@ -163,7 +163,7 @@ void execute_chucha() {
     cur_cell--;
 }
 
-void execute_puta() {
+void interpret_puta() {
 	if (cur_cell == (cells_size / sizeof(int64_t)) - 1) {
         double_cells_size();
         memset(cells + (cur_cell + 1), 0, cells_size / 2);
@@ -183,7 +183,7 @@ void double_cells_size() {
     cells = tmp;
 }
 
-void execute_pichula(long *cmd_idx) {
+void interpret_pichula(long *cmd_idx) {
 	if (cells[cur_cell] == 0) {
         *cmd_idx = find_loop_end(*cmd_idx);
     }
@@ -205,7 +205,7 @@ long find_loop_end(long cmd_idx) {
     return -1;
 }
 
-void execute_tula(long *cmd_idx) {
+void interpret_tula(long *cmd_idx) {
 	if (cells[cur_cell] != 0) {
         *cmd_idx = find_loop_start(*cmd_idx);
     }
@@ -227,11 +227,11 @@ long find_loop_start(long cmd_idx) {
     return -1;
 }
 
-inline void execute_pico(long *cmd_idx) {
+inline void interpret_pico(long *cmd_idx) {
 	*cmd_idx = find_loop_end(*cmd_idx);
 }
 
-void execute_ctm() {
+void interpret_ctm() {
 	if (is_value_in_unicode_range(cells[cur_cell])) {
         print_char();
     } else {
@@ -256,7 +256,7 @@ inline bool is_value_in_unicode_range(int64_t value) {
 	}
 #endif
 
-void execute_quéweá() {
+void interpret_quéweá() {
 	read_char();
 }
 
@@ -292,11 +292,11 @@ void handle_partial_line_input() {
     cells[cur_cell] = 0;
 }
 
-inline void execute_chúpala() {
+inline void interpret_chúpala() {
 	printf("%" PRId64, cells[cur_cell]);
 }
 
-void execute_brígido() {
+void interpret_brígido() {
 	char num_input[23] = {0};
 
     if (fgets(num_input, 23, stdin)[strlen(num_input) - 1] == '\n') {
@@ -328,7 +328,7 @@ bool is_valid_num_input(const char *num_input) {
     return true;
 }
 
-void execute_perkin() {
+void interpret_perkin() {
 	static bool is_copy_set = false;
     static int64_t cell_value_copy;
 
@@ -341,7 +341,7 @@ void execute_perkin() {
     }
 }
 
-void execute_mierda() {
+void interpret_mierda() {
 	free(cells);
     exit(EXIT_SUCCESS);
 }

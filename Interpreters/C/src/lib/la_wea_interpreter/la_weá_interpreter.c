@@ -21,7 +21,7 @@
 #include "utf_utils.h"
 #include "get_code.h"
 #include "parse_code.h"
-#include "execute_commands.h"
+#include "interpret_commands.h"
 
 #include <stdlib.h>
 #include <string.h>
@@ -63,7 +63,7 @@ void la_weá_parse_code(const uint_least32_t *code) {
 }
 
 void la_weá_run() {
-    execute_commands();
+    interpret_commands();
 }
 
 void la_weá_exit_with_error(const char *err_msg) {

@@ -17,7 +17,7 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 //
 
-#ifndef EXECUTE_COMMANDS_H
-#define EXECUTE_COMMANDS_H
-	void execute_commands();
+#ifndef INTERPRET_COMMANDS_H
+#define INTERPRET_COMMANDS_H
+	void interpret_commands();
 #endif
