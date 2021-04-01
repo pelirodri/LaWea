@@ -429,7 +429,10 @@ uint_least32_t *utf16_str_to_utf32(const uint_least16_t *utf16_str) {
 			return NULL;
 		}
 
-		utf32_str[i++] = utf16_char_to_utf32(utf16_str + j);
+		uint_least16_t utf16_char[3] = {u'\0'};
+		memcpy(utf16_char, &utf16_str[i], utf16_code_point_len);
+
+		utf32_str[i++] = utf16_char_to_utf32(utf16_char);
 		j += utf16_code_point_len;
 	}
 
