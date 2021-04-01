@@ -420,20 +420,20 @@ uint_least32_t *utf16_str_to_utf32(const uint_least16_t *utf16_str) {
 		return NULL;
 	}
 
-	long i = 0, j = 0;
+	long i = 0;
 
-	while (utf16_str[i]) {
-		size_t utf16_code_point_len = utf16_surrogate_utf16_code_point_len(utf16_str[i]);
+	for (long j = 0; utf16_str[j];) {
+		size_t utf16_code_point_len = utf16_surrogate_utf16_code_point_len(utf16_str[j]);
 
 		if (utf16_code_point_len == 0) {
 			return NULL;
 		}
 
-		utf32_str[j++] = utf16_char_to_utf32(utf16_str + i);
-		i += utf16_code_point_len;
+		utf32_str[i++] = utf16_char_to_utf32(utf16_str + j);
+		j += utf16_code_point_len;
 	}
 
-	utf32_str[j] = U'\0';
+	utf32_str[i] = U'\0';
 
 	return utf32_str;
 }
