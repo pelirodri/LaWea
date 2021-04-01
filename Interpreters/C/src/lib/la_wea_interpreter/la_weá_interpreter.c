@@ -28,9 +28,9 @@
 
 #if defined(_WIN64)
     #include <windows.h>
-
-    static void print_error_windows(const char *);
 #endif
+
+static void print_error_in_red(const char *);
 
 command_t *restrict commands;
 size_t commands_size, commands_count;
@@ -67,21 +67,16 @@ void la_weá_run() {
 }
 
 void la_weá_exit_with_error_message(const char *err_msg) {
-    if (!err_msg || strlen(err_msg) == 0) {
-        err_msg = "Error interno";
-    }
-
-    #if !defined(_WIN64)
-        fprintf(stderr, "\x1b[1;31m%s\x1b[0m\n", err_msg);
-    #else
-        print_error_windows(err_msg);
-    #endif
-
+    print_error_in_red(err_msg && strlen(err_msg) != 0 ? err_msg : "Error interno" );
     exit(EXIT_FAILURE);
 }
 
-#if defined(_WIN64)
-    void print_error_windows(const char *err_msg) {
+#if !defined(_WIN64)
+    inline void print_error_in_red(const char *err_msg) {
+        fprintf(stderr, "\x1b[1;31m%s\x1b[0m\n", err_msg);
+    }
+#else
+    void print_error_in_red(const char *err_msg) {
         WCHAR utf16_buffer[(utf8_strlen((const unsigned char *)err_msg) + 1)];
 
         int utf16_buffer_len = MultiByteToWideChar(
