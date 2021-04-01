@@ -24,15 +24,15 @@
 
 int main(int argc, char **argv) {
 	#if !defined(__LP64__) && !defined(_WIN64)
-		la_weá_print_and_exit("Qué chucha hacís usando todavía un sistema operativo de 32 bits...");
+		la_weá_exit_with_error("Qué chucha hacís usando todavía un sistema operativo de 32 bits...");
 	#endif
 
     setlocale(LC_CTYPE, "");
 
     if (argc != 2) {
-        la_weá_print_and_exit("Tenís que pasar la ruta del archivo con el código, pos, aweona’o qlo");
+        la_weá_exit_with_error("Tenís que pasar la ruta del archivo con el código, pos, aweona’o qlo");
     } else if (!strstr(argv[1], ".lw")) {
-    	la_weá_print_and_exit("El archivo qlo tiene que tener la extensión .lw");
+    	la_weá_exit_with_error("El archivo qlo tiene que tener la extensión .lw");
     }
 
     la_weá_interpret(argv[1]);

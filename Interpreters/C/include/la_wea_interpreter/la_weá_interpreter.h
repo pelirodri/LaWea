@@ -96,5 +96,5 @@
 	 * A utility function that prints an error message and exits the program abnormally.
 	 * @param err_msg the error message to print
 	 */
-	void la_weá_print_and_exit(const char *err_msg);
+	void la_weá_exit_with_error(const char *err_msg);
 #endif
