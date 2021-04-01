@@ -129,7 +129,7 @@ size_t utf8_strlen(const unsigned char *utf8_str) {
 size_t utf16_strlen(const uint_least16_t *utf16_str) {
 	size_t str_len = 0;
 
-	for (long i = 0; utf16_str[i]; ) {
+	for (long i = 0; utf16_str[i];) {
 		size_t utf16_code_point_len = utf16_surrogate_utf16_code_point_len(utf16_str[i]);
 
 		if (utf16_code_point_len == 0) {
@@ -336,8 +336,6 @@ unsigned char *utf32_char_to_utf8(uint_least32_t utf32_char) {
 			utf8_char[i++] = 0x80 | (utf32_char & 0x3F);
 
 			break;
-		default:
-			return NULL;
 	}
 
 	utf8_char[i] = '\0';
@@ -372,8 +370,6 @@ uint_least16_t *utf32_char_to_utf16(uint_least32_t utf32_char) {
 
 	        break;
 	    }
-	    default:
-	    	return NULL;
 	}
 
 	utf16_char[i] = u'\0';
