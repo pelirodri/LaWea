@@ -52,7 +52,7 @@ void la_weá_parse_code(const uint_least32_t *code) {
     commands = (command_t *)malloc(commands_size);
 
     if (!commands) {
-        la_weá_exit_with_error(NULL);
+        la_weá_exit_with_error_message(NULL);
     }
 
     for (long i = 0; i <= code_len; i++) {
@@ -66,7 +66,7 @@ void la_weá_run() {
     interpret_commands();
 }
 
-void la_weá_exit_with_error(const char *err_msg) {
+void la_weá_exit_with_error_message(const char *err_msg) {
     if (!err_msg || strlen(err_msg) == 0) {
         err_msg = "Error interno";
     }

@@ -86,7 +86,7 @@ void parse_code_char(uint_least32_t code_char) {
 void check_loops_balance() {
     if (loop_open_cmds_count != loop_close_cmds_count) {
         free(commands);
-        la_weá_exit_with_error("O te sobran pichulas o te faltan tulas");
+        la_weá_exit_with_error_message("O te sobran pichulas o te faltan tulas");
     }
 }
 
@@ -143,13 +143,13 @@ void found_invalid_command_exit(const uint_least32_t *cmd_name) {
     unsigned char *utf8_cmd_name = utf32_str_to_utf8(cmd_name);
 
     if (!utf8_cmd_name) {
-        la_weá_exit_with_error(NULL);
+        la_weá_exit_with_error_message(NULL);
     }
 
     sprintf(msg, msg_template, utf8_cmd_name, line, col - (long)utf32_strlen(cmd_name));
 
     free(utf8_cmd_name);
-    la_weá_exit_with_error(msg);
+    la_weá_exit_with_error_message(msg);
 }
 
 void handle_loop_balancing(command_t cmd) {
@@ -176,7 +176,7 @@ void handle_tula_command() {
 
         sprintf(msg, msg_template, line, col - (long)utf32_strlen(U"tula"));
 
-        la_weá_exit_with_error(msg);
+        la_weá_exit_with_error_message(msg);
     }
 
     loop_close_cmds_count++;
@@ -192,7 +192,7 @@ void handle_pico_command() {
 
         sprintf(msg, msg_template, line, col - (long)utf32_strlen(U"pico"));
 
-        la_weá_exit_with_error(msg);
+        la_weá_exit_with_error_message(msg);
     }
 }
 
@@ -201,7 +201,7 @@ void double_commands_size() {
 
     if (!tmp) {
         free(commands);
-        la_weá_exit_with_error(NULL);
+        la_weá_exit_with_error_message(NULL);
     }
 
     commands = tmp;
@@ -226,13 +226,13 @@ void validate_cmd_char(uint_least32_t cmd_char) {
         unsigned char *utf8_char = utf32_char_to_utf8(cmd_char);
 
         if (!utf8_char) {
-            la_weá_exit_with_error(NULL);
+            la_weá_exit_with_error_message(NULL);
         }
 
         sprintf(msg,msg_template, utf8_char,line, col);
 
         free(utf8_char);
-        la_weá_exit_with_error(msg);
+        la_weá_exit_with_error_message(msg);
     }
 }
 
@@ -249,7 +249,7 @@ void validate_cmd_length(const uint_least32_t *cmd_name, size_t cmd_name_len) {
 
         sprintf(msg, msg_template, line, col - (long)utf32_strlen(cmd_name));
 
-        la_weá_exit_with_error(msg);
+        la_weá_exit_with_error_message(msg);
     }
 }
 

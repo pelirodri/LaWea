@@ -24,7 +24,7 @@
 #include <stdlib.h>
 #include <errno.h>
 
-extern void la_weá_exit_with_error(const char *);
+extern void la_weá_exit_with_error_message(const char *);
 
 static const char *get_code_utf8(const char *file_path);
 static void file_open_error_exit();
@@ -37,7 +37,7 @@ const uint_least32_t *get_code(const char *file_path) {
     free((void *)utf8_code);
 
     if (!utf32_code) {
-        la_weá_exit_with_error(NULL);
+        la_weá_exit_with_error_message(NULL);
     }
 
     return utf32_code;
@@ -60,7 +60,7 @@ const char *get_code_utf8(const char *file_path) {
 
     if (!utf8_code) {
         fclose(fp);
-        la_weá_exit_with_error(NULL);
+        la_weá_exit_with_error_message(NULL);
     }
 
     fread(utf8_code, sizeof(char), utf8_code_len, fp);
@@ -72,11 +72,11 @@ const char *get_code_utf8(const char *file_path) {
 void file_open_error_exit() {
     switch (errno) {
         case EACCES:
-            la_weá_exit_with_error("No tenís permiso pa’ abrir la weá");
+            la_weá_exit_with_error_message("No tenís permiso pa’ abrir la weá");
         case ENOENT:
-            la_weá_exit_with_error("No existe la weá, pos, wn");
+            la_weá_exit_with_error_message("No existe la weá, pos, wn");
         default:
-            la_weá_exit_with_error(NULL);
+            la_weá_exit_with_error_message(NULL);
     }
 }
 

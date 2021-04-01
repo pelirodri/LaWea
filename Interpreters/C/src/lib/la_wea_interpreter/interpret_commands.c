@@ -71,7 +71,7 @@ void interpret_commands() {
     cells = (int64_t *)calloc(8, sizeof(int64_t));    
 
     if (!cells) {
-        la_weá_exit_with_error(NULL);
+        la_weá_exit_with_error_message(NULL);
     }
 
     for (long i = 0; i < commands_count; i++) {
@@ -157,7 +157,7 @@ inline void interpret_maraca() {
 void interpret_chucha() {
 	if (cur_cell == 0) {
         free(cells);
-        la_weá_exit_with_error("Te saliste pa’ la izquierda, aweona’o");
+        la_weá_exit_with_error_message("Te saliste pa’ la izquierda, aweona’o");
     }
 
     cur_cell--;
@@ -177,7 +177,7 @@ void double_cells_size() {
 
     if (!tmp) {
         free(cells);
-        la_weá_exit_with_error(NULL);
+        la_weá_exit_with_error_message(NULL);
     }
 
     cells = tmp;
