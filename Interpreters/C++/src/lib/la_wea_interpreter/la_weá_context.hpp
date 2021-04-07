@@ -1,5 +1,5 @@
 //
-// Copyright © 2020 Rodrigo Pelissier. All rights reserved.
+// Copyright © 2021 Rodrigo Pelissier. All rights reserved.
 //
 // This file is part of La Weá Interpreter (C++)
 //
@@ -17,20 +17,37 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 //
 
-#ifndef UTF8_UTF32_UTILITY_HPP
-#define UTF8_UTF32_UTILITY_HPP
+#ifndef LA_WEÁ_CONTEXT_HPP
+#define LA_WEÁ_CONTEXT_HPP
+	#include <vector>
 
-#include <string>
+	class la_weá_context {
+		public:
+			la_weá_context();
 
-class utf8_utf32_utility {
-	public:
-		static size_t utf8_byte_utf8_code_point_len(char8_t);
-		static size_t utf32_char_utf8_code_point_len(char32_t);
+			long get_expr_idx() const;	
+			void set_expr_idx(long);
+			void increase_expr_idx();
 
-		static char32_t utf8_char_to_utf32(const std::u8string &);
-		static std::u8string utf32_char_to_utf8(char32_t);
-		static std::u32string utf8_str_to_utf32(const std::u8string &);
-		static std::u8string utf32_str_to_utf8(const std::u32string &);
-};
+			int64_t get_cell_value() const;
+			void set_cell_value(int64_t);
 
+			void decrease_cell(int64_t = 1);
+			void increase_cell(int64_t = 1);
+
+			void reset_cell_value();
+
+			void shift_cell_left(long = 1);
+			void shift_cell_right(long = 1);
+
+			void copy_cell_value();
+		private:
+			long expr_idx;
+
+			std::vector<int64_t> cells;
+			long cur_cell;
+
+			bool is_copy_set;
+			int64_t cell_value_copy;
+	};
 #endif

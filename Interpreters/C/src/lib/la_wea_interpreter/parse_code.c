@@ -24,27 +24,25 @@
 #include <string.h>
 #include <ctype.h>
 
-static const uint_least32_t valid_chars[] = U"abcdeghiklmnopqrtuwáéíóú";
-
 static long line = 1, col = 1;
-static long loop_open_cmds_count, loop_close_cmds_count;
+static long loop_open_commands_count, loop_close_commands_count;
 
-static bool is_command_boundary(uint_least32_t);
-static void handle_potential_command(uint_least32_t *, long *);
-static void parse_command(const uint_least32_t *);
-static command_t get_command_from_name(const uint_least32_t *);
-static void found_invalid_command_exit(const uint_least32_t *);
-static void handle_loop_balancing(command_t, const uint_least32_t *);
-static void handle_pichula_command();
-static void handle_tula_command();
-static void handle_pico_command();
+static bool is_cmd_boundary(uint_least32_t);
+static void handle_potential_cmd(uint_least32_t *, long *);
+static void parse_cmd(const uint_least32_t *);
+static la_weá_command_t get_cmd_from_name(const uint_least32_t *);
+static void found_invalid_cmd_exit(const uint_least32_t *);
+static void handle_loop_balancing(la_weá_command_t);
+static void handle_pichula_cmd();
+static void handle_tula_cmd();
+static void handle_pico_cmd();
 static void double_commands_size();
-static void add_char_to_cmd(uint_least32_t *restrict, long *restrict, uint_least32_t);
+static void add_char_to_cmd_name(uint_least32_t *restrict, long *restrict, uint_least32_t);
 static void validate_cmd_char(uint_least32_t);
-static void validate_cmd_length(const uint_least32_t *, size_t);
+static void validate_cmd_name_length(const uint_least32_t *, size_t);
 static void parsed_code_char(uint_least32_t, bool *);
 
-extern command_t *commands;
+extern la_weá_command_t *commands;
 extern size_t commands_size, commands_count;
 
 static const uint_least32_t cmd_names[][8 * sizeof(uint_least32_t)] = { 
@@ -67,73 +65,73 @@ static const uint_least32_t cmd_names[][8 * sizeof(uint_least32_t)] = {
 };
 
 void parse_code_char(uint_least32_t code_char) {
-    static bool is_mid_comment = false;
+    static bool is_mid_comment;
 
     if (code_char == U'#') {
         is_mid_comment = true;
     }
 
-    static uint_least32_t cmd_name[8 * sizeof(uint_least32_t)] = {U'\0'};
-    static long cmd_name_idx = 0;
+    static uint_least32_t cmd_name[8 * sizeof(uint_least32_t)];
+    static long cmd_name_idx;
 
-    if (is_command_boundary(code_char)) {
-        handle_potential_command(cmd_name, &cmd_name_idx);
+    if (is_cmd_boundary(code_char)) {
+        handle_potential_cmd(cmd_name, &cmd_name_idx);
     } else if (!is_mid_comment) {
-        add_char_to_cmd(cmd_name, &cmd_name_idx, code_char);
+        add_char_to_cmd_name(cmd_name, &cmd_name_idx, code_char);
     }
 
     parsed_code_char(code_char, &is_mid_comment);
 }
 
 void check_loops_balance() {
-    if (loop_open_cmds_count != loop_close_cmds_count) {
+    if (loop_open_commands_count != loop_close_commands_count) {
         free(commands);
-        la_weá_print_and_exit("O te sobran pichulas o te faltan tulas");
+        la_weá_exit_with_error_message("O te sobran pichulas o te faltan tulas");
     }
 }
 
-inline bool is_command_boundary(uint_least32_t code_char) {
+inline bool is_cmd_boundary(uint_least32_t code_char) {
     return isspace(code_char) || code_char == U'#' || code_char == U'\0';
 }
 
-void handle_potential_command(uint_least32_t *cmd_name, long *cmd_name_idx) {
+void handle_potential_cmd(uint_least32_t *cmd_name, long *cmd_name_idx) {
     if (*cmd_name_idx > 0) {      
-        parse_command(cmd_name);
+        parse_cmd(cmd_name);
 
         memset(cmd_name, U'\0', 7 * sizeof(uint_least32_t));
         *cmd_name_idx = 0;
     }
 }
 
-void parse_command(const uint_least32_t *cmd_name) {
-    command_t cmd = get_command_from_name(cmd_name);
+void parse_cmd(const uint_least32_t *cmd_name) {
+    la_weá_command_t cmd = get_cmd_from_name(cmd_name);
 
     if ((int)cmd == -1) {
-        found_invalid_command_exit(cmd_name);
+        found_invalid_cmd_exit(cmd_name);
     }
 
-    handle_loop_balancing(cmd, cmd_name);
+    handle_loop_balancing(cmd);
 
-    if ((commands_count * sizeof(command_t)) == commands_size) {
+    if ((commands_count * sizeof(la_weá_command_t)) == commands_size) {
         double_commands_size();
     }
 
     commands[commands_count++] = cmd;
 }
 
-command_t get_command_from_name(const uint_least32_t *cmd_name) {
+la_weá_command_t get_cmd_from_name(const uint_least32_t *cmd_name) {
     size_t cmd_names_len = sizeof(cmd_names) / sizeof(*cmd_names);
 
     for (int cmd = 0; cmd < cmd_names_len; cmd++) {
         if (utf32_strcmp(cmd_name, cmd_names[cmd]) == 0) {
-            return (command_t)cmd;
+            return (la_weá_command_t)cmd;
         }
     }
 
-    return (command_t)-1;
+    return (la_weá_command_t)-1;
 }
 
-void found_invalid_command_exit(const uint_least32_t *cmd_name) {
+void found_invalid_cmd_exit(const uint_least32_t *cmd_name) {
     free(commands);
 
     int line_len = snprintf(NULL, 0, "%ld", line);
@@ -145,31 +143,31 @@ void found_invalid_command_exit(const uint_least32_t *cmd_name) {
     unsigned char *utf8_cmd_name = utf32_str_to_utf8(cmd_name);
 
     if (!utf8_cmd_name) {
-        la_weá_print_and_exit(NULL);
+        la_weá_exit_with_error_message(NULL);
     }
 
     sprintf(msg, msg_template, utf8_cmd_name, line, col - (long)utf32_strlen(cmd_name));
 
     free(utf8_cmd_name);
-    la_weá_print_and_exit(msg);
+    la_weá_exit_with_error_message(msg);
 }
 
-void handle_loop_balancing(command_t cmd, const uint_least32_t *cmd_name) {
-    if ((command_t)cmd == pichula) {
-        handle_pichula_command();  
-    } else if ((command_t)cmd == tula) {
-        handle_tula_command();
-    } else if ((command_t)cmd == pico) {
-        handle_pico_command();
+void handle_loop_balancing(la_weá_command_t cmd) {
+    if (cmd == pichula) {
+        handle_pichula_cmd();  
+    } else if (cmd == tula) {
+        handle_tula_cmd();
+    } else if (cmd == pico) {
+        handle_pico_cmd();
     }
 }
 
-inline void handle_pichula_command() {
-    loop_open_cmds_count++;  
+inline void handle_pichula_cmd() {
+    loop_open_commands_count++;  
 }
 
-void handle_tula_command() {
-    if (loop_close_cmds_count == loop_open_cmds_count) {
+void handle_tula_cmd() {
+    if (loop_close_commands_count == loop_open_commands_count) {
         int line_len = snprintf(NULL, 0, "%ld", line);
         int col_len = snprintf(NULL, 0, "%ld", col - (long)utf32_strlen(U"tula"));
 
@@ -178,14 +176,14 @@ void handle_tula_command() {
 
         sprintf(msg, msg_template, line, col - (long)utf32_strlen(U"tula"));
 
-        la_weá_print_and_exit(msg);
+        la_weá_exit_with_error_message(msg);
     }
 
-    loop_close_cmds_count++;
+    loop_close_commands_count++;
 }
 
-void handle_pico_command() {
-    if (loop_open_cmds_count == loop_close_cmds_count) {
+void handle_pico_cmd() {
+    if (loop_open_commands_count == loop_close_commands_count) {
         int line_len = snprintf(NULL, 0, "%ld", line);
         int col_len = snprintf(NULL, 0, "%ld", col - (long)utf32_strlen(U"pico"));
 
@@ -194,30 +192,30 @@ void handle_pico_command() {
 
         sprintf(msg, msg_template, line, col - (long)utf32_strlen(U"pico"));
 
-        la_weá_print_and_exit(msg);
+        la_weá_exit_with_error_message(msg);
     }
 }
 
 void double_commands_size() {
-    command_t *tmp = (command_t *)realloc(commands, (commands_size *= 2));
+    la_weá_command_t *tmp = (la_weá_command_t *)realloc(commands, (commands_size *= 2));
 
     if (!tmp) {
         free(commands);
-        la_weá_print_and_exit(NULL);
+        la_weá_exit_with_error_message(NULL);
     }
 
     commands = tmp;
 }
 
-void add_char_to_cmd(uint_least32_t *restrict cmd_name, long *restrict cmd_name_idx, uint_least32_t code_char) {
+void add_char_to_cmd_name(uint_least32_t *restrict cmd_name, long *restrict cmd_name_idx, uint_least32_t code_char) {
     validate_cmd_char(code_char);
-    validate_cmd_length(cmd_name, *cmd_name_idx + 1);
+    validate_cmd_name_length(cmd_name, *cmd_name_idx + 1);
 
     cmd_name[(*cmd_name_idx)++] = code_char;
 }
 
 void validate_cmd_char(uint_least32_t cmd_char) {
-    if (!utf32_strchr(valid_chars, cmd_char)) {
+    if (!utf32_strchr(U"abcdeghiklmnopqrtuwáéíóú", cmd_char)) {
         free(commands);
 
         int line_len = snprintf(NULL, 0, "%ld", line), col_len = snprintf(NULL, 0, "%ld", col);
@@ -228,17 +226,17 @@ void validate_cmd_char(uint_least32_t cmd_char) {
         unsigned char *utf8_char = utf32_char_to_utf8(cmd_char);
 
         if (!utf8_char) {
-            la_weá_print_and_exit(NULL);
+            la_weá_exit_with_error_message(NULL);
         }
 
         sprintf(msg,msg_template, utf8_char,line, col);
 
         free(utf8_char);
-        la_weá_print_and_exit(msg);
+        la_weá_exit_with_error_message(msg);
     }
 }
 
-void validate_cmd_length(const uint_least32_t *cmd_name, size_t cmd_name_len) {
+void validate_cmd_name_length(const uint_least32_t *cmd_name, size_t cmd_name_len) {
     if (cmd_name_len >= 8) {
         free(commands);
 
@@ -251,7 +249,7 @@ void validate_cmd_length(const uint_least32_t *cmd_name, size_t cmd_name_len) {
 
         sprintf(msg, msg_template, line, col - (long)utf32_strlen(cmd_name));
 
-        la_weá_print_and_exit(msg);
+        la_weá_exit_with_error_message(msg);
     }
 }
 

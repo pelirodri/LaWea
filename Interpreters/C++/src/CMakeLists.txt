@@ -1,9 +1,7 @@
-add_subdirectory(libs)
+add_subdirectory(lib)
 add_executable(lawea++ main.cpp)
 
-target_include_directories(lawea++ PRIVATE ${PROJECT_SOURCE_DIR}/include)
 target_link_libraries(lawea++ PRIVATE la_wea_interpreter)
-
 set_target_properties(lawea++ PROPERTIES OUTPUT_NAME laweá++)
 
 if(UNIX)

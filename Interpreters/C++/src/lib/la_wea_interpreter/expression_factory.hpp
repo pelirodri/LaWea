@@ -17,27 +17,24 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 //
 
-#include "la_weá_interpreter.hpp"
+#ifndef EXPRESSION_FACTORY_HPP
+#define EXPRESSION_FACTORY_HPP
+	#include "la_weá_command.hpp"
 
-#include <locale>
-#include <cstring>
+	#include <vector>
 
-int main(int argc, char **argv) {
-	la_weá_interpreter interpreter;
+	class la_weá_expression;
 
-	#if !defined(__LP64__) && !defined(_WIN64)
-		interpreter.exit_with_error_message("Qué chucha hacís usando todavía un sistema operativo de 32 bits...");
-	#endif
+	class expression_factory {
+		public:
+			static la_weá_expression *create_expression_from_cmd_at_idx(
+				std::vector<la_weá_command>,
+				long = -1
+			);
+		private:
+			expression_factory();
 
-	std::locale::global(std::locale(""));
-
-	if (argc != 2) {
-		interpreter.exit_with_error_message("Tenís que pasar la ruta del archivo con el código, poh, aweona’o qlo");
-	} else if (!strstr(argv[1], ".lw")) {
-		interpreter.exit_with_error_message("El archivo qlo tiene que tener la extensión .lw");
-	}
-
-	interpreter.interpret(argv[1]);
-
-	return 0;
-}
+			static long find_loop_start(std::vector<la_weá_command>, long);
+			static long find_loop_end(std::vector<la_weá_command>, long);
+	};
+#endif

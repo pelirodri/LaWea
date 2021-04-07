@@ -21,18 +21,18 @@
 #include "utf_utils.h"
 #include "get_code.h"
 #include "parse_code.h"
-#include "execute_commands.h"
+#include "interpret_commands.h"
 
 #include <stdlib.h>
 #include <string.h>
 
 #if defined(_WIN64)
     #include <windows.h>
-
-    static void print_error_windows(const char *);
 #endif
 
-command_t *restrict commands;
+static void print_error_in_red(const char *);
+
+la_weá_command_t *restrict commands;
 size_t commands_size, commands_count;
 
 void la_weá_interpret(const char *file_path) {
@@ -48,11 +48,11 @@ void la_weá_interpret(const char *file_path) {
 void la_weá_parse_code(const uint_least32_t *code) {
     size_t code_len = utf32_strlen(code);
 
-    commands_size = (size_t)(code_len / 3) * sizeof(command_t);
-    commands = (command_t *)malloc(commands_size);
+    commands_size = (size_t)(code_len / 3) * sizeof(la_weá_command_t);
+    commands = (la_weá_command_t *)malloc(commands_size);
 
     if (!commands) {
-        la_weá_print_and_exit(NULL);
+        la_weá_exit_with_error_message(NULL);
     }
 
     for (long i = 0; i <= code_len; i++) {
@@ -63,25 +63,20 @@ void la_weá_parse_code(const uint_least32_t *code) {
 }
 
 void la_weá_run() {
-    execute_commands();
+    interpret_commands();
 }
 
-void la_weá_print_and_exit(const char *err_msg) {
-    if (!err_msg || strlen(err_msg) == 0) {
-        err_msg = "Error interno";
-    }
-
-    #if !defined(_WIN64)
-        fprintf(stderr, "\x1b[1;31m%s\x1b[0m\n", err_msg);
-    #else
-        print_error_windows(err_msg);
-    #endif
-
+void la_weá_exit_with_error_message(const char *err_msg) {
+    print_error_in_red(err_msg && strlen(err_msg) != 0 ? err_msg : "Error interno" );
     exit(EXIT_FAILURE);
 }
 
-#if defined(_WIN64)
-    void print_error_windows(const char *err_msg) {
+#if !defined(_WIN64)
+    inline void print_error_in_red(const char *err_msg) {
+        fprintf(stderr, "\x1b[1;31m%s\x1b[0m\n", err_msg);
+    }
+#else
+    void print_error_in_red(const char *err_msg) {
         WCHAR utf16_buffer[(utf8_strlen((const unsigned char *)err_msg) + 1)];
 
         int utf16_buffer_len = MultiByteToWideChar(
