@@ -66,6 +66,34 @@ void la_weá::interpreter::exit_with_error_message(const std::string &err_msg) c
 	std::exit(EXIT_FAILURE);
 }
 
+std::u32string la_weá::interpreter::get_code(const char *file_path) const {
+	std::ifstream is (file_path);
+
+	if (!is) {
+		file_open_error_exit();
+	}
+
+	is.seekg(0, is.end);
+	std::streampos utf8_code_len = is.tellg();
+	is.seekg(0, is.beg);
+
+	std::string utf8_code (utf8_code_len, ' ');
+	is.read(&utf8_code[0], utf8_code_len);
+
+	return utf_utils::utf8_str_to_utf32(std::u8string((const char8_t *)utf8_code.data()));
+}
+
+void la_weá::interpreter::file_open_error_exit() const {
+	switch (errno) {
+		case EACCES:
+			exit_with_error_message("No tenís permiso pa’ abrir la weá");
+		case ENOENT:
+			exit_with_error_message("No existe la weá, pos, wn");
+		default:
+			exit_with_error_message("");
+	}
+}
+
 #if !defined(_WIN64)
 	inline void la_weá::interpreter::print_error_in_red(const std::string &err_msg) const {
 		std::cerr << "\x1b[1;31m" << err_msg << "\x1b[0m\n";
@@ -97,31 +125,3 @@ void la_weá::interpreter::exit_with_error_message(const std::string &err_msg) c
         SetConsoleTextAttribute(error_handle, saved_attributes);
 	}
 #endif
-
-std::u32string la_weá::interpreter::get_code(const char *file_path) const {
-	std::ifstream is (file_path);
-
-	if (!is) {
-		file_open_error_exit();
-	}
-
-	is.seekg(0, is.end);
-	std::streampos utf8_code_len = is.tellg();
-	is.seekg(0, is.beg);
-
-	std::string utf8_code (utf8_code_len, ' ');
-	is.read(&utf8_code[0], utf8_code_len);
-
-	return utf_utils::utf8_str_to_utf32(std::u8string((const char8_t *)utf8_code.data()));
-}
-
-void la_weá::interpreter::file_open_error_exit() const {
-	switch (errno) {
-		case EACCES:
-			exit_with_error_message("No tenís permiso pa’ abrir la weá");
-		case ENOENT:
-			exit_with_error_message("No existe la weá, pos, wn");
-		default:
-			exit_with_error_message("");
-	}
-}

@@ -57,10 +57,10 @@
 			private:
 				std::unique_ptr<expression> program;
 
-				void print_error_in_red(const std::string &) const;
-
 				std::u32string get_code(const char *) const;
 				void file_open_error_exit() const;
+
+				void print_error_in_red(const std::string &) const;
 		};
 	}
 #endif
