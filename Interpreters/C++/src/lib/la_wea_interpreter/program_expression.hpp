@@ -17,27 +17,29 @@
 // along with this la_weá_program. If not, see <http://www.gnu.org/licenses/>.
 //
 
-#ifndef LA_WEÁ_PROGRAM_EXPRESSION_HPP
-#define LA_WEÁ_PROGRAM_EXPRESSION_HPP
-	#include "la_weá_expression.hpp"
+#ifndef PROGRAM_EXPRESSION_HPP
+#define PROGRAM_EXPRESSION_HPP
+	#include "expression.hpp"
 
 	#include <vector>
 
-	class la_weá_context;
+	namespace la_weá {
+		class context;
 
-	class la_weá_program_expression: public la_weá_expression {
-		public:
-			la_weá_program_expression(const std::vector<la_weá_expression *> &);
-			~la_weá_program_expression();
+		class program_expression: public expression {
+			public:
+				program_expression(const std::vector<expression *> &);
+				~program_expression();
 
-			la_weá_program_expression(const la_weá_program_expression &);
-			la_weá_program_expression &operator=(const la_weá_program_expression &);
+				program_expression(const program_expression &);
+				program_expression &operator=(const program_expression &);
 
-			la_weá_program_expression(la_weá_program_expression &&) noexcept;
-			la_weá_program_expression &operator=(la_weá_program_expression &&) noexcept;
+				program_expression(program_expression &&) noexcept;
+				program_expression &operator=(program_expression &&) noexcept;
 
-			void interpret(la_weá_context *) override;
-		private:
-			std::vector<la_weá_expression *> expressions;
-	};
+				void interpret(context *) override;
+			private:
+				std::vector<expression *> expressions;
+		};
+	}
 #endif

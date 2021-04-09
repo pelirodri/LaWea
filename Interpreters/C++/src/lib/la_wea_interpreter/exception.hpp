@@ -17,10 +17,22 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 //
 
-#include "la_weá_expression.hpp"
+#ifndef EXCEPTION_HPP
+#define EXCEPTION_HPP
+	#include <stdexcept>
+	#include <string>
 
-la_weá_expression::la_weá_expression() = default;
-la_weá_expression::~la_weá_expression() = default;
+	namespace la_weá {
+		class exception: public std::runtime_error {
+			public:
+				exception(const exception &) = delete;
+				exception &operator=(const exception &) = delete;
 
-la_weá_expression::la_weá_expression(la_weá_expression &&expression) noexcept = default;
-la_weá_expression &la_weá_expression::operator=(la_weá_expression &&expression) noexcept = default;
+				exception(const std::string &);
+				virtual ~exception();
+
+				exception(exception &&) noexcept;
+				exception &operator=(exception &&) noexcept;
+		};
+	}
+#endif

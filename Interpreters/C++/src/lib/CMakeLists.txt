@@ -4,14 +4,14 @@ set(LA_WEA_INTERPRETER_DIR la_wea_interpreter)
 
 set(
 	LA_WEA_INTERPRETER_SOURCES 
-	${LA_WEA_INTERPRETER_DIR}/la_weá_interpreter.cpp
-	${LA_WEA_INTERPRETER_DIR}/la_weá_code_parser.cpp
-	${LA_WEA_INTERPRETER_DIR}/la_weá_expression.cpp
-	${LA_WEA_INTERPRETER_DIR}/la_weá_context.cpp
-	${LA_WEA_INTERPRETER_DIR}/la_weá_program_expression.cpp
+	${LA_WEA_INTERPRETER_DIR}/interpreter.cpp
+	${LA_WEA_INTERPRETER_DIR}/code_parser.cpp
+	${LA_WEA_INTERPRETER_DIR}/expression.cpp
+	${LA_WEA_INTERPRETER_DIR}/context.cpp
+	${LA_WEA_INTERPRETER_DIR}/program_expression.cpp
 	${LA_WEA_INTERPRETER_DIR}/expressions.cpp
 	${LA_WEA_INTERPRETER_DIR}/expression_factory.cpp
-	${LA_WEA_INTERPRETER_DIR}/la_weá_exception.cpp
+	${LA_WEA_INTERPRETER_DIR}/exception.cpp
 	${LA_WEA_INTERPRETER_DIR}/exceptions.cpp
 )
 

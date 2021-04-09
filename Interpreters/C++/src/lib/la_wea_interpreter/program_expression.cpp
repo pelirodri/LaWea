@@ -17,44 +17,44 @@
 // along with this la_weá_program. If not, see <http://www.gnu.org/licenses/>.
 //
 
-#include "la_weá_program_expression.hpp"
-#include "la_weá_context.hpp"
+#include "program_expression.hpp"
+#include "context.hpp"
 
-la_weá_program_expression::la_weá_program_expression(const std::vector<la_weá_expression *> &expressions) : 
+la_weá::program_expression::program_expression(const std::vector<expression *> &expressions) : 
 	expressions(expressions) {}
 
-la_weá_program_expression::~la_weá_program_expression() {
-	for (la_weá_expression *expression : expressions) {
+la_weá::program_expression::~program_expression() {
+	for (expression *expression : expressions) {
 		delete expression;
 	}
 }
 
-la_weá_program_expression::la_weá_program_expression(const la_weá_program_expression &other) :
+la_weá::program_expression::program_expression(const program_expression &other) :
 	expressions(other.expressions) {}
 
-la_weá_program_expression &la_weá_program_expression::operator=(const la_weá_program_expression &other) {
+la_weá::program_expression &la_weá::program_expression::operator=(const program_expression &other) {
 	if (this != &other) {
-		this->~la_weá_program_expression();
+		this->~program_expression();
 		expressions = other.expressions;
 	}
 
 	return *this;
 }
 
-la_weá_program_expression::la_weá_program_expression(la_weá_program_expression &&other) noexcept {
+la_weá::program_expression::program_expression(program_expression &&other) noexcept {
 	*this = std::move(other);
 }
 
-la_weá_program_expression &la_weá_program_expression::operator=(la_weá_program_expression &&other) noexcept {
+la_weá::program_expression &la_weá::program_expression::operator=(program_expression &&other) noexcept {
 	if (this != &other) {
-		this->~la_weá_program_expression();
+		this->~program_expression();
 		expressions = std::move(other.expressions);
 	}
 
 	return *this;
 }
 
-void la_weá_program_expression::interpret(la_weá_context *ctx) {
+void la_weá::program_expression::interpret(context *ctx) {
 	for (long i = 0; i < expressions.size(); i = ctx->get_expr_idx()) {
 		expressions[i]->interpret(ctx);
 	}

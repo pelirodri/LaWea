@@ -19,104 +19,106 @@
 
 #ifndef EXPRESSIONS_HPP
 #define EXPRESSIONS_HPP
-	#include "la_weá_expression.hpp"
+	#include "expression.hpp"
 
 	#include <string>
+	
+	namespace la_weá {
+		class context;
 
-	class la_weá_context;
+		class maricón_expression: public expression {
+			public:
+				void interpret(context *) override;
+		};
 
-	class maricón_expression: public la_weá_expression {
-		public:
-			void interpret(la_weá_context *) override;
-	};
+		class maraco_expression: public expression {
+			public:
+				void interpret(context *) override;
+		};
 
-	class maraco_expression: public la_weá_expression {
-		public:
-			void interpret(la_weá_context *) override;
-	};
+		class weón_expression: public expression {
+			public:
+				void interpret(context *) override;
+		};
 
-	class weón_expression: public la_weá_expression {
-		public:
-			void interpret(la_weá_context *) override;
-	};
+		class aweonao_expression: public expression {
+			public:
+				void interpret(context *) override;
+		};
 
-	class aweonao_expression: public la_weá_expression {
-		public:
-			void interpret(la_weá_context *) override;
-	};
+		class maraca_expression: public expression {
+			public:
+				void interpret(context *) override;
+		};
 
-	class maraca_expression: public la_weá_expression {
-		public:
-			void interpret(la_weá_context *) override;
-	};
+		class chucha_expression: public expression {
+			public:
+				void interpret(context *) override;
+		};
 
-	class chucha_expression: public la_weá_expression {
-		public:
-			void interpret(la_weá_context *) override;
-	};
+		class puta_expression: public expression {
+			public:
+				void interpret(context *) override;
+		};
 
-	class puta_expression: public la_weá_expression {
-		public:
-			void interpret(la_weá_context *) override;
-	};
+		class pichula_expression: public expression {
+			public:
+				pichula_expression(long);
 
-	class pichula_expression: public la_weá_expression {
-		public:
-			pichula_expression(long);
+				void interpret(context *) override;
+			private:
+				long tula_idx;
+		};
 
-			void interpret(la_weá_context *) override;
-		private:
-			long tula_idx;
-	};
+		class tula_expression: public expression {
+			public:
+				tula_expression(long);
 
-	class tula_expression: public la_weá_expression {
-		public:
-			tula_expression(long);
+				void interpret(context *) override;
+			private:
+				long pichula_idx;
+		};
 
-			void interpret(la_weá_context *) override;
-		private:
-			long pichula_idx;
-	};
+		class pico_expression: public expression {
+			public:
+				pico_expression(long);
 
-	class pico_expression: public la_weá_expression {
-		public:
-			pico_expression(long);
+				void interpret(context *) override;
+			private:
+				long tula_idx;
+		};
 
-			void interpret(la_weá_context *) override;
-		private:
-			long tula_idx;
-	};
+		class ctm_expression: public expression {
+			public:
+				void interpret(context *) override;
+		};
 
-	class ctm_expression: public la_weá_expression {
-		public:
-			void interpret(la_weá_context *) override;
-	};
+		class quéweá_expression: public expression {
+			public:
+				void interpret(context *) override;
+		};
 
-	class quéweá_expression: public la_weá_expression {
-		public:
-			void interpret(la_weá_context *) override;
-	};
+		class chúpala_expression: public expression {
+			public:
+				void interpret(context *) override;
+		};
 
-	class chúpala_expression: public la_weá_expression {
-		public:
-			void interpret(la_weá_context *) override;
-	};
+		class brígido_expression: public expression {
+			public:
+				void interpret(context *) override;
+			private:
+				std::string get_num_input() const;
+				bool is_valid_num_input(const std::string &) const;
+		};
 
-	class brígido_expression: public la_weá_expression {
-		public:
-			void interpret(la_weá_context *) override;
-		private:
-			std::string get_num_input() const;
-			bool is_valid_num_input(const std::string &) const;
-	};
+		class perkin_expression: public expression {
+			public:
+				void interpret(context *) override;
+		};
 
-	class perkin_expression: public la_weá_expression {
-		public:
-			void interpret(la_weá_context *) override;
-	};
-
-	class mierda_expression: public la_weá_expression {
-		public:
-			void interpret(la_weá_context *) override;
-	};
+		class mierda_expression: public expression {
+			public:
+				void interpret(context *) override;
+		};
+	}
 #endif

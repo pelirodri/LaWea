@@ -17,21 +17,23 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 //
 
-#ifndef LA_WEÁ_EXPRESSION_HPP
-#define LA_WEÁ_EXPRESSION_HPP
-	class la_weá_context;
+#ifndef EXPRESSION_HPP
+#define EXPRESSION_HPP
+	namespace la_weá {
+		class context;
 
-	class la_weá_expression {
-		public:
-			la_weá_expression(const la_weá_expression &) = delete;
-			la_weá_expression &operator=(const la_weá_expression &) = delete;
+		class expression {
+			public:
+				expression(const expression &) = delete;
+				expression &operator=(const expression &) = delete;
 
-			la_weá_expression();
-			virtual ~la_weá_expression();
+				expression();
+				virtual ~expression();
 
-			la_weá_expression(la_weá_expression &&) noexcept;
-			la_weá_expression &operator=(la_weá_expression &&) noexcept;
+				expression(expression &&) noexcept;
+				expression &operator=(expression &&) noexcept;
 
-			virtual void interpret(la_weá_context *) = 0;
-	};
+				virtual void interpret(context *) = 0;
+		};
+	}
 #endif

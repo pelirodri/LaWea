@@ -17,27 +17,10 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 //
 
-#include "interpreter.hpp"
+#include "expression.hpp"
 
-#include <locale>
-#include <cstring>
+la_weá::expression::expression() = default;
+la_weá::expression::~expression() = default;
 
-int main(int argc, char **argv) {
-	la_weá::interpreter interpreter;
-
-	#if !defined(__LP64__) && !defined(_WIN64)
-		interpreter.exit_with_error_message("Qué chucha hacís usando todavía un sistema operativo de 32 bits...");
-	#endif
-
-	std::locale::global(std::locale(""));
-
-	if (argc != 2) {
-		interpreter.exit_with_error_message("Tenís que pasar la ruta del archivo con el código, poh, aweona’o qlo");
-	} else if (!strstr(argv[1], ".lw")) {
-		interpreter.exit_with_error_message("El archivo qlo tiene que tener la extensión .lw");
-	}
-
-	interpreter.interpret(argv[1]);
-
-	return 0;
-}
+la_weá::expression::expression(expression &&expression) noexcept = default;
+la_weá::expression &la_weá::expression::operator=(expression &&expression) noexcept = default;

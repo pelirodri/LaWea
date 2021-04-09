@@ -17,14 +17,14 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 //
 
-#include "la_weá_code_parser.hpp"
+#include "code_parser.hpp"
+#include "expression.hpp"
+#include "program_expression.hpp"
 #include "expression_factory.hpp"
-#include "la_weá_program_expression.hpp"
-#include "la_weá_expression.hpp"
 #include "exceptions.hpp"
 #include "utf_utils.hpp"
 
-const std::vector<std::u32string> la_weá_code_parser::cmd_names = {
+const std::vector<std::u32string> la_weá::code_parser::cmd_names = {
 	U"maricón",
 	U"maraco",
 	U"weón",
@@ -43,23 +43,23 @@ const std::vector<std::u32string> la_weá_code_parser::cmd_names = {
 	U"mierda"
 };
 
-la_weá_code_parser::la_weá_code_parser(const std::u32string &code) :
+la_weá::code_parser::code_parser(const std::u32string &code) :
 	code(code), is_mid_comment(false), line(1), col(1), loop_open_commands_count(0), loop_close_commands_count(0) {}
 
-std::unique_ptr<la_weá_expression> la_weá_code_parser::parse() {	
+std::unique_ptr<la_weá::expression> la_weá::code_parser::parse() {	
 	parse_code();
 	check_loops_balance();
 
-	return std::make_unique<la_weá_program_expression>(get_expressions_from_commands());
+	return std::make_unique<program_expression>(get_expressions_from_commands());
 }
 
-void la_weá_code_parser::parse_code() {
+void la_weá::code_parser::parse_code() {
 	for (long i = 0; i <= code.length(); i++) {
 		parse_char_at_idx(i);
 	}
 }
 
-void la_weá_code_parser::parse_char_at_idx(long code_idx) {
+void la_weá::code_parser::parse_char_at_idx(long code_idx) {
 	if (code[code_idx] == U'#') {
 		is_mid_comment = true;
 	}
@@ -73,13 +73,13 @@ void la_weá_code_parser::parse_char_at_idx(long code_idx) {
 	parsed_char_at_idx(code_idx);
 }
 
-inline bool la_weá_code_parser::is_cmd_boundary(long code_idx) const {
+inline bool la_weá::code_parser::is_cmd_boundary(long code_idx) const {
 	return isspace(code[code_idx]) || code[code_idx] == U'#' || code_idx == code.length();
 }
 
-void la_weá_code_parser::handle_potential_cmd() {
+void la_weá::code_parser::handle_potential_cmd() {
 	if (!cmd_name_buffer.empty()) {
-		la_weá_command cmd = get_cmd_from_name();
+		command cmd = get_cmd_from_name();
 
 		handle_loop_balancing(cmd);
 		commands.push_back(cmd);
@@ -88,10 +88,10 @@ void la_weá_code_parser::handle_potential_cmd() {
 	}
 }
 
-la_weá_command la_weá_code_parser::get_cmd_from_name() const {
-    for (int cmd = 0; cmd < la_weá_code_parser::cmd_names.size(); cmd++) {
+la_weá::command la_weá::code_parser::get_cmd_from_name() const {
+    for (int cmd = 0; cmd < code_parser::cmd_names.size(); cmd++) {
         if (cmd_name_buffer == cmd_names[cmd]) {
-            return static_cast<la_weá_command>(cmd);
+            return static_cast<command>(cmd);
         }
     }
 
@@ -102,7 +102,7 @@ la_weá_command la_weá_code_parser::get_cmd_from_name() const {
     );
 }
 
-void la_weá_code_parser::handle_loop_balancing(la_weá_command cmd) {
+void la_weá::code_parser::handle_loop_balancing(command cmd) {
     if (cmd == pichula) {
         handle_pichula_cmd();  
     } else if (cmd == tula) {
@@ -112,11 +112,11 @@ void la_weá_code_parser::handle_loop_balancing(la_weá_command cmd) {
     }
 }
 
-inline void la_weá_code_parser::handle_pichula_cmd() {
+inline void la_weá::code_parser::handle_pichula_cmd() {
 	loop_open_commands_count++;
 }
 
-void la_weá_code_parser::handle_tula_cmd() {
+void la_weá::code_parser::handle_tula_cmd() {
 	if (loop_close_commands_count == loop_open_commands_count) {
 		throw unmatched_tula_exception (line, col - std::u32string(U"tula").length());
     }
@@ -124,32 +124,32 @@ void la_weá_code_parser::handle_tula_cmd() {
     loop_close_commands_count++;
 }
 
-void la_weá_code_parser::handle_pico_cmd() const {
+void la_weá::code_parser::handle_pico_cmd() const {
 	if (loop_open_commands_count == loop_close_commands_count) {
 		throw misplaced_pico_exception (line, col - std::u32string(U"pico").length());
 	}
 }
 
-void la_weá_code_parser::add_char_at_idx_to_cmd_name(long code_idx) {
+void la_weá::code_parser::add_char_at_idx_to_cmd_name(long code_idx) {
 	validate_cmd_char_at_idx(code_idx);
 	validate_cmd_name_length();
 
 	cmd_name_buffer += code[code_idx];
 }
 
-void la_weá_code_parser::validate_cmd_char_at_idx(long code_idx) const {
+void la_weá::code_parser::validate_cmd_char_at_idx(long code_idx) const {
 	if (std::u32string (U"abcdeghiklmnopqrtuwáéíóú").find(code[code_idx]) == std::u32string::npos) {
 		throw invalid_character_exception (code[code_idx], line, col);
 	}
 }
 
-void la_weá_code_parser::validate_cmd_name_length() const {
+void la_weá::code_parser::validate_cmd_name_length() const {
 	if (cmd_name_buffer.length() == 7) {
 		throw too_long_command_exception (line, col - cmd_name_buffer.length());
 	}
 }
 
-void la_weá_code_parser::parsed_char_at_idx(long code_idx) {
+void la_weá::code_parser::parsed_char_at_idx(long code_idx) {
 	if (code[code_idx] == U'\n') {
 		line++;
 		col = 1;
@@ -160,14 +160,14 @@ void la_weá_code_parser::parsed_char_at_idx(long code_idx) {
 	}
 }
 
-void la_weá_code_parser::check_loops_balance() const {
+void la_weá::code_parser::check_loops_balance() const {
     if (loop_open_commands_count != loop_close_commands_count) {
 		throw unmatched_pichulas_exception ();
 	}
 }
 
-std::vector<la_weá_expression *> la_weá_code_parser::get_expressions_from_commands() const {
-	std::vector<la_weá_expression *> expressions;
+std::vector<la_weá::expression *> la_weá::code_parser::get_expressions_from_commands() const {
+	std::vector<expression *> expressions;
 
 	for (long i = 0; i < commands.size(); i++) {
 		expressions.push_back(expression_factory::create_expression_from_cmd_at_idx(commands, i));

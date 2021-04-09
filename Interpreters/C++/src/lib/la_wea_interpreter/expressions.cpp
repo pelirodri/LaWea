@@ -18,49 +18,49 @@
 //
 
 #include "expressions.hpp"
-#include "la_weá_context.hpp"
+#include "context.hpp"
 #include "utf_utils.hpp"
 
 #include <iostream>
 
-void maricón_expression::interpret(la_weá_context *ctx) {
+void la_weá::maricón_expression::interpret(context *ctx) {
 	ctx->decrease_cell();
 	ctx->increase_expr_idx();
 }
 
-void maraco_expression::interpret(la_weá_context *ctx) {
+void la_weá::maraco_expression::interpret(context *ctx) {
 	ctx->decrease_cell(2);
 	ctx->increase_expr_idx();
 }
 
-void weón_expression::interpret(la_weá_context *ctx) {
+void la_weá::weón_expression::interpret(context *ctx) {
 	ctx->increase_cell();
 	ctx->increase_expr_idx();
 }
 
-void aweonao_expression::interpret(la_weá_context *ctx) {
+void la_weá::aweonao_expression::interpret(context *ctx) {
 	ctx->increase_cell(2);
 	ctx->increase_expr_idx();
 }
 
-void maraca_expression::interpret(la_weá_context *ctx) {
+void la_weá::maraca_expression::interpret(context *ctx) {
 	ctx->reset_cell_value();
 	ctx->increase_expr_idx();
 }
 
-void chucha_expression::interpret(la_weá_context *ctx) {
+void la_weá::chucha_expression::interpret(context *ctx) {
 	ctx->shift_cell_left();
 	ctx->increase_expr_idx();
 }
 
-void puta_expression::interpret(la_weá_context *ctx) {
+void la_weá::puta_expression::interpret(context *ctx) {
 	ctx->shift_cell_right();
 	ctx->increase_expr_idx();
 }
 
-pichula_expression::pichula_expression(long tula_idx) : tula_idx(tula_idx) {}
+la_weá::pichula_expression::pichula_expression(long tula_idx) : tula_idx(tula_idx) {}
 
-void pichula_expression::interpret(la_weá_context *ctx) {
+void la_weá::pichula_expression::interpret(context *ctx) {
 	if (ctx->get_cell_value() == 0) {
 		ctx->set_expr_idx(tula_idx + 1);
 	} else {
@@ -68,9 +68,9 @@ void pichula_expression::interpret(la_weá_context *ctx) {
 	}
 }
 
-tula_expression::tula_expression(long pichula_idx) : pichula_idx(pichula_idx) {}
+la_weá::tula_expression::tula_expression(long pichula_idx) : pichula_idx(pichula_idx) {}
 
-void tula_expression::interpret(la_weá_context *ctx) {
+void la_weá::tula_expression::interpret(context *ctx) {
 	if (ctx->get_cell_value() != 0) {
 		ctx->set_expr_idx(pichula_idx + 1);
 	} else {
@@ -78,13 +78,13 @@ void tula_expression::interpret(la_weá_context *ctx) {
 	}
 }
 
-pico_expression::pico_expression(long tula_idx) : tula_idx(tula_idx) {}
+la_weá::pico_expression::pico_expression(long tula_idx) : tula_idx(tula_idx) {}
 
-void pico_expression::interpret(la_weá_context *ctx) {
+void la_weá::pico_expression::interpret(context *ctx) {
 	ctx->set_expr_idx(tula_idx + 1);
 }
 
-void ctm_expression::interpret(la_weá_context *ctx) {
+void la_weá::ctm_expression::interpret(context *ctx) {
 	int64_t cell_value = ctx->get_cell_value();
 
 	if (cell_value >= 0x0 && cell_value <= 0x10FFFF) {
@@ -102,7 +102,7 @@ void ctm_expression::interpret(la_weá_context *ctx) {
 }
 
 #if !defined(_WIN64)
-	void quéweá_expression::interpret(la_weá_context *ctx) {
+	void la_weá::quéweá_expression::interpret(context *ctx) {
 		std::string utf8_input = "";
 		std::getline(std::cin, utf8_input);
 
@@ -111,7 +111,7 @@ void ctm_expression::interpret(la_weá_context *ctx) {
 		ctx->increase_expr_idx();
 	}
 #else
-	void quéweá_expression::interpret(la_weá_context *ctx) {
+	void la_weá::quéweá_expression::interpret(context *ctx) {
 		WCHAR utf16_input[5] = {L'\0'};
 
         ULONG read_char_count;
@@ -129,12 +129,12 @@ void ctm_expression::interpret(la_weá_context *ctx) {
 	}	
 #endif
 
-void chúpala_expression::interpret(la_weá_context *ctx) {
+void la_weá::chúpala_expression::interpret(context *ctx) {
 	std::cout << ctx->get_cell_value();
 	ctx->increase_expr_idx();
 }
 
-void brígido_expression::interpret(la_weá_context *ctx) {
+void la_weá::brígido_expression::interpret(context *ctx) {
 	std::string num_input = get_num_input();
 
 	if (!is_valid_num_input(num_input)) {
@@ -150,7 +150,7 @@ void brígido_expression::interpret(la_weá_context *ctx) {
     ctx->increase_expr_idx();
 }
 
-std::string brígido_expression::get_num_input() const {
+std::string la_weá::brígido_expression::get_num_input() const {
 	std::string num_input = "";
 	std::getline(std::cin, num_input);
 
@@ -161,7 +161,7 @@ std::string brígido_expression::get_num_input() const {
 	return num_input;
 }
 
-bool brígido_expression::is_valid_num_input(const std::string &num_input) const {
+bool la_weá::brígido_expression::is_valid_num_input(const std::string &num_input) const {
 	if (num_input.length() > 20) {
 		return false;
 	}
@@ -175,11 +175,11 @@ bool brígido_expression::is_valid_num_input(const std::string &num_input) const
     return true;
 }
 
-void perkin_expression::interpret(la_weá_context *ctx) {
+void la_weá::perkin_expression::interpret(context *ctx) {
 	ctx->copy_cell_value();
 	ctx->increase_expr_idx();
 }
 
-void mierda_expression::interpret(la_weá_context *ctx) {
+void la_weá::mierda_expression::interpret(context *ctx) {
 	std::exit(EXIT_SUCCESS);
 }

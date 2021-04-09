@@ -19,22 +19,24 @@
 
 #ifndef EXPRESSION_FACTORY_HPP
 #define EXPRESSION_FACTORY_HPP
-	#include "la_weá_command.hpp"
+	#include "command.hpp"
 
 	#include <vector>
 
-	class la_weá_expression;
+	namespace la_weá {
+		class expression;
 
-	class expression_factory {
-		public:
-			static la_weá_expression *create_expression_from_cmd_at_idx(
-				std::vector<la_weá_command>,
-				long = -1
-			);
-		private:
-			expression_factory();
+		class expression_factory {
+			public:
+				static expression *create_expression_from_cmd_at_idx(
+					std::vector<command>,
+					long = -1
+				);
+			private:
+				expression_factory();
 
-			static long find_loop_start(std::vector<la_weá_command>, long);
-			static long find_loop_end(std::vector<la_weá_command>, long);
-	};
+				static long find_loop_start(std::vector<command>, long);
+				static long find_loop_end(std::vector<command>, long);
+		};
+	}
 #endif

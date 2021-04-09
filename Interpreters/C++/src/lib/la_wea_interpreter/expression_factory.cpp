@@ -20,8 +20,8 @@
 #include "expression_factory.hpp"
 #include "expressions.hpp"
 
-la_weá_expression *expression_factory::create_expression_from_cmd_at_idx(
-	std::vector<la_weá_command> commands,
+la_weá::expression *la_weá::expression_factory::create_expression_from_cmd_at_idx(
+	std::vector<command> commands,
 	long cmd_idx
 ) {
 	switch (commands[cmd_idx]) {
@@ -76,7 +76,7 @@ la_weá_expression *expression_factory::create_expression_from_cmd_at_idx(
 	}
 }
 
-long expression_factory::find_loop_start(std::vector<la_weá_command> commands, long cmd_idx) {
+long la_weá::expression_factory::find_loop_start(std::vector<command> commands, long cmd_idx) {
 	for (long i = cmd_idx - 1, loop_level = 1; i >= 0; i--) {
 		if (commands[i] == tula) {
 			loop_level++;
@@ -92,7 +92,7 @@ long expression_factory::find_loop_start(std::vector<la_weá_command> commands, 
 	return -1;
 }
 
-long expression_factory::find_loop_end(std::vector<la_weá_command> commands, long cmd_idx) {
+long la_weá::expression_factory::find_loop_end(std::vector<command> commands, long cmd_idx) {
 	for (long i = cmd_idx + 1, loop_level = 1; i < commands.size(); i++) {
 		if (commands[i] == pichula) {
 			loop_level++;

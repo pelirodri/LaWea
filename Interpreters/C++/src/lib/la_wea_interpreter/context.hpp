@@ -17,37 +17,39 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 //
 
-#ifndef LA_WEÁ_CONTEXT_HPP
-#define LA_WEÁ_CONTEXT_HPP
+#ifndef CONTEXT_HPP
+#define CONTEXT_HPP
 	#include <vector>
 
-	class la_weá_context {
-		public:
-			la_weá_context();
+	namespace la_weá {
+		class context {
+			public:
+				context();
 
-			long get_expr_idx() const;	
-			void set_expr_idx(long);
-			void increase_expr_idx();
+				long get_expr_idx() const;	
+				void set_expr_idx(long);
+				void increase_expr_idx();
 
-			int64_t get_cell_value() const;
-			void set_cell_value(int64_t);
+				int64_t get_cell_value() const;
+				void set_cell_value(int64_t);
 
-			void decrease_cell(int64_t = 1);
-			void increase_cell(int64_t = 1);
+				void decrease_cell(int64_t = 1);
+				void increase_cell(int64_t = 1);
 
-			void reset_cell_value();
+				void reset_cell_value();
 
-			void shift_cell_left(long = 1);
-			void shift_cell_right(long = 1);
+				void shift_cell_left(long = 1);
+				void shift_cell_right(long = 1);
 
-			void copy_cell_value();
-		private:
-			long expr_idx;
+				void copy_cell_value();
+			private:
+				long expr_idx;
 
-			std::vector<int64_t> cells;
-			long cur_cell;
+				std::vector<int64_t> cells;
+				long cur_cell;
 
-			bool is_copy_set;
-			int64_t cell_value_copy;
-	};
+				bool is_copy_set;
+				int64_t cell_value_copy;
+		};
+	}
 #endif

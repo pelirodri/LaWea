@@ -17,11 +17,11 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 //
 
-#include "la_weá_interpreter.hpp"
-#include "la_weá_code_parser.hpp"
-#include "la_weá_exception.hpp"
-#include "la_weá_expression.hpp"
-#include "la_weá_context.hpp"
+#include "interpreter.hpp"
+#include "expression.hpp"
+#include "code_parser.hpp"
+#include "exception.hpp"
+#include "context.hpp"
 #include "utf_utils.hpp"
 
 #include <iostream>
@@ -31,47 +31,47 @@
 	#include <windows>
 #endif
 
-la_weá_interpreter::la_weá_interpreter() = default;
-la_weá_interpreter::~la_weá_interpreter() = default;
+la_weá::interpreter::interpreter() = default;
+la_weá::interpreter::~interpreter() = default;
 
-void la_weá_interpreter::interpret(const char *file_path) {
+void la_weá::interpreter::interpret(const char *file_path) {
 	parse_code(get_code(file_path));
 	run();
 }
 
-void la_weá_interpreter::parse_code(const std::u32string &code) {
+void la_weá::interpreter::parse_code(const std::u32string &code) {
 	try {
-		program = (la_weá_code_parser (code)).parse();
-	} catch (la_weá_exception &e) {
+		program = (code_parser (code)).parse();
+	} catch (exception &e) {
 		exit_with_error_message(std::string (e.what()));
 	}
 }
 
-void la_weá_interpreter::run() {
+void la_weá::interpreter::run() {
 	std::cout.setf(std::ios::unitbuf);
 
-	la_weá_context *ctx = new la_weá_context;
+	context *ctx = new context;
 
 	try {
 		program->interpret(ctx);
 		delete ctx;
-	} catch (la_weá_exception &e) {
+	} catch (exception &e) {
 		delete ctx;
 		exit_with_error_message(std::string (e.what()));
 	}
 }
 
-void la_weá_interpreter::exit_with_error_message(const std::string &err_msg) const {
+void la_weá::interpreter::exit_with_error_message(const std::string &err_msg) const {
 	print_error_in_red(err_msg.length() != 0 ? err_msg : "Error interno");
 	std::exit(EXIT_FAILURE);
 }
 
 #if !defined(_WIN64)
-	inline void la_weá_interpreter::print_error_in_red(const std::string &err_msg) const {
+	inline void la_weá::interpreter::print_error_in_red(const std::string &err_msg) const {
 		std::cerr << "\x1b[1;31m" << err_msg << "\x1b[0m\n";
 	}
 #else
-	void la_weá_interpreter::print_error_in_red(const std::string &err_msg) const {
+	void la_weá::interpreter::print_error_in_red(const std::string &err_msg) const {
 		WCHAR utf16_buffer[err_msg.length() + 1];
 
         short utf16_buffer_len = MultiByteToWideChar(
@@ -98,7 +98,7 @@ void la_weá_interpreter::exit_with_error_message(const std::string &err_msg) co
 	}
 #endif
 
-std::u32string la_weá_interpreter::get_code(const char *file_path) const {
+std::u32string la_weá::interpreter::get_code(const char *file_path) const {
 	std::ifstream is (file_path);
 
 	if (!is) {
@@ -115,7 +115,7 @@ std::u32string la_weá_interpreter::get_code(const char *file_path) const {
 	return utf_utils::utf8_str_to_utf32(std::u8string((const char8_t *)utf8_code.data()));
 }
 
-void la_weá_interpreter::file_open_error_exit() const {
+void la_weá::interpreter::file_open_error_exit() const {
 	switch (errno) {
 		case EACCES:
 			exit_with_error_message("No tenís permiso pa’ abrir la weá");
