@@ -85,12 +85,13 @@
 	 * Retrieves the commands from the code.
 	 * @param code the code to parse
 	 */
-	void la_weá_parse_code(const uint_least32_t *code);
+	la_weá_command_t *la_weá_parse_code(const uint_least32_t *code);
 
 	/**
-	 * Interprets the commands found in the code.
+	 * Interprets commands.
+	 * @param commands to interpret
 	 */
-	void la_weá_run();
+	void la_weá_run(la_weá_command_t *commands);
 
 	/**
 	 * A utility function that prints an error message and exits the program abnormally.

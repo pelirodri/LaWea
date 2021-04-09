@@ -41,11 +41,11 @@ void la_weá_interpret(const char *file_path) {
     la_weá_parse_code(code);
     free((void *)code);
 
-    la_weá_run();
+    la_weá_run(commands);
     free(commands);
 }
 
-void la_weá_parse_code(const uint_least32_t *code) {
+la_weá_command_t *la_weá_parse_code(const uint_least32_t *code) {
     size_t code_len = utf32_strlen(code);
 
     commands_size = (size_t)(code_len / 3) * sizeof(la_weá_command_t);
@@ -60,10 +60,12 @@ void la_weá_parse_code(const uint_least32_t *code) {
     }
 
     check_loops_balance();
+
+    return commands;
 }
 
-void la_weá_run() {
-    interpret_commands();
+void la_weá_run(la_weá_command_t *commands) {
+    interpret_commands(commands);
 }
 
 void la_weá_exit_with_error_message(const char *err_msg) {

@@ -19,5 +19,7 @@
 
 #ifndef INTERPRET_COMMANDS_H
 #define INTERPRET_COMMANDS_H
-	void interpret_commands();
+	#include "la_weá_interpreter.h"
+
+	void interpret_commands(la_weá_command_t *);
 #endif

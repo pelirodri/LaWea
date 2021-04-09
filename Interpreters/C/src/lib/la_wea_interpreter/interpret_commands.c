@@ -31,7 +31,7 @@
     #include <windows.h>
 #endif
 
-static void interpret_command(la_weá_command_t, long *);
+static void interpret_command(long *, const la_weá_command_t *);
 static void interpret_maricón();
 static void interpret_maraco();
 static void interpret_weón();
@@ -40,11 +40,11 @@ static void interpret_maraca();
 static void interpret_chucha();
 static void interpret_puta();
 static void double_cells_size();
-static void interpret_pichula(long *);
-static long find_loop_end(long);
-static void interpret_tula(long *);
-static long find_loop_start(long);
-static void interpret_pico(long *);
+static void interpret_pichula(long *, const la_weá_command_t *);
+static long find_loop_end(long, const la_weá_command_t *);
+static void interpret_tula(long *, const la_weá_command_t *);
+static long find_loop_start(long, const la_weá_command_t *);
+static void interpret_pico(long *, const la_weá_command_t *);
 static void interpret_ctm();
 static bool is_value_in_unicode_range(int64_t);
 static void print_char();
@@ -58,14 +58,13 @@ static bool is_valid_num_input(const char *);
 static void interpret_perkin();
 static void interpret_mierda();
 
-extern la_weá_command_t *commands;
 extern size_t commands_count;
 
 static size_t cells_size = 8 * sizeof(int64_t);
 static int64_t *cells;
 static long cur_cell;
 
-void interpret_commands() {
+void interpret_commands(la_weá_command_t *commands) {
     setvbuf(stdout, NULL, _IONBF, 0);
     
     cells = (int64_t *)calloc(8, sizeof(int64_t));    
@@ -75,14 +74,14 @@ void interpret_commands() {
     }
 
     for (long i = 0; i < commands_count; i++) {
-        interpret_command(commands[i], &i);
+        interpret_command(&i, commands);
     }
 
     free(cells);
 }
 
-void interpret_command(la_weá_command_t command, long *cmd_idx) {
-	switch (command) {
+void interpret_command(long *cmd_idx, const la_weá_command_t *commands) {
+	switch (commands[*cmd_idx]) {
         case maricón:
             interpret_maricón();
             break;
@@ -105,13 +104,13 @@ void interpret_command(la_weá_command_t command, long *cmd_idx) {
             interpret_puta();
             break;
         case pichula:
-            interpret_pichula(cmd_idx);
+            interpret_pichula(cmd_idx, commands);
             break;
         case tula:
-            interpret_tula(cmd_idx);
+            interpret_tula(cmd_idx, commands);
             break;
         case pico:
-            interpret_pico(cmd_idx);
+            interpret_pico(cmd_idx, commands);
             break;
         case ctm:
             interpret_ctm();
@@ -183,13 +182,13 @@ void double_cells_size() {
     cells = tmp;
 }
 
-void interpret_pichula(long *cmd_idx) {
+void interpret_pichula(long *cmd_idx, const la_weá_command_t *commands) {
 	if (cells[cur_cell] == 0) {
-        *cmd_idx = find_loop_end(*cmd_idx);
+        *cmd_idx = find_loop_end(*cmd_idx, commands);
     }
 }
 
-long find_loop_end(long cmd_idx) {
+long find_loop_end(long cmd_idx, const la_weá_command_t *commands) {
     for (long i = cmd_idx + 1, loop_level = 1; i < commands_count; i++) {
         if (commands[i] == pichula) {
             loop_level++;
@@ -205,13 +204,13 @@ long find_loop_end(long cmd_idx) {
     return -1;
 }
 
-void interpret_tula(long *cmd_idx) {
+void interpret_tula(long *cmd_idx, const la_weá_command_t *commands) {
 	if (cells[cur_cell] != 0) {
-        *cmd_idx = find_loop_start(*cmd_idx);
+        *cmd_idx = find_loop_start(*cmd_idx, commands);
     }
 }
 
-long find_loop_start(long cmd_idx) {
+long find_loop_start(long cmd_idx, const la_weá_command_t *commands) {
     for (long i = cmd_idx - 1, loop_level = 1; i >= 0; i--) {
         if (commands[i] == tula) {
             loop_level++;
@@ -227,8 +226,8 @@ long find_loop_start(long cmd_idx) {
     return -1;
 }
 
-inline void interpret_pico(long *cmd_idx) {
-	*cmd_idx = find_loop_end(*cmd_idx);
+inline void interpret_pico(long *cmd_idx, const la_weá_command_t *commands) {
+	*cmd_idx = find_loop_end(*cmd_idx, commands);
 }
 
 void interpret_ctm() {
