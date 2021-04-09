@@ -24,16 +24,17 @@
 
 		class expression {
 			public:
+				virtual ~expression();
+
+				virtual void interpret(context *) = 0;
+			protected:
 				expression(const expression &) = delete;
 				expression &operator=(const expression &) = delete;
 
 				expression();
-				virtual ~expression();
 
 				expression(expression &&) noexcept;
 				expression &operator=(expression &&) noexcept;
-
-				virtual void interpret(context *) = 0;
 		};
 	}
 #endif

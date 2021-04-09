@@ -25,11 +25,12 @@
 	namespace la_weá {
 		class exception: public std::runtime_error {
 			public:
+				virtual ~exception();		
+			protected:
 				exception(const exception &) = delete;
 				exception &operator=(const exception &) = delete;
 
 				exception(const std::string &);
-				virtual ~exception();
 
 				exception(exception &&) noexcept;
 				exception &operator=(exception &&) noexcept;

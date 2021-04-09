@@ -112,7 +112,7 @@ void la_weá::code_parser::handle_loop_balancing(command cmd) {
     }
 }
 
-inline void la_weá::code_parser::handle_pichula_cmd() {
+void la_weá::code_parser::handle_pichula_cmd() {
 	loop_open_commands_count++;
 }
 

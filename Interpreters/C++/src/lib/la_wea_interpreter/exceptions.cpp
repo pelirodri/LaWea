@@ -21,57 +21,68 @@
 #include "utf_utils.hpp"
 
 la_weá::invalid_command_exception::invalid_command_exception(const std::string &cmd_name, long line, long col) :
-	exception("") {
-	std::string err_msg = "'" +
+	exception(get_err_msg(cmd_name, line, col)) {}
+
+inline std::string la_weá::invalid_command_exception::get_err_msg(const std::string &cmd_name, long line, long col) {
+	return std::string (
+		"'" +
 		cmd_name +
 		"' no es un comando válido, pos, saco de weas (línea: " +
 		std::to_string(line) +
 		", columna: " +
 		std::to_string(col) +
-		")";
-
-	static_cast<exception &>(*this) = exception (err_msg);
+		")"
+	);
 }
 
-la_weá::unmatched_tula_exception::unmatched_tula_exception(long line, long col) : exception("") {
-	std::string err_msg = "Se encontró una tula sin su respectiva pichula en la línea " +
+la_weá::unmatched_tula_exception::unmatched_tula_exception(long line, long col) : exception(get_err_msg(line, col)) {}
+
+inline std::string la_weá::unmatched_tula_exception::get_err_msg(long line, long col) {
+	return std::string (
+		"Se encontró una tula sin su respectiva pichula en la línea " +
 		std::to_string(line) +
 		", columna " +
-		std::to_string(col);
-
-	static_cast<exception &>(*this) = exception (err_msg);
+		std::to_string(col)
+	);
 }
 
-la_weá::misplaced_pico_exception::misplaced_pico_exception(long line, long col) : exception("") {
-	std::string err_msg = "No debiste meter ese pico en la línea " +
+la_weá::misplaced_pico_exception::misplaced_pico_exception(long line, long col) : exception(get_err_msg(line, col)) {}
+
+inline std::string la_weá::misplaced_pico_exception::get_err_msg(long line, long col) {
+	return std::string (
+		"No debiste meter ese pico en la línea " +
 		std::to_string(line) +
 		", columna " +
-		std::to_string(col);
-
-	static_cast<exception &>(*this) = exception (err_msg);
+		std::to_string(col)
+	);
 }
 
 la_weá::invalid_character_exception::invalid_character_exception(char32_t invalid_char, long line, long col) :
-	exception("") {
-	std::string err_msg = "'" +
+	exception(get_err_msg(invalid_char, line, col)) {}
+
+inline std::string la_weá::invalid_character_exception::get_err_msg(char32_t invalid_char, long line, long col) {
+	return std::string (
+		"'" +
 		std::string((const char *)utf_utils::utf32_char_to_utf8(invalid_char).data()) +
 		"' no es parte de La Weá, tonto qlo (línea: " +
 		std::to_string(line) +
 		", columna: " +
 		std::to_string(col) +
-		")";
-
-	static_cast<exception &>(*this) = exception (err_msg);
+		")"
+	);
 }
 
-la_weá::too_long_command_exception::too_long_command_exception(long line, long col) : exception("") {
-	std::string err_msg = "¿Vos creís que yo soy weón, CTM? Te gustan largos, parece (línea: " +
+la_weá::too_long_command_exception::too_long_command_exception(long line, long col) :
+	exception(get_err_msg(line, col)) {}
+
+inline std::string la_weá::too_long_command_exception::get_err_msg(long line, long col) {
+	return std::string (
+		"¿Vos creís que yo soy weón, CTM? Te gustan largos, parece (línea: " +
 		std::to_string(line) +
 		", columna: " +
 		std::to_string(col) +
-		")";
-
-	static_cast<exception &>(*this) = exception (err_msg);
+		")"
+	);
 }
 
 la_weá::unmatched_pichulas_exception::unmatched_pichulas_exception() :

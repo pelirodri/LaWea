@@ -27,26 +27,36 @@
 		class invalid_command_exception: public exception {
 			public:
 				invalid_command_exception(const std::string &, long, long);
+			private:
+				std::string get_err_msg(const std::string &, long, long);
 		};
 
 		class unmatched_tula_exception: public exception {
 			public:
 				unmatched_tula_exception(long, long);
+			private:
+				std::string get_err_msg(long, long);
 		};
 
 		class misplaced_pico_exception: public exception {
 			public:
 				misplaced_pico_exception(long, long);
+			private:
+				std::string get_err_msg(long, long);
 		};
 
 		class invalid_character_exception: public exception {
 			public:
 				invalid_character_exception(char32_t, long, long);
+			private:
+				std::string get_err_msg(char32_t, long, long);
 		};
 
 		class too_long_command_exception: public exception {
 			public:
 				too_long_command_exception(long, long);
+			private:
+				std::string get_err_msg(long, long);
 		};
 
 		class unmatched_pichulas_exception: public exception {
