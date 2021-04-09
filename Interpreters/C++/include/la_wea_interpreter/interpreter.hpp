@@ -39,15 +39,17 @@
 				void interpret(const char *file_path);
 
 				/**
-				 * Retrieves the commands from the code.
+				 * Retrieves the interpretable expressions made from the code.
 				 * @param code the code to parse
+				 * @return A composite expression
 				 */
-				void parse_code(const std::u32string &code);
+				std::unique_ptr<expression> parse_code(const std::u32string &code);
 
 				/**
-				 * Interprets the commands found in the code.
+				 * Interprets an expression.
+				 * @param the expression to run
 				 */
-				void run();
+				void run(std::unique_ptr<expression> expression);
 
 				/**
 				 * A utility function that prints an error message and exits the program abnormally.
@@ -55,8 +57,6 @@
 				 */
 				void exit_with_error_message(const std::string &err_msg) const;
 			private:
-				std::unique_ptr<expression> program;
-
 				std::u32string get_code(const char *) const;
 				void file_open_error_exit() const;
 

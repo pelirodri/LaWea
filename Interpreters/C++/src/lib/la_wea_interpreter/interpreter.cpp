@@ -35,25 +35,28 @@ la_weá::interpreter::interpreter() = default;
 la_weá::interpreter::~interpreter() = default;
 
 void la_weá::interpreter::interpret(const char *file_path) {
-	parse_code(get_code(file_path));
-	run();
+	run(parse_code(get_code(file_path)));
 }
 
-void la_weá::interpreter::parse_code(const std::u32string &code) {
+std::unique_ptr<la_weá::expression> la_weá::interpreter::parse_code(const std::u32string &code) {
+	std::unique_ptr<expression> program;
+
 	try {
 		program = (code_parser (code)).parse();
 	} catch (exception &e) {
 		exit_with_error_message(std::string (e.what()));
 	}
+
+	return program;
 }
 
-void la_weá::interpreter::run() {
+void la_weá::interpreter::run(std::unique_ptr<expression> expression) {
 	std::cout.setf(std::ios::unitbuf);
 
 	context *ctx = new context;
 
 	try {
-		program->interpret(ctx);
+		expression->interpret(ctx);
 		delete ctx;
 	} catch (exception &e) {
 		delete ctx;
