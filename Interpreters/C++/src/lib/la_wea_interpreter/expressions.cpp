@@ -122,7 +122,7 @@ void la_weá::ctm_expression::interpret(context *ctx) {
             ctx->set_cell_value(utf16_char_to_utf32(utf16_input));
         } else {
             while (getchar() != '\n') {}
-    		ctx->set_cell_value(0);
+    		ctx->reset_cell_value();
         }
 
         ctx->increase_expr_idx();
@@ -144,7 +144,7 @@ void la_weá::brígido_expression::interpret(context *ctx) {
     try {
     	ctx->set_cell_value((int64_t)std::stoll(num_input, nullptr, 10));
     } catch (...) {
-    	ctx->set_cell_value((int64_t)0);
+    	ctx->reset_cell_value();
     }
 
     ctx->increase_expr_idx();
