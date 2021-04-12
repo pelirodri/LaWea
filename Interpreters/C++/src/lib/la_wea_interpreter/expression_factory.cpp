@@ -27,52 +27,36 @@ la_weá::expression *la_weá::expression_factory::create_expression_from_cmd_at_
 	switch (commands[cmd_idx]) {
 		case maricón:
 			return new maricón_expression;
-			break;
 		case maraco:
 			return new maraco_expression;
-			break;
 		case weón:
 			return new weón_expression;
-			break;
 		case aweonao:
 			return new aweonao_expression;
-			break;
 		case maraca:
 			return new maraca_expression;
-			break;
 		case chucha:
 			return new chucha_expression;
-			break;
 		case puta:
 			return new puta_expression;
-			break;
 		case pichula:
 			return new pichula_expression (expression_factory::find_loop_end(commands, cmd_idx));
-			break;
 		case tula:
 			return new tula_expression (expression_factory::find_loop_start(commands, cmd_idx));
-			break;
 		case pico:
 			return new pico_expression (expression_factory::find_loop_end(commands, cmd_idx));
-			break;
 		case ctm:
 			return new ctm_expression;
-			break;
 		case quéweá:
 			return new quéweá_expression;
-			break;
 		case chúpala:
 			return new chúpala_expression;
-			break;
 		case brígido:
 			return new brígido_expression;
-			break;
 		case perkin:
 			return new perkin_expression;
-			break;
 		case mierda:
 			return new mierda_expression;
-			break;
 	}
 }
 
