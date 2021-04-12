@@ -24,22 +24,22 @@
 #include <iostream>
 
 void la_weá::maricón_expression::interpret(context *ctx) {
-	ctx->decrease_cell();
+	ctx->decrease_cell_value();
 	ctx->increase_expr_idx();
 }
 
 void la_weá::maraco_expression::interpret(context *ctx) {
-	ctx->decrease_cell(2);
+	ctx->decrease_cell_value(2);
 	ctx->increase_expr_idx();
 }
 
 void la_weá::weón_expression::interpret(context *ctx) {
-	ctx->increase_cell();
+	ctx->increase_cell_value();
 	ctx->increase_expr_idx();
 }
 
 void la_weá::aweonao_expression::interpret(context *ctx) {
-	ctx->increase_cell(2);
+	ctx->increase_cell_value(2);
 	ctx->increase_expr_idx();
 }
 

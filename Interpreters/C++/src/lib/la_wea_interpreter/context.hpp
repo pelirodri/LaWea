@@ -33,8 +33,8 @@
 				int64_t get_cell_value() const;
 				void set_cell_value(int64_t);
 
-				void decrease_cell(int64_t = 1);
-				void increase_cell(int64_t = 1);
+				void decrease_cell_value(int64_t = 1);
+				void increase_cell_value(int64_t = 1);
 
 				void reset_cell_value();
 

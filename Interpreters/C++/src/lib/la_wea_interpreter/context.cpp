@@ -53,11 +53,11 @@ void la_weá::context::set_cell_value(int64_t cell_value) {
 }
 
 
-void la_weá::context::decrease_cell(int64_t decrease_amount) {
+void la_weá::context::decrease_cell_value(int64_t decrease_amount) {
 	cells[cur_cell] -= decrease_amount;
 }
 
-void la_weá::context::increase_cell(int64_t increase_amount) {
+void la_weá::context::increase_cell_value(int64_t increase_amount) {
 	cells[cur_cell] += increase_amount;
 }
 
