@@ -17,19 +17,6 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 //
 
-import LaWeáInterpreter
-
-@main
-struct LaWeáMain {
-    static func main() {
-        let interpreter = LaWeáInterpreter()
-
-        if CommandLine.arguments.count != 2 {
-            interpreter.exit(with: "Tenís que pasar la ruta del archivo con el código, pos, aweona’o qlo")
-        } else if !CommandLine.arguments[1].hasSuffix(".lw") {
-            interpreter.exit(with: "El archivo qlo tiene que tener la extensión .lw")
-        }
-
-        interpreter.interpret(filePath: CommandLine.arguments[1])
-    }
+public protocol LaWeáExpression {
+    func interpret(with context: LaWeáContext) throws
 }
