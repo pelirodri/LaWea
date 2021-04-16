@@ -40,11 +40,11 @@ static void interpret_maraca();
 static void interpret_chucha();
 static void interpret_puta();
 static void double_cells_size();
-static void interpret_pichula(long *, const la_weá_command_t *);
-static long find_loop_end(long, const la_weá_command_t *);
-static void interpret_tula(long *, const la_weá_command_t *);
-static long find_loop_start(long, const la_weá_command_t *);
-static void interpret_pico(long *, const la_weá_command_t *);
+static void interpret_pichula(const la_weá_command_t *, long *);
+static long find_loop_end(const la_weá_command_t *, long);
+static void interpret_tula(const la_weá_command_t *, long *);
+static long find_loop_start(const la_weá_command_t *, long);
+static void interpret_pico(const la_weá_command_t *, long *);
 static void interpret_ctm();
 static bool is_value_in_unicode_range(int64_t);
 static void print_char();
@@ -104,13 +104,13 @@ void interpret_cmd_at_idx(const la_weá_command_t *commands, long *cmd_idx) {
             interpret_puta();
             break;
         case pichula:
-            interpret_pichula(cmd_idx, commands);
+            interpret_pichula(commands, cmd_idx);
             break;
         case tula:
-            interpret_tula(cmd_idx, commands);
+            interpret_tula(commands, cmd_idx);
             break;
         case pico:
-            interpret_pico(cmd_idx, commands);
+            interpret_pico(commands, cmd_idx);
             break;
         case ctm:
             interpret_ctm();
@@ -182,13 +182,13 @@ void double_cells_size() {
     cells = tmp;
 }
 
-void interpret_pichula(long *cmd_idx, const la_weá_command_t *commands) {
+void interpret_pichula(const la_weá_command_t *commands, long *cmd_idx) {
 	if (cells[cur_cell] == 0) {
-        *cmd_idx = find_loop_end(*cmd_idx, commands);
+        *cmd_idx = find_loop_end(commands, *cmd_idx);
     }
 }
 
-long find_loop_end(long cmd_idx, const la_weá_command_t *commands) {
+long find_loop_end(const la_weá_command_t *commands, long cmd_idx) {
     for (long i = cmd_idx + 1, loop_level = 1; i < commands_count; i++) {
         if (commands[i] == pichula) {
             loop_level++;
@@ -204,13 +204,13 @@ long find_loop_end(long cmd_idx, const la_weá_command_t *commands) {
     return -1;
 }
 
-void interpret_tula(long *cmd_idx, const la_weá_command_t *commands) {
+void interpret_tula(const la_weá_command_t *commands, long *cmd_idx) {
 	if (cells[cur_cell] != 0) {
-        *cmd_idx = find_loop_start(*cmd_idx, commands);
+        *cmd_idx = find_loop_start(commands, *cmd_idx);
     }
 }
 
-long find_loop_start(long cmd_idx, const la_weá_command_t *commands) {
+long find_loop_start(const la_weá_command_t *commands, long cmd_idx) {
     for (long i = cmd_idx - 1, loop_level = 1; i >= 0; i--) {
         if (commands[i] == tula) {
             loop_level++;
@@ -226,8 +226,8 @@ long find_loop_start(long cmd_idx, const la_weá_command_t *commands) {
     return -1;
 }
 
-inline void interpret_pico(long *cmd_idx, const la_weá_command_t *commands) {
-	*cmd_idx = find_loop_end(*cmd_idx, commands);
+inline void interpret_pico(const la_weá_command_t *commands, long *cmd_idx) {
+	*cmd_idx = find_loop_end(commands, *cmd_idx);
 }
 
 void interpret_ctm() {
