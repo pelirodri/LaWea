@@ -69,7 +69,7 @@ void la_weá_run(la_weá_command_t *commands) {
 }
 
 void la_weá_exit_with_error_message(const char *err_msg) {
-    print_error_in_red(err_msg && strlen(err_msg) != 0 ? err_msg : "Error interno" );
+    print_error_in_red(err_msg && strlen(err_msg) != 0 ? err_msg : "Error interno");
     exit(EXIT_FAILURE);
 }
 

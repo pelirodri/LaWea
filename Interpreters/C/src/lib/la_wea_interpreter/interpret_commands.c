@@ -31,7 +31,7 @@
     #include <windows.h>
 #endif
 
-static void interpret_command(long *, const la_weá_command_t *);
+static void interpret_cmd_at_idx(const la_weá_command_t *, long *);
 static void interpret_maricón();
 static void interpret_maraco();
 static void interpret_weón();
@@ -74,13 +74,13 @@ void interpret_commands(la_weá_command_t *commands) {
     }
 
     for (long i = 0; i < commands_count; i++) {
-        interpret_command(&i, commands);
+        interpret_cmd_at_idx(commands, &i);
     }
 
     free(cells);
 }
 
-void interpret_command(long *cmd_idx, const la_weá_command_t *commands) {
+void interpret_cmd_at_idx(const la_weá_command_t *commands, long *cmd_idx) {
 	switch (commands[*cmd_idx]) {
         case maricón:
             interpret_maricón();
