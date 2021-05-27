@@ -24,9 +24,6 @@
 #include <string.h>
 #include <ctype.h>
 
-static long line = 1, col = 1;
-static long loop_open_commands_count, loop_close_commands_count;
-
 static bool is_cmd_boundary(uint_least32_t);
 static void handle_potential_cmd(uint_least32_t *, long *);
 static void parse_cmd(const uint_least32_t *);
@@ -44,6 +41,9 @@ static void parsed_code_char(uint_least32_t, bool *);
 
 extern la_weá_command_t *commands;
 extern size_t commands_size, commands_count;
+
+static long line = 1, col = 1;
+static long loop_open_commands_count, loop_close_commands_count;
 
 static const uint_least32_t cmd_names[][8 * sizeof(uint_least32_t)] = { 
     U"maricón",
