@@ -84,7 +84,7 @@ void la_weá::code_parser::handle_potential_cmd() {
 		handle_loop_balancing(cmd);
 		commands.push_back(cmd);
 
-		cmd_name_buffer = U"";
+		cmd_name_buffer.clear();
 	}
 }
 
