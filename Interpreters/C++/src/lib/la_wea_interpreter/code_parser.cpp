@@ -74,7 +74,7 @@ void la_weá::code_parser::parse_char_at_idx(long code_idx) {
 }
 
 inline bool la_weá::code_parser::is_cmd_boundary(long code_idx) const {
-	return isspace(code[code_idx]) || code[code_idx] == U'#' || code_idx == code.length();
+	return code_idx == code.length() || isspace(code[code_idx]) || code[code_idx] == U'#';
 }
 
 void la_weá::code_parser::handle_potential_cmd() {
