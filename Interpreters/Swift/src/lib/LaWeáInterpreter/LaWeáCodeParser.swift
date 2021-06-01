@@ -70,7 +70,7 @@ class LaWeáCodeParser {
             spacesRange = String(code[characterIndex]!).rangeOfCharacter(from: CharacterSet.whitespacesAndNewlines)
         }
         
-        return spacesRange != nil || code[characterIndex] == "#" || characterIndex == code.count
+        return characterIndex == code.count || spacesRange != nil || code[characterIndex] == "#"
     }
     
     private func handlePotentialCommand() throws {
