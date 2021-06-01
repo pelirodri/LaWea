@@ -56,6 +56,7 @@ std::unique_ptr<la_weá::expression> la_weá::code_parser::parse() {
 void la_weá::code_parser::parse_code() {
 	for (long i = 0; i <= code.length(); i++) {
 		parse_char_at_idx(i);
+		parsed_char_at_idx(i);
 	}
 }
 
@@ -69,8 +70,6 @@ void la_weá::code_parser::parse_char_at_idx(long code_idx) {
 	} else if (!is_mid_comment) {
 		add_char_at_idx_to_cmd_name(code_idx);
 	}
-
-	parsed_char_at_idx(code_idx);
 }
 
 inline bool la_weá::code_parser::is_cmd_boundary(long code_idx) const {
