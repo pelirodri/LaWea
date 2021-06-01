@@ -46,6 +46,7 @@ class LaWeáCodeParser {
     private func parseCode() throws {
         for i in 0...code.count {
             try parseCharacter(at: i)
+            didParseCharacter(at: i)
         }
     }
     
@@ -59,8 +60,6 @@ class LaWeáCodeParser {
         } else if !isMidComment {
             try addCharacter(at: index)
         }
-        
-        didParseCharacter(at: index)
     }
     
     private func isCommandBoundary(characterIndex: Int) -> Bool {
