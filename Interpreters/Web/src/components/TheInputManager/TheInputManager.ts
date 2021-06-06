@@ -8,4 +8,8 @@ export default class TheInputManager extends Vue {
 	focusInput(): void {
 		(this.$refs.input as HTMLElement).focus();
 	}
+
+	private inputText(): void {
+		this.$emit("enterButtonClicked");
+	}
 }

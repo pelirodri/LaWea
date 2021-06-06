@@ -12,19 +12,19 @@
 		<b-row class="mt-3">
 			<b-col>
 				<div class="d-flex justify-content-center">
-					<b-button class="mr-3" variant="light" @click="run">
+					<b-button class="mr-3" variant="light" @click="runCode()">
 						Run
 					</b-button>
 
-					<b-button class="mr-3" variant="light" :disabled="isStopButtonDisabled" @click="stop">
+					<b-button class="mr-3" variant="light" :disabled="isStopButtonDisabled" @click="stopCode()">
 						Stop
 					</b-button>
 
-					<b-button class="mr-3" variant="light" :disabled="code.length == 0" @click="copy">
+					<b-button class="mr-3" variant="light" :disabled="code.length === 0" @click="copyCode()">
 						Copy
 					</b-button>
 
-					<b-button variant="light" :disabled="!code.length" @click="clear">
+					<b-button variant="light" :disabled="code.length === 0" @click="clearCode()">
 						Clear
 					</b-button>
 				</div>

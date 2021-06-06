@@ -14,6 +14,7 @@
 						ref="input"
 						v-model="syncedInput"
 						:disabled="isInputDisabled"
+						@keypress.enter="inputText()"
 					/>
 				</div>
 			</b-col>
@@ -25,7 +26,7 @@
 					class="d-block mx-auto"
 					variant="light"
 					:disabled="isInputDisabled"
-					@click="$emit('enterButtonClicked')"
+					@click="inputText()"
 				>
 					Enter
 				</b-button>

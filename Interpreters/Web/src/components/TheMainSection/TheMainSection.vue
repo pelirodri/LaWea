@@ -3,7 +3,7 @@
 		<TheCodeEditor
 			:isStopButtonDisabled="isStopButtonDisabled"
 			@runButtonClicked="interpretLaWeá($event)"
-			@stopButtonClicked="stopRunningCommands"
+			@stopButtonClicked="stopRunningLaWeáCommands()"
 		/>
 
 		<TheOutputManager :output="output" />
@@ -12,7 +12,7 @@
 			ref="inputManager"
 			:input.sync="input"
 			:isInputDisabled="isInputDisabled"
-			@enterButtonClicked="runCommands(true)"
+			@enterButtonClicked="sendInputToLaWeáInterpreter()"
 		/>
 
 		<TheErrorModal>
@@ -23,5 +23,4 @@
 	</main>
 </template>
 
-<script src="./test.js"></script>
 <script lang="ts" src="./TheMainSection.ts"></script>

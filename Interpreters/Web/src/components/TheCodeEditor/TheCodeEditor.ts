@@ -14,15 +14,30 @@ export default class CodeEditor extends Vue {
 
 	private editor!: CodeMirror.Editor;
 
-	run(): void {
+	runCode(): void {
 		this.$emit("runButtonClicked", this.code);
 	}
 
-	stop(): void {
+	stopCode(): void {
 		this.$emit("stopButtonClicked");
 	}
 
-	copy(): void {
+	copyCode(): void {
+		this.copyCodeToClipboard();
+
+		this.$bvToast.toast("Code was copied", {
+			title: "Info",
+			autoHideDelay: 1000,
+			noHoverPause: true,
+			variant: "info"
+		});
+	}
+
+	clearCode(): void {
+		this.editor.setValue("");
+	}
+
+	private copyCodeToClipboard(): void {
 		if (navigator.clipboard) {
 			navigator.clipboard.writeText(this.code);
 		} else {
@@ -36,20 +51,14 @@ export default class CodeEditor extends Vue {
 
 			document.body.removeChild(textArea);
 		}
-
-		this.$bvToast.toast("Code was copied", {
-			title: "Info",
-			autoHideDelay: 1000,
-			noHoverPause: true,
-			variant: "info"
-		});
-	}
-
-	clear(): void {
-		this.editor.setValue("");
 	}
 
 	private mounted(): void {
+		this.defineLaWeáMode();
+		this.setUpCodeEditor();
+	}
+
+	private defineLaWeáMode(): void {
 		CodeMirror.defineSimpleMode("laweá", {
 			start: [
 				{ regex: /[abcdeghiklmnopqrtuwáéíóú\s]/, token: "keyword" },
@@ -61,7 +70,9 @@ export default class CodeEditor extends Vue {
 				lineComment: "#"
 			}
 		});
+	}
 
+	private setUpCodeEditor(): void {
 		this.editor = CodeMirror(document.getElementById("code-container")!, {
 			lineNumbers: true,
 			lineWrapping: true,
