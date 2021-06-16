@@ -90,7 +90,7 @@ class LaWeáCodeParser {
             }
         }
         
-        throw LaWeáError.invalidCommand(commandNameBuffer, line, col - commandNameBuffer.count)
+        throw LaWeáError.invalidCommand(commandName: commandNameBuffer, line: line, col: col - commandNameBuffer.count)
     }
     
     private func handleLoopBalancing(command: LaWeáCommand) throws {
@@ -109,7 +109,7 @@ class LaWeáCodeParser {
     
     private func handleTulaCommand() throws {
         if loopCloseCommandsCount == loopOpenCommandsCount {
-            throw LaWeáError.unmatchedTula(line, col - "tula".count)
+            throw LaWeáError.unmatchedTula(line: line, col: col - "tula".count)
         }
         
         loopCloseCommandsCount += 1
@@ -117,7 +117,7 @@ class LaWeáCodeParser {
     
     private func handlePicoCommand() throws {
         if loopOpenCommandsCount == loopCloseCommandsCount {
-            throw LaWeáError.misplacedPico(line, col - "pico".count)
+            throw LaWeáError.misplacedPico(line: line, col: col - "pico".count)
         }
     }
     
@@ -130,13 +130,13 @@ class LaWeáCodeParser {
     
     private func validateCharacter(at index: Int) throws {
         if !"abcdeghiklmnopqrtuwáéíóú".contains(code[index]!) {
-            throw LaWeáError.invalidCharacter(code[index]!, line, col)
+            throw LaWeáError.invalidCharacter(character: code[index]!, line: line, col: col)
         }
     }
     
     private func validateCommandNameLength() throws {
         if commandNameBuffer.count == 7 {
-            throw LaWeáError.tooLongCommand(line, col - commandNameBuffer.count)
+            throw LaWeáError.tooLongCommand(line: line, col: col - commandNameBuffer.count)
         }
     }
     

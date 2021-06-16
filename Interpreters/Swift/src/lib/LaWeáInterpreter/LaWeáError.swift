@@ -18,11 +18,11 @@
 //
 
 enum LaWeáError: Error {
-    case invalidCommand(String, Int, Int)
-    case unmatchedTula(Int, Int)
-    case misplacedPico(Int, Int)
-    case invalidCharacter(Character, Int, Int)
-    case tooLongCommand(Int, Int)
+    case invalidCommand(commandName: String, line: Int, col: Int)
+    case unmatchedTula(line: Int, col: Int)
+    case misplacedPico(line: Int, col: Int)
+    case invalidCharacter(character: Character, line: Int, col: Int)
+    case tooLongCommand(line: Int, col: Int)
     case unmatchedPichulas
     case outOfBounds
 }
