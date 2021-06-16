@@ -36,7 +36,7 @@ export default class TheMainSection extends Vue {
 		try {
 			this.laWeáInterpreter.interpret(code);
 		} catch (error) {
-			this.exitLaWeáInterpreter(error.message);
+			this.exitLaWeáInterpreter(error instanceof LaWeá.CustomError ? error.message : undefined);
 		}
 	}
 
@@ -49,10 +49,10 @@ export default class TheMainSection extends Vue {
 		this.isStopButtonDisabled = this.isInputDisabled = true;
 	}
 
-	private exitLaWeáInterpreter(errorMessage: string): void {
+	private exitLaWeáInterpreter(errorMessage?: string): void {
 		this.isStopButtonDisabled = this.isInputDisabled = true;
 
-		if (errorMessage.length > 1) {
+		if (errorMessage && errorMessage.length > 1) {
 			this.errorMessage = errorMessage;
 			this.$bvModal.show("error-modal");
 

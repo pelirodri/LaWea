@@ -1,5 +1,14 @@
 import Command from "./Command";
 
+import { 
+	InvalidCommandError,
+	UnmatchedTulaError,
+	MisplacedPicoError,
+	InvalidCharacterError,
+	TooLongCommandError,
+	UnmatchedPichulasError
+} from "./errors";
+
 export default class CodeParser {
 	private code: string;
 	private commands: Command[] = [];
@@ -65,16 +74,7 @@ export default class CodeParser {
 			}
 		}
 
-		throw new Error(
-			"'" +
-			this.commandNameBuffer +
-			"'" +
-			" no es un comando válido, pos, saco de weas (línea: " +
-			String(this.line) +
-			", columna: " +
-			String(this.col - this.commandNameBuffer.length) +
-			")"
-		);
+		throw new InvalidCommandError(this.commandNameBuffer, this.line, this.col - this.commandNameBuffer.length);
 	}
 
 	private handleLoopBalancing(command: Command): void {
@@ -93,12 +93,7 @@ export default class CodeParser {
 
 	private handleTulaCommand(): void {
 		if (this.loopCloseCommandsCount === this.loopOpenCommandsCount) {
-			throw new Error(
-				"Se encontró una tula sin su respectiva pichula en la línea " + 
-				String(this.line) + 
-				", columna " +
-				String(this.col - this.commandNameBuffer.length)
-			);
+			throw new UnmatchedTulaError(this.line, this.col - this.commandNameBuffer.length);
 		}
 
 		this.loopCloseCommandsCount++;
@@ -106,6 +101,8 @@ export default class CodeParser {
 
 	private handlePicoCommand(): void {
 		if (this.loopOpenCommandsCount === this.loopCloseCommandsCount) {
+			throw new MisplacedPicoError(this.line, this.col - this.commandNameBuffer.length);
+
 			throw new Error(
 				"No debiste meter ese pico en la línea " +
 				String(this.line) +
@@ -124,28 +121,13 @@ export default class CodeParser {
 
 	private validateCommandCharacterAtIndex(codeIndex: number): void {
 		if ("abcdeghiklmnopqrtuwáéíóú".indexOf(this.code[codeIndex]) === -1) {
-			throw new Error(
-				"'" +
-				this.code[codeIndex] +
-				"'" +
-				" no es parte de La Weá, tonto qlo (línea: " +
-				String(this.line) +
-				", columna: " +
-				String(this.col) +
-				")"
-			);
+			throw new InvalidCharacterError(this.code[codeIndex], this.line, this.col);
 		}
 	}
 
 	private validateCommandNameLength(): void {
 		if (this.commandNameBuffer.length === 7) {
-			throw new Error(
-				"¿Vos creís que yo soy weón, CTM? Te gustan largos, parece (línea: " +
-				String(this.line) +
-				", columna: " +
-				String(this.col - this.commandNameBuffer.length) +
-				")"
-			);
+			throw new TooLongCommandError(this.line, this.col - this.commandNameBuffer.length);
 		}
 	}
 
@@ -162,7 +144,7 @@ export default class CodeParser {
 
 	private checkLoopsBalance(): void {
 		if (this.loopOpenCommandsCount !== this.loopCloseCommandsCount) {
-			throw new Error("O te sobran pichulas o te faltan tulas");
+			throw new UnmatchedPichulasError();
 		}
 	}
 }
