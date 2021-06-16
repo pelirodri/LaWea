@@ -57,13 +57,13 @@ inline std::string la_weá::misplaced_pico_exception::get_err_msg(long line, lon
 	);
 }
 
-la_weá::invalid_character_exception::invalid_character_exception(char32_t invalid_char, long line, long col) :
-	exception(get_err_msg(invalid_char, line, col)) {}
+la_weá::invalid_character_exception::invalid_character_exception(char32_t character, long line, long col) :
+	exception(get_err_msg(character, line, col)) {}
 
-inline std::string la_weá::invalid_character_exception::get_err_msg(char32_t invalid_char, long line, long col) {
+inline std::string la_weá::invalid_character_exception::get_err_msg(char32_t character, long line, long col) {
 	return std::string (
 		"'" +
-		std::string((const char *)utf_utils::utf32_char_to_utf8(invalid_char).data()) +
+		std::string((const char *)utf_utils::utf32_char_to_utf8(character).data()) +
 		"' no es parte de La Weá, tonto qlo (línea: " +
 		std::to_string(line) +
 		", columna: " +
