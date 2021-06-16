@@ -1,37 +1,25 @@
 <template>
 	<div class="mt-4">
-		<b-row>
-			<b-col>
-				<div class="d-flex flex-column align-items-start">
-					<label class="mx-auto text-light" for="input">Input:</label>
+		<div class="d-flex flex-column align-items-start">
+			<label class="mx-auto text-light" for="input">Input:</label>
 
-					<b-form-input 
-						id="input"
-						class="border border-light rounded mx-auto text-light"
-						size="sm"
-						autocorrect="off"
-						autocapitalize="none"
-						ref="input"
-						v-model="syncedInput"
-						:disabled="isInputDisabled"
-						@keypress.enter="inputText()"
-					/>
-				</div>
-			</b-col>
-		</b-row>
+			<b-form-input 
+				id="input"
+				class="border border-light rounded mx-auto text-light"
+				size="sm"
+				autocorrect="off"
+				autocapitalize="none"
+				ref="input"
+				v-model="syncedInput"
+				aria-label="input"
+				:disabled="isInputDisabled"
+				@keypress.enter="inputText()"
+			/>
+		</div>
 				
-		<b-row class="mt-3">
-			<b-col>
-				<b-button 
-					class="d-block mx-auto"
-					variant="light"
-					:disabled="isInputDisabled"
-					@click="inputText()"
-				>
-					Enter
-				</b-button>
-			</b-col>
-		</b-row>
+		<b-button class="d-block mt-3 mx-auto" variant="light" :disabled="isInputDisabled" @click="inputText()">
+			Enter
+		</b-button>
 	</div>
 </template>
 

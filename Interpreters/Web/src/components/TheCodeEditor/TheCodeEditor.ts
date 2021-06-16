@@ -29,12 +29,17 @@ export default class CodeEditor extends Vue {
 			title: "Info",
 			autoHideDelay: 1000,
 			noHoverPause: true,
+			isStatus: true,
 			variant: "info"
 		});
 	}
 
 	clearCode(): void {
 		this.editor.setValue("");
+	}
+
+	focusEditor(): void {
+		this.editor.focus();
 	}
 
 	private copyCodeToClipboard(): void {
@@ -73,9 +78,10 @@ export default class CodeEditor extends Vue {
 	}
 
 	private setUpCodeEditor(): void {
-		this.editor = CodeMirror(document.getElementById("code-container")!, {
+		this.editor = CodeMirror(document.getElementById("code-editor")!, {
 			lineNumbers: true,
 			lineWrapping: true,
+			inputStyle: "contenteditable",
 			mode: "laweá",
 			theme: "monokai"
 		});

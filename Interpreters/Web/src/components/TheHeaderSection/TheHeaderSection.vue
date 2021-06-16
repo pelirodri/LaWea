@@ -5,4 +5,4 @@
 </template>
 
 <script lang="ts" src="./TheHeaderSection.ts"></script>
-<style src="./TheHeaderSection.css" scoped></style>
+<style lang="scss" src="./TheHeaderSection.scss" scoped></style>

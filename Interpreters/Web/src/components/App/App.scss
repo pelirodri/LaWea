@@ -1,0 +1,35 @@
+body, #output, #input {
+	background: #272822;
+	font-family: system-ui, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+.container-fluid {
+	min-height: 100vh;
+}
+
+*:focus, *:active {
+	outline: none !important;
+	box-shadow: none !important;
+}
+
+label, #code-editor, #output, #input {
+	@media (max-width:  575px) {
+		width: 95%;
+	}
+
+	@media (min-width:  576px) {
+		width: 90%;
+	}
+
+	@media (min-width:  768px) {
+		width: 85%;
+	}
+
+	@media (min-width:  992px) {
+		width: 80%;
+	}
+
+	@media (min-width:  1200px) {
+		width: 75%;
+	}
+}
