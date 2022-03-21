@@ -30,7 +30,7 @@ size_t utf_utils::utf8_byte_utf8_code_point_len(char8_t utf8_byte) {
 		return 3;
 	} else if ((utf8_byte & 0xF8) == 0xF0){
 		return 4;
-	} else {
+	} else { [[unlikely]]
 		return 0;
 	}
 }
@@ -40,7 +40,7 @@ size_t utf_utils::utf16_surrogate_utf16_code_point_len(char16_t utf16_surrogate)
 		return 1;
 	} else if (utf16_surrogate >= 0xD800 && utf16_surrogate <= 0xDBFF) {
 		return 2;
-	} else {
+	} else { [[unlikely]]
 		return 0;
 	}
 }
@@ -50,7 +50,7 @@ inline size_t utf_utils::utf8_char_utf16_code_point_len(const std::u8string &utf
 }
 
 size_t utf_utils::utf16_char_utf8_code_point_len(const std::u16string &utf16_char) {
-	if (utf16_strlen(utf16_char) != 1) {
+	if (utf16_strlen(utf16_char) != 1) { [[unlikely]]
 		return 0;
 	}
 
@@ -66,7 +66,7 @@ size_t utf_utils::utf32_char_utf8_code_point_len(char32_t utf32_char) {
 		return 3;
 	} else if (utf32_char <= 0x10FFFF) {
 		return 4;
-	} else {
+	} else { [[unlikely]]
 		return 0;
 	}
 }
@@ -76,7 +76,7 @@ size_t utf_utils::utf32_char_utf16_code_point_len(char32_t utf32_char) {
 		return 1;
 	} else if (utf32_char <= 0x10FFFF) {
 		return 2;
-	} else {
+	} else { [[unlikely]]
 		return 0;
 	}
 }
@@ -87,7 +87,7 @@ size_t utf_utils::utf8_strlen(const std::u8string &utf8_str) {
 	for (long i = 0; utf8_str[i];) {
 		size_t utf8_code_point_len = utf8_byte_utf8_code_point_len(utf8_str[i]);
 
-		if (utf8_code_point_len == 0) {
+		if (utf8_code_point_len == 0) { [[unlikely]]
 			return 0;
 		}
 
@@ -104,7 +104,7 @@ size_t utf_utils::utf16_strlen(const std::u16string &utf16_str) {
 	for (long i = 0; utf16_str[i];) {
 		size_t utf16_code_point_len = utf16_surrogate_utf16_code_point_len(utf16_str[i]);
 
-		if (utf16_code_point_len == 0) {
+		if (utf16_code_point_len == 0) { [[unlikely]]
 			return 0;
 		}
 
@@ -120,7 +120,7 @@ inline std::u16string utf_utils::utf8_char_to_utf16(const std::u8string &utf8_ch
 }
 
 char32_t utf_utils::utf8_char_to_utf32(const std::u8string &utf8_char) {
-	if (utf8_strlen(utf8_char) != 1) {
+	if (utf8_strlen(utf8_char) != 1) { [[unlikely]]
 		return U'\0';
 	}
 
@@ -137,7 +137,7 @@ char32_t utf_utils::utf8_char_to_utf32(const std::u8string &utf8_char) {
 			
 			return first_half | second_half;
 		}
-		default:
+		default: [[unlikely]]
 			return U'\0';
 	}
 }
@@ -147,7 +147,7 @@ inline std::u8string utf_utils::utf16_char_to_utf8(const std::u16string &utf16_c
 }
 
 char32_t utf_utils::utf16_char_to_utf32(const std::u16string &utf16_char) {
-	if (utf16_strlen(utf16_char) != 1) {
+	if (utf16_strlen(utf16_char) != 1) { [[unlikely]]
 		return 0;
 	}
 
@@ -162,7 +162,7 @@ char32_t utf_utils::utf16_char_to_utf32(const std::u16string &utf16_char) {
 
             return (tmp_char[0] + tmp_char[1]) + 0x10000;
         }
-		default:
+		default: [[unlikely]]
 			return u'\0';
 	}
 }
@@ -192,7 +192,7 @@ std::u8string utf_utils::utf32_char_to_utf8(char32_t utf32_char) {
 			utf8_char += 0x80 | (utf32_char & 0x3F);
 
 			break;
-		default:
+		default: [[unlikely]]
 			return u8"";
 	}
 
@@ -214,7 +214,7 @@ std::u16string utf_utils::utf32_char_to_utf16(char32_t utf32_char) {
 
 	        break;
 	    }
-	    default:
+	    default: [[unlikely]]
 	    	return u"";
 	}
 
@@ -231,7 +231,7 @@ std::u32string utf_utils::utf8_str_to_utf32(const std::u8string &utf8_str) {
 	for (long i = 0; utf8_str[i];) {
 		size_t utf8_code_point_len = utf8_byte_utf8_code_point_len(utf8_str[i]);
 
-		if (!utf8_code_point_len) {
+		if (!utf8_code_point_len) { [[unlikely]]
 			return U"";
 		}
 
@@ -252,7 +252,7 @@ std::u32string utf_utils::utf16_str_to_utf32(const std::u16string &utf16_str) {
 	for (long i = 0; utf16_str[i];) {
 		size_t utf16_code_point_len = utf16_surrogate_utf16_code_point_len(utf16_str[i]);
 
-		if (utf16_code_point_len == 0) {
+		if (utf16_code_point_len == 0) { [[unlikely]]
 			return U"";
 		}
 
@@ -266,8 +266,8 @@ std::u32string utf_utils::utf16_str_to_utf32(const std::u16string &utf16_str) {
 std::u8string utf_utils::utf32_str_to_utf8(const std::u32string &utf32_str) {
 	std::u8string utf8_str;
 
-	for (long i = 0; utf32_str[i]; i++) {
-		if (utf32_char_utf8_code_point_len(utf32_str[i]) == 0) {
+	for (long i = 0; utf32_str[i]; i++) { [[likely]]
+		if (utf32_char_utf8_code_point_len(utf32_str[i]) == 0) { [[unlikely]]
 			return u8"";
 		}
 
@@ -280,8 +280,8 @@ std::u8string utf_utils::utf32_str_to_utf8(const std::u32string &utf32_str) {
 std::u16string utf_utils::utf32_str_to_utf16(const std::u32string &utf32_str) {
 	std::u16string utf16_str;
 
-	for (long i = 0; utf32_str[i]; i++) {
-		if (utf32_char_utf16_code_point_len(utf32_str[i]) == 0) {
+	for (long i = 0; utf32_str[i]; i++) { [[likely]]
+		if (utf32_char_utf16_code_point_len(utf32_str[i]) == 0) { [[unlikely]]
 			return u"";
 		}
 

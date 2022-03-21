@@ -29,7 +29,7 @@ long la_weá::context::get_expr_idx() const {
 }
 
 void la_weá::context::set_expr_idx(long new_expr_idx) {
-	if (new_expr_idx < 0) {
+	if (new_expr_idx < 0) { [[unlikely]]
 		throw std::logic_error ("expr_idx cannot be lower than 0");
 	}
 
@@ -37,7 +37,7 @@ void la_weá::context::set_expr_idx(long new_expr_idx) {
 }
 
 void la_weá::context::increase_expr_idx() {
-	if (expr_idx == std::numeric_limits<long>::max()) {
+	if (expr_idx == std::numeric_limits<long>::max()) { [[unlikely]]
 		throw std::logic_error ("expr_idx is about to overflow");
 	}
 
@@ -66,7 +66,7 @@ void la_weá::context::reset_cell_value() {
 }
 
 void la_weá::context::shift_cell_left(long shift_amount) {
-	if (cur_cell == 0) {
+	if (cur_cell == 0) { [[unlikely]]
 		throw out_of_bounds_exception ();
 	}
 
@@ -74,7 +74,7 @@ void la_weá::context::shift_cell_left(long shift_amount) {
 }
 
 void la_weá::context::shift_cell_right(long shift_amount) {
-	if (cur_cell == cells.size() - 1) {
+	if (cur_cell == cells.size() - 1) { [[unlikely]]
 		cells.resize(cells.capacity() * 2);
 	}
 

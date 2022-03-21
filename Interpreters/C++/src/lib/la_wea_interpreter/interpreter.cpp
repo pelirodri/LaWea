@@ -43,7 +43,7 @@ std::unique_ptr<la_weá::expression> la_weá::interpreter::parse_code(const std:
 
 	try {
 		program = (code_parser (code)).parse();
-	} catch (exception &e) {
+	} catch (exception &e) { [[unlikely]]
 		exit_with_error_message(std::string (e.what()));
 	}
 
@@ -58,7 +58,7 @@ void la_weá::interpreter::run(std::unique_ptr<expression> expression) {
 	try {
 		expression->interpret(ctx);
 		delete ctx;
-	} catch (exception &e) {
+	} catch (exception &e) { [[unlikely]]
 		delete ctx;
 		exit_with_error_message(std::string (e.what()));
 	}
@@ -72,7 +72,7 @@ void la_weá::interpreter::exit_with_error_message(const std::string &err_msg) c
 std::u32string la_weá::interpreter::get_code(const char *file_path) const {
 	std::ifstream is (file_path);
 
-	if (!is) {
+	if (!is) { [[unlikely]]
 		file_open_error_exit();
 	}
 
