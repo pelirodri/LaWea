@@ -164,6 +164,12 @@ struct PerkinExpression: LaWeáExpression {
 
 struct MierdaExpression: LaWeáExpression {
     func interpret(with context: LaWeáContext) {
-        Darwin.exit(EXIT_SUCCESS)
+        #if os(macOS)
+        Darwin.exit(EXIT_FAILURE)
+        #elseif os(Linux)
+        Glibc.exit(EXIT_FAILURE)
+        #elseif os(Windows)
+        ucrt.exit(EXIT_FAILURE)
+        #endif
     }
 }
