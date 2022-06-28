@@ -77,7 +77,14 @@ open class LaWeáInterpreter {
      */
     open func exit(with errorMessage: String?) {
         printErrorInRed(errorMessage: errorMessage != nil && errorMessage!.count > 0 ? errorMessage! : "Error interno")
+
+        #if os(macOS)
         Darwin.exit(EXIT_FAILURE)
+        #elseif os(Linux)
+        Glibc.exit(EXIT_FAILURE)
+        #elseif os(Windows)
+        ucrt.exit(EXIT_FAILURE)
+        #endif
     }
     
     private func getCode(filePath: String) -> String {

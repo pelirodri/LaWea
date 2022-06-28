@@ -21,6 +21,7 @@
 #define INTERPRETER_HPP
 	#include <vector>
 	#include <string>
+	#include <memory>
 
 	namespace la_weá {
 		class expression;
