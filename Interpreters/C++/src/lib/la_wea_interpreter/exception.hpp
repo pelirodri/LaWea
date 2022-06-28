@@ -1,5 +1,5 @@
 //
-// Copyright © 2021 Rodrigo Pelissier. All rights reserved.
+// Copyright © 2022 Rodrigo Pelissier. All rights reserved.
 //
 // This file is part of La Weá Interpreter (C++)
 //
@@ -27,10 +27,10 @@
 			public:
 				virtual ~exception();		
 			protected:
-				exception(const exception &) = delete;
-				exception &operator=(const exception &) = delete;
-
 				exception(const std::string &);
+
+				exception(const exception &);
+				exception &operator=(const exception &);
 
 				exception(exception &&) noexcept;
 				exception &operator=(exception &&) noexcept;

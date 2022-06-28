@@ -1,5 +1,5 @@
 //
-// Copyright © 2021 Rodrigo Pelissier. All rights reserved.
+// Copyright © 2022 Rodrigo Pelissier. All rights reserved.
 //
 // This file is part of La Weá Interpreter (C++)
 //
@@ -21,6 +21,3 @@
 
 la_weá::expression::expression() = default;
 la_weá::expression::~expression() = default;
-
-la_weá::expression::expression(expression &&expression) noexcept = default;
-la_weá::expression &la_weá::expression::operator=(expression &&expression) noexcept = default;

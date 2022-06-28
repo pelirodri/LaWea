@@ -1,5 +1,5 @@
 //
-// Copyright © 2021 Rodrigo Pelissier. All rights reserved.
+// Copyright © 2022 Rodrigo Pelissier. All rights reserved.
 //
 // This file is part of La Weá Interpreter (C++)
 //
@@ -22,6 +22,9 @@
 la_weá::exception::exception(const std::string &what_arg) : std::runtime_error (what_arg) {}
 
 la_weá::exception::~exception() = default;
+
+la_weá::exception::exception(const exception &) = default;
+la_weá::exception &la_weá::exception::operator=(const exception &) = default;
 
 la_weá::exception::exception(exception &&) noexcept = default;
 la_weá::exception &la_weá::exception::operator=(exception &&) noexcept = default;

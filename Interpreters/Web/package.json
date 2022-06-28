@@ -15,7 +15,6 @@
 		"vue-property-decorator": "^8.4.2"
 	},
 	"devDependencies": {
-		"@open-wc/webpack-import-meta-loader": "^0.4.7",
 		"@types/codemirror": "0.0.76",
 		"@vue/cli-plugin-typescript": "~4.5.0",
 		"@vue/cli-service": "~4.5.0",

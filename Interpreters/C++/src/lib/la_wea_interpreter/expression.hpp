@@ -1,5 +1,5 @@
 //
-// Copyright © 2021 Rodrigo Pelissier. All rights reserved.
+// Copyright © 2022 Rodrigo Pelissier. All rights reserved.
 //
 // This file is part of La Weá Interpreter (C++)
 //
@@ -32,9 +32,6 @@
 				expression &operator=(const expression &) = delete;
 
 				expression();
-
-				expression(expression &&) noexcept;
-				expression &operator=(expression &&) noexcept;
 		};
 	}
 #endif
