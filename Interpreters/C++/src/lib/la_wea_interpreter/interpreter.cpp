@@ -58,6 +58,7 @@ void la_weá::interpreter::run(std::unique_ptr<expression> expression) {
 
 	try {
 		[[likely]]
+		
 		expression->interpret(ctx);
 		delete ctx;
 	} catch (exception &e) {

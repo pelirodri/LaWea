@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.10)
 
 project(laweá)
 
-set(CMAKE_C_STANDARD 11)
+set(CMAKE_C_STANDARD 17)
 set(CMAKE_C_STANDARD_REQUIRED True)
 set(CMAKE_C_COMPILER "/usr/bin/clang")
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/lib)
