@@ -1,5 +1,5 @@
 //
-// Copyright © 2022 Rodrigo Pelissier. All rights reserved.
+// Copyright © 2023 Rodrigo Pelissier. All rights reserved.
 //
 // This file is part of La Weá Interpreter (C++)
 //
@@ -61,14 +61,14 @@ la_weá::expression *la_weá::expression_factory::create_expression_from_cmd_at_
 }
 
 long la_weá::expression_factory::find_loop_start(std::vector<command> commands, long cmd_idx) {
-	for (long i = cmd_idx - 1, loop_level = 1; i >= 0; i--) {
+	for (long i = cmd_idx - 1, loop_level = 1; i >= 0; i--) [[likely]] {
 		if (commands[i] == tula) {
 			loop_level++;
 		} else if (commands[i] == pichula) {
 			loop_level--;
 		}
 
-		if (!loop_level) {
+		if (!loop_level) [[likely]] {
 			return i;
 		}
 	}
@@ -77,14 +77,14 @@ long la_weá::expression_factory::find_loop_start(std::vector<command> commands,
 }
 
 long la_weá::expression_factory::find_loop_end(std::vector<command> commands, long cmd_idx) {
-	for (long i = cmd_idx + 1, loop_level = 1; i < commands.size(); i++) {
+	for (long i = cmd_idx + 1, loop_level = 1; i < commands.size(); i++) [[likely]] {
 		if (commands[i] == pichula) {
 			loop_level++;
 		} else if (commands[i] == tula) {
 			loop_level--;
 		}
 
-		if (!loop_level) {
+		if (!loop_level) [[likely]] {
 			return i;
 		}
 	}

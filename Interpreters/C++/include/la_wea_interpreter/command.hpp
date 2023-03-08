@@ -1,5 +1,5 @@
 //
-// Copyright © 2022 Rodrigo Pelissier. All rights reserved.
+// Copyright © 20223 Rodrigo Pelissier. All rights reserved.
 //
 // This file is part of La Weá Interpreter (C++)
 //

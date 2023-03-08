@@ -1,5 +1,5 @@
 //
-// Copyright © 2022 Rodrigo Pelissier. All rights reserved.
+// Copyright © 2023 Rodrigo Pelissier. All rights reserved.
 //
 // This file is part of La Weá Interpreter (C++)
 //
@@ -42,8 +42,9 @@ std::unique_ptr<la_weá::expression> la_weá::interpreter::parse_code(const std:
 	std::unique_ptr<expression> program;
 
 	try {
+		[[likely]]
 		program = (code_parser (code)).parse();
-	} catch (exception &e) { [[unlikely]]
+	} catch (exception &e) {
 		exit_with_error_message(std::string (e.what()));
 	}
 
@@ -56,9 +57,10 @@ void la_weá::interpreter::run(std::unique_ptr<expression> expression) {
 	context *ctx = new context;
 
 	try {
+		[[likely]]
 		expression->interpret(ctx);
 		delete ctx;
-	} catch (exception &e) { [[unlikely]]
+	} catch (exception &e) {
 		delete ctx;
 		exit_with_error_message(std::string (e.what()));
 	}
@@ -72,7 +74,7 @@ void la_weá::interpreter::exit_with_error_message(const std::string &err_msg) c
 std::u32string la_weá::interpreter::get_code(const char *file_path) const {
 	std::ifstream is (file_path);
 
-	if (!is) { [[unlikely]]
+	if (!is) [[unlikely]] {
 		file_open_error_exit();
 	}
 

@@ -1,5 +1,5 @@
 //
-// Copyright © 2022 Rodrigo Pelissier. All rights reserved.
+// Copyright © 2023 Rodrigo Pelissier. All rights reserved.
 //
 // This file is part of La Weá Interpreter (C++)
 //
@@ -24,7 +24,7 @@ la_weá::program_expression::program_expression(const std::vector<expression *> 
 	expressions(expressions) {}
 
 la_weá::program_expression::~program_expression() {
-	for (expression *expression : expressions) { [[likely]]
+	for (expression *expression : expressions) [[likely]] {
 		delete expression;
 	}
 }
@@ -55,7 +55,7 @@ la_weá::program_expression &la_weá::program_expression::operator=(program_expr
 }
 
 void la_weá::program_expression::interpret(context *ctx) {
-	for (long i = 0; i < expressions.size(); i = ctx->get_expr_idx()) { [[likely]]
+	for (long i = 0; i < expressions.size(); i = ctx->get_expr_idx()) [[likely]] {
 		expressions[i]->interpret(ctx);
 	}
 }

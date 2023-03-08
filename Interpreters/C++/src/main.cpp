@@ -1,5 +1,5 @@
 //
-// Copyright © 2022 Rodrigo Pelissier. All rights reserved.
+// Copyright © 2023 Rodrigo Pelissier. All rights reserved.
 //
 // This file is part of La Weá Interpreter (C++)
 //
@@ -31,9 +31,9 @@ int main(int argc, char **argv) {
 
 	std::locale::global(std::locale(""));
 
-	if (argc != 2) { [[unlikely]]
-		interpreter.exit_with_error_message("Tenís que pasar la ruta del archivo con el código, poh, aweona’o qlo");
-	} else if (!strstr(argv[1], ".lw")) { [[likely]]
+	if (argc != 2) [[unlikely]] {
+		interpreter.exit_with_error_message("Tenís que pasar la ruta del archivo con el código, pos, aweona’o qlo");
+	} else if (!strstr(argv[1], ".lw")) [[likely]] {
 		interpreter.exit_with_error_message("El archivo qlo tiene que tener la extensión .lw");
 	}
 
