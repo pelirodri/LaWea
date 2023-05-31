@@ -19,5 +19,10 @@
 
 #include "expression.hpp"
 
-la_weá::expression::expression() = default;
 la_weá::expression::~expression() = default;
+
+la_weá::expression::expression(const expression &) = default;
+la_weá::expression &la_weá::expression::operator=(const expression &) = default;
+
+la_weá::expression::expression(expression &&) noexcept = default;
+la_weá::expression &la_weá::expression::operator=(expression &&) noexcept = default;

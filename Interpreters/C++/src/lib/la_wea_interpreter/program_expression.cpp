@@ -21,7 +21,7 @@
 #include "context.hpp"
 
 la_weá::program_expression::program_expression(const std::vector<expression *> &expressions) : 
-	expressions(expressions) {}
+	expressions (expressions) {}
 
 la_weá::program_expression::~program_expression() {
 	for (expression *expression : expressions) [[likely]] {
@@ -29,8 +29,7 @@ la_weá::program_expression::~program_expression() {
 	}
 }
 
-la_weá::program_expression::program_expression(const program_expression &other) :
-	expressions(other.expressions) {}
+la_weá::program_expression::program_expression(const program_expression &other) : expressions (other.expressions) {}
 
 la_weá::program_expression &la_weá::program_expression::operator=(const program_expression &other) {
 	if (this != &other) {
@@ -41,9 +40,8 @@ la_weá::program_expression &la_weá::program_expression::operator=(const progra
 	return *this;
 }
 
-la_weá::program_expression::program_expression(program_expression &&other) noexcept {
-	*this = std::move(other);
-}
+la_weá::program_expression::program_expression(program_expression &&other) noexcept :
+	expressions (std::move(other.expressions)) {}
 
 la_weá::program_expression &la_weá::program_expression::operator=(program_expression &&other) noexcept {
 	if (this != &other) {

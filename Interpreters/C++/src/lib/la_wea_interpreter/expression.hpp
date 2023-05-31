@@ -27,11 +27,15 @@
 				virtual ~expression();
 
 				virtual void interpret(context *) = 0;
-			protected:
-				expression(const expression &) = delete;
-				expression &operator=(const expression &) = delete;
 
+			protected:
 				expression();
+
+				expression(const expression &);
+				expression &operator=(const expression &);
+
+				expression(expression &&) noexcept;
+				expression &operator=(expression &&) noexcept;
 		};
 	}
 #endif

@@ -25,15 +25,15 @@
 	namespace la_weá {
 		class exception: public std::runtime_error {
 			public:
-				virtual ~exception();		
-			protected:
-				exception(const std::string &);
+				virtual ~exception();
 
 				exception(const exception &);
 				exception &operator=(const exception &);
+			protected:
+				exception(const std::string &);
 
 				exception(exception &&) noexcept;
-				exception &operator=(exception &&) noexcept;
+				exception &operator=(exception &&) noexcept;	
 		};
 	}
 #endif
