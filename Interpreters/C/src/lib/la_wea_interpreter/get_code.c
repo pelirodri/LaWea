@@ -26,10 +26,10 @@ const uint_least32_t *get_code(const char *file_path) {
 
 const char *get_code_utf8(const char *file_path) {
     #if !defined(_WIN64)
-        FILE *fp = fopen(file_path, "r");
+    FILE *fp = fopen(file_path, "r");
     #else
-        FILE *fp;
-        errno = fopen_s(&fp, file_path, "r");
+    FILE *fp;
+    errno = fopen_s(&fp, file_path, "r");
     #endif
 
     if (!fp) {

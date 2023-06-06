@@ -8,7 +8,7 @@
 #include <string.h>
 
 #if defined(_WIN64)
-    #include <windows.h>
+#include <windows.h>
 #endif
 
 static void print_error_in_red(const char *);
@@ -55,33 +55,33 @@ void la_weá_exit_with_error_message(const char *err_msg) {
 }
 
 #if !defined(_WIN64)
-    inline void print_error_in_red(const char *err_msg) {
-        fprintf(stderr, "\x1b[1;31m%s\x1b[0m\n", err_msg);
-    }
+inline void print_error_in_red(const char *err_msg) {
+    fprintf(stderr, "\x1b[1;31m%s\x1b[0m\n", err_msg);
+}
 #else
-    void print_error_in_red(const char *err_msg) {
-        WCHAR utf16_buffer[(utf8_strlen((const unsigned char *)err_msg) + 1)];
+void print_error_in_red(const char *err_msg) {
+    WCHAR utf16_buffer[(utf8_strlen((const unsigned char *)err_msg) + 1)];
 
-        int utf16_buffer_len = MultiByteToWideChar(
-            CP_UTF8,
-            0,
-            err_msg,
-            strlen(err_msg),
-            utf16_buffer,
-            sizeof(utf16_buffer)
-        );
+    int utf16_buffer_len = MultiByteToWideChar(
+        CP_UTF8,
+        0,
+        err_msg,
+        strlen(err_msg),
+        utf16_buffer,
+        sizeof(utf16_buffer)
+    );
 
-        utf16_buffer[utf16_buffer_len] = L'\n';
+    utf16_buffer[utf16_buffer_len] = L'\n';
 
-        HANDLE error_handle = GetStdHandle(STD_ERROR_HANDLE);
+    HANDLE error_handle = GetStdHandle(STD_ERROR_HANDLE);
 
-        CONSOLE_SCREEN_BUFFER_INFO console_info;
-        GetConsoleScreenBufferInfo(error_handle, &console_info);
+    CONSOLE_SCREEN_BUFFER_INFO console_info;
+    GetConsoleScreenBufferInfo(error_handle, &console_info);
 
-        WORD saved_attributes = console_info.wAttributes;
+    WORD saved_attributes = console_info.wAttributes;
 
-        SetConsoleTextAttribute(error_handle, FOREGROUND_INTENSITY | FOREGROUND_RED);
-        WriteConsoleW(error_handle, utf16_buffer, utf16_buffer_len + 1, NULL, NULL);
-        SetConsoleTextAttribute(error_handle, saved_attributes);
-    }
+    SetConsoleTextAttribute(error_handle, FOREGROUND_INTENSITY | FOREGROUND_RED);
+    WriteConsoleW(error_handle, utf16_buffer, utf16_buffer_len + 1, NULL, NULL);
+    SetConsoleTextAttribute(error_handle, saved_attributes);
+}
 #endif

@@ -9,7 +9,7 @@
 #include <errno.h>
 
 #if defined(_WIN64)
-    #include <windows.h>
+#include <windows.h>
 #endif
 
 static void interpret_cmd_at_idx(const la_weá_command_t *, long *);
@@ -224,16 +224,16 @@ inline bool is_value_in_unicode_range(int64_t value) {
 }
 
 #if !defined(_WIN64)
-	void print_char() {
-		unsigned char *utf8_output = utf32_char_to_utf8(cells[cur_cell]);
-	    printf("%s", (const char *)utf8_output);
-	    free(utf8_output);
-	}
+void print_char() {
+    unsigned char *utf8_output = utf32_char_to_utf8(cells[cur_cell]);
+    printf("%s", (const char *)utf8_output);
+    free(utf8_output);
+}
 #else
-	void print_char() {
-		const uint_least16_t *utf16_char = utf32_char_to_utf16(cells[cur_cell]);
-	    WriteConsoleW(GetStdHandle(STD_OUTPUT_HANDLE), utf16_char, utf16_strlen(utf16_char), NULL, NULL);
-	}
+void print_char() {
+    const uint_least16_t *utf16_char = utf32_char_to_utf16(cells[cur_cell]);
+    WriteConsoleW(GetStdHandle(STD_OUTPUT_HANDLE), utf16_char, utf16_strlen(utf16_char), NULL, NULL);
+}
 #endif
 
 void interpret_quéweá() {
@@ -241,30 +241,30 @@ void interpret_quéweá() {
 }
 
 #if !defined(_WIN64)
-	void read_char() {
-		char utf8_input[6] = {'\0'};
+void read_char() {
+    char utf8_input[6] = {'\0'};
 
-        if (fgets(utf8_input, sizeof(utf8_input), stdin)[strlen(utf8_input) - 1] == '\n') {
-        	utf8_input[strcspn(utf8_input, "\n")] = '\0';
-            cells[cur_cell] = utf8_char_to_utf32((unsigned char *)utf8_input);
-        } else {
-            handle_partial_line_input();
-        }
-	}
+    if (fgets(utf8_input, sizeof(utf8_input), stdin)[strlen(utf8_input) - 1] == '\n') {
+        utf8_input[strcspn(utf8_input, "\n")] = '\0';
+        cells[cur_cell] = utf8_char_to_utf32((unsigned char *)utf8_input);
+    } else {
+        handle_partial_line_input();
+    }
+}
 #else
-	void read_char() {
-		WCHAR utf16_input[5] = {L'\0'};
+void read_char() {
+    WCHAR utf16_input[5] = {L'\0'};
 
-        ULONG read_char_count;
-        ReadConsoleW(GetStdHandle(STD_INPUT_HANDLE), utf16_input, sizeof(utf16_input) / 2, &read_char_count, NULL);
+    ULONG read_char_count;
+    ReadConsoleW(GetStdHandle(STD_INPUT_HANDLE), utf16_input, sizeof(utf16_input) / 2, &read_char_count, NULL);
 
-        if (utf16_input[read_char_count - 1] == L'\n') {
-            utf16_input[wcscspn(utf16_input, L"\r")] = L'\0';
-            cells[cur_cell] = utf16_char_to_utf32(utf16_input);
-        } else {
-            handle_partial_line_input();
-        }
-	}
+    if (utf16_input[read_char_count - 1] == L'\n') {
+        utf16_input[wcscspn(utf16_input, L"\r")] = L'\0';
+        cells[cur_cell] = utf16_char_to_utf32(utf16_input);
+    } else {
+        handle_partial_line_input();
+    }
+}
 #endif
 
 void handle_partial_line_input() {
