@@ -1,53 +1,53 @@
 #ifndef LA_WEÁ_COMMAND_T_H
 #define LA_WEÁ_COMMAND_T_H
-	/// All the valid commands.
-	typedef enum la_weá_command_t {
-		/// Decrements current cell value by 1.
-		maricón,
+/// All the valid commands.
+typedef enum la_weá_command_t {
+	/// Decrements current cell value by 1.
+	maricón,
 
-		/// Decrements current cell value by 2.
-		maraco,
+	/// Decrements current cell value by 2.
+	maraco,
 
-		/// Increments current cell value by 1.
-		weón,
+	/// Increments current cell value by 1.
+	weón,
 
-		/// Increments current cell value by 2.
-		aweonao,
+	/// Increments current cell value by 2.
+	aweonao,
 
-		/// Sets current cell value to 0.
-		maraca,
+	/// Sets current cell value to 0.
+	maraca,
 
-		/// Moves back one cell.
-		chucha,
+	/// Moves back one cell.
+	chucha,
 
-		/// Moves forward one cell.
-		puta,
+	/// Moves forward one cell.
+	puta,
 
-		/// If current cell value is 0, moves the instruction pointer after the matching tula command.
-		pichula,
+	/// If current cell value is 0, moves the instruction pointer after the matching tula command.
+	pichula,
 
-		/// If current cell value is not 0, moves the instruction pointer after the matching pichula command.
-		tula,
+	/// If current cell value is not 0, moves the instruction pointer after the matching pichula command.
+	tula,
 
-		/// Moves the instruction pointer after the closest tula command, regardless of the current cell value.
-		pico,
+	/// Moves the instruction pointer after the closest tula command, regardless of the current cell value.
+	pico,
 
-		/// Prints current cell value to STDOUT as an ASCII character.
-		ctm,
+	/// Prints current cell value to STDOUT as an ASCII character.
+	ctm,
 
-		/// Reads ASCII character from STDIN and stores it in the current cell.
-		quéweá,
+	/// Reads ASCII character from STDIN and stores it in the current cell.
+	quéweá,
 
-		/// Prints current cell value to STDOUT as an integer.
-		chúpala,
+	/// Prints current cell value to STDOUT as an integer.
+	chúpala,
 
-		/// Reads integer from STDIN and stores it in the current cell.
-		brígido,
+	/// Reads integer from STDIN and stores it in the current cell.
+	brígido,
 
-		/// Copies current cell value if there is no copy; otherwise, pastes the copied value and resets the copy.
-		perkin,
+	/// Copies current cell value if there is no copy; otherwise, pastes the copied value and resets the copy.
+	perkin,
 
-		/// Terminates program.
-		mierda
-	} la_weá_command_t;
+	/// Terminates program.
+	mierda
+} la_weá_command_t;
 #endif
