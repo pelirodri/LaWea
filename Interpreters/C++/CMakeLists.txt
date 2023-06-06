@@ -1,13 +1,18 @@
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.23 FATAL_ERROR)
 
-project(laweá++)
+project(lawea++ VERSION 2.1.0 LANGUAGES CXX)
 
-set(CMAKE_CXX_STANDARD 20)
-set(CMAKE_CXX_STANDARD_REQUIRED True)
+add_subdirectory(${PROJECT_SOURCE_DIR}/src/lib/laweainterpreter++)
+
 set(CMAKE_CXX_COMPILER "/usr/bin/clang++")
-set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/lib)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/bin)
-set(CMAKE_BUILD_TYPE Release)
-set(CMAKE_CXX_FLAGS_RELEASE -Ofast)
 
-add_subdirectory(${PROJECT_SOURCE_DIR}/src)
+add_executable(${PROJECT_NAME})
+
+set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME laweá++)
+
+target_sources(${PROJECT_NAME} PRIVATE ${PROJECT_SOURCE_DIR}/src/main.cpp)
+target_compile_features(${PROJECT_NAME} PRIVATE cxx_std_20)
+target_link_libraries(${PROJECT_NAME} PRIVATE laweainterpreter++)
+
+install(TARGETS ${PROJECT_NAME} RUNTIME)
