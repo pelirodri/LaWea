@@ -1,6 +1,7 @@
 #ifndef CODE_PARSER_HPP
 #define CODE_PARSER_HPP
 #include "command.hpp"
+#include "utfutils/utf_utils.hpp"
 
 #include <string>
 
@@ -9,7 +10,8 @@ namespace la_weá {
 
 	class code_parser {
 		public:
-			code_parser(const std::u32string &code) : code (code) {}
+			code_parser(const std::string &code) :
+				code (utf_utils::utf8_str_to_utf32(std::u8string ((const char8_t *)code.data()))) {}
 
 			std::unique_ptr<expression> parse();
 		private:

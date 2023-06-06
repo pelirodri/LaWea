@@ -16,7 +16,7 @@ void la_weá::interpreter::interpret(const std::string &file_path) {
 	run(parse_code(get_code(file_path)));
 }
 
-std::unique_ptr<la_weá::expression> la_weá::interpreter::parse_code(const std::u32string &code) {
+std::unique_ptr<la_weá::expression> la_weá::interpreter::parse_code(const std::string &code) {
 	std::unique_ptr<expression> program;
 
 	try {
@@ -50,7 +50,7 @@ void la_weá::interpreter::exit_with_error_message(const std::string &err_msg) c
 	std::exit(EXIT_FAILURE);
 }
 
-std::u32string la_weá::interpreter::get_code(const std::string &file_path) const {
+std::string la_weá::interpreter::get_code(const std::string &file_path) const {
 	std::ifstream is (file_path);
 
 	if (!is) [[unlikely]] {
@@ -64,7 +64,7 @@ std::u32string la_weá::interpreter::get_code(const std::string &file_path) cons
 	std::string utf8_code (utf8_code_len, ' ');
 	is.read(&utf8_code[0], utf8_code_len);
 
-	return utf_utils::utf8_str_to_utf32(std::u8string((const char8_t *)utf8_code.data()));
+	return std::string(utf8_code.data());
 }
 
 void la_weá::interpreter::file_open_error_exit() const {

@@ -29,7 +29,7 @@ namespace la_weá {
 			 * @param code the code to parse
 			 * @return A composite expression
 			 */
-			std::unique_ptr<expression> parse_code(const std::u32string &code);
+			std::unique_ptr<expression> parse_code(const std::string &code);
 
 			/**
 			 * Interprets an expression.
@@ -43,7 +43,7 @@ namespace la_weá {
 			 */
 			void exit_with_error_message(const std::string &err_msg) const;
 		private:
-			std::u32string get_code(const std::string &) const;
+			std::string get_code(const std::string &) const;
 			void file_open_error_exit() const;
 
 			void print_error_in_red(const std::string &) const;
