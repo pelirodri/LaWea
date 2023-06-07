@@ -306,7 +306,7 @@ unsigned char *utf32_char_to_utf8(uint_least32_t utf32_char) {
 		return NULL;
 	}
 
-	unsigned char *utf8_char = (unsigned char *)malloc((utf8_code_point_len + 1) * sizeof(unsigned char));
+	unsigned char *utf8_char = malloc((utf8_code_point_len + 1) * sizeof(unsigned char));
 
 	if (!utf8_char) {
 		return NULL;
@@ -350,7 +350,7 @@ uint_least16_t *utf32_char_to_utf16(uint_least32_t utf32_char) {
 		return NULL;
 	}
 
-	uint_least16_t *utf16_char = (uint_least16_t *)malloc((utf16_code_point_len + 1) * sizeof(uint_least16_t));
+	uint_least16_t *utf16_char = malloc((utf16_code_point_len + 1) * sizeof(uint_least16_t));
 
 	if (!utf16_char) {
 		return NULL;
@@ -382,7 +382,7 @@ inline uint_least16_t *utf8_str_to_utf16(const unsigned char *utf8_str) {
 }
 
 uint_least32_t *utf8_str_to_utf32(const unsigned char *utf8_str) {
-	uint_least32_t *utf32_str = (uint_least32_t *)malloc((utf8_strlen(utf8_str) + 1) * sizeof(uint_least32_t));
+	uint_least32_t *utf32_str = malloc((utf8_strlen(utf8_str) + 1) * sizeof(uint_least32_t));
 
 	if (!utf32_str) {
 		return NULL;
@@ -414,7 +414,7 @@ inline unsigned char *utf16_str_to_utf8(const uint_least16_t *utf16_str) {
 }
 
 uint_least32_t *utf16_str_to_utf32(const uint_least16_t *utf16_str) {
-	uint_least32_t *utf32_str = (uint_least32_t *)malloc((utf16_strlen(utf16_str) + 1) * sizeof(uint_least32_t));
+	uint_least32_t *utf32_str = malloc((utf16_strlen(utf16_str) + 1) * sizeof(uint_least32_t));
 
 	if (!utf32_str) {
 		return NULL;
@@ -442,7 +442,7 @@ uint_least32_t *utf16_str_to_utf32(const uint_least16_t *utf16_str) {
 }
 
 unsigned char *utf32_str_to_utf8(const uint_least32_t *utf32_str) {
-	unsigned char *utf8_str = (unsigned char *)malloc((utf32_str_utf8_size(utf32_str) + 1) * sizeof(unsigned char));
+	unsigned char *utf8_str = malloc((utf32_str_utf8_size(utf32_str) + 1) * sizeof(unsigned char));
 
 	if (!utf8_str) {
 		return NULL;
@@ -471,9 +471,7 @@ unsigned char *utf32_str_to_utf8(const uint_least32_t *utf32_str) {
 }
 
 uint_least16_t *utf32_str_to_utf16(const uint_least32_t *utf32_str) {
-	uint_least16_t *utf16_str = (uint_least16_t *)malloc(
-		(utf32_str_utf16_size(utf32_str) + 1) * sizeof(uint_least16_t)
-	);
+	uint_least16_t *utf16_str = malloc((utf32_str_utf16_size(utf32_str) + 1) * sizeof(uint_least16_t));
 
 	if (!utf16_str) {
 		return NULL;
