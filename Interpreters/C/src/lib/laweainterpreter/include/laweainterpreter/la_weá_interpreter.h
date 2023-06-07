@@ -17,25 +17,34 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 //
 
-#include "laweainterpreter/la_weá_interpreter.h"
+#ifndef LA_WEÁ_INTERPRETER_H
+#define LA_WEÁ_INTERPRETER_H
+#include "la_weá_command_t.h"
 
-#include <locale.h>
-#include <string.h>
+#include <stdint.h>
 
-int main(int argc, char **argv) {
-	#if !defined(__LP64__) && !defined(_WIN64)
-	la_weá_exit_with_error_message("Qué chucha hacís usando todavía un sistema operativo de 32 bits...");
-	#endif
+/**
+ * The entry point for interpreting the code.
+ * @param file_path the path to the file with the code
+ * @note The file must have the .lw extension.
+ */
+void la_weá_interpret(const char *file_path);
 
-    setlocale(LC_CTYPE, "");
+/**
+ * Retrieves the commands from the code.
+ * @param code the code to parse
+ */
+la_weá_command_t *la_weá_parse_code(const char *code);
 
-    if (argc != 2) {
-        la_weá_exit_with_error_message("Tenís que pasar la ruta del archivo con el código, pos, aweona’o qlo");
-    } else if (!strstr(argv[1], ".lw")) {
-    	la_weá_exit_with_error_message("El archivo qlo tiene que tener la extensión .lw");
-    }
+/**
+ * Interprets commands.
+ * @param commands to interpret
+ */
+void la_weá_run(la_weá_command_t *commands);
 
-    la_weá_interpret(argv[1]);
-
-    return 0;
-}
+/**
+ * A utility function that prints an error message and exits the program abnormally.
+ * @param err_msg the error message to print
+ */
+void la_weá_exit_with_error_message(const char *err_msg);
+#endif

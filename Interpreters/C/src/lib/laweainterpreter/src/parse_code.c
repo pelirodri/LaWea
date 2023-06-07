@@ -1,9 +1,32 @@
-#include "parse_code.h"
-#include "la_weá_interpreter.h"
-#include "utf_utils.h"
+//
+// Copyright © 2023 Rodrigo Pelissier. All rights reserved.
+//
+// This file is part of La Weá Interpreter (C)
+//
+// La Weá Interpreter (C) is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program. If not, see <http://www.gnu.org/licenses/>.
+//
 
+#include "parse_code.h"
+#include "la_weá_command_t.h"
+#include "utfutils/utf_utils.h"
+
+#include <stdio.h>
 #include <string.h>
 #include <ctype.h>
+#include <stdbool.h>
+
+extern void la_weá_exit_with_error_message(const char *);
 
 static bool is_cmd_boundary(uint_least32_t);
 static void handle_potential_cmd(uint_least32_t *, long *);
@@ -144,11 +167,13 @@ void handle_loop_balancing(la_weá_command_t cmd) {
 }
 
 inline void handle_pichula_cmd() {
-    loop_open_commands_count++;  
+    loop_open_commands_count++;
 }
 
 void handle_tula_cmd() {
     if (loop_close_commands_count == loop_open_commands_count) {
+        free(commands);
+
         int line_len = snprintf(NULL, 0, "%ld", line);
         int col_len = snprintf(NULL, 0, "%ld", col - (long)utf32_strlen(U"tula"));
 
@@ -165,6 +190,8 @@ void handle_tula_cmd() {
 
 void handle_pico_cmd() {
     if (loop_open_commands_count == loop_close_commands_count) {
+        free(commands);
+        
         int line_len = snprintf(NULL, 0, "%ld", line);
         int col_len = snprintf(NULL, 0, "%ld", col - (long)utf32_strlen(U"pico"));
 

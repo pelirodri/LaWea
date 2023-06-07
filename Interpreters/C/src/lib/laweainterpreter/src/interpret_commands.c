@@ -1,16 +1,37 @@
+//
+// Copyright © 2023 Rodrigo Pelissier. All rights reserved.
+//
+// This file is part of La Weá Interpreter (C)
+//
+// La Weá Interpreter (C) is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program. If not, see <http://www.gnu.org/licenses/>.
+//
+
 #include "interpret_commands.h"
-#include "la_weá_interpreter.h"
-#include "utf_utils.h"
+#include "utfutils/utf_utils.h"
 
 #include <stdio.h>
 #include <string.h>
 #include <ctype.h>
 #include <inttypes.h>
 #include <errno.h>
+#include <stdbool.h>
 
 #if defined(_WIN64)
 #include <windows.h>
 #endif
+
+extern void la_weá_exit_with_error_message(const char *);
 
 static void interpret_cmd_at_idx(const la_weá_command_t *, long *);
 static void interpret_maricón();

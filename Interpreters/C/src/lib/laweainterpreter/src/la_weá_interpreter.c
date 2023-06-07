@@ -1,9 +1,29 @@
+//
+// Copyright © 2023 Rodrigo Pelissier. All rights reserved.
+//
+// This file is part of La Weá Interpreter (C)
+//
+// La Weá Interpreter (C) is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program. If not, see <http://www.gnu.org/licenses/>.
+//
+
 #include "la_weá_interpreter.h"
-#include "utf_utils.h"
 #include "get_code.h"
 #include "parse_code.h"
 #include "interpret_commands.h"
+#include "utfutils/utf_utils.h"
 
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -17,7 +37,7 @@ la_weá_command_t *restrict commands;
 size_t commands_size, commands_count;
 
 void la_weá_interpret(const char *file_path) {
-    const uint_least32_t *code = get_code(file_path);
+    const char *code = get_code(file_path);
 
     la_weá_parse_code(code);
     free((void *)code);
@@ -26,19 +46,27 @@ void la_weá_interpret(const char *file_path) {
     free(commands);
 }
 
-la_weá_command_t *la_weá_parse_code(const uint_least32_t *code) {
-    size_t code_len = utf32_strlen(code);
+la_weá_command_t *la_weá_parse_code(const char *code) {
+    const uint_least32_t *utf32_code = utf8_str_to_utf32((unsigned char *)code);
 
-    commands_size = (size_t)(code_len / 3) * sizeof(la_weá_command_t);
+    if (!utf32_code) {
+        la_weá_exit_with_error_message(NULL);
+    }
+
+    size_t utf32_code_len = utf32_strlen(utf32_code);
+
+    commands_size = (size_t)(utf32_code_len / 3) * sizeof(la_weá_command_t);
     commands = (la_weá_command_t *)malloc(commands_size);
 
     if (!commands) {
         la_weá_exit_with_error_message(NULL);
     }
 
-    for (long i = 0; i <= code_len; i++) {
-        parse_code_char(code[i]);
+    for (long i = 0; i <= utf32_code_len; i++) {
+        parse_code_char(utf32_code[i]);
     }
+
+    free((void *)utf32_code);
 
     check_loops_balance();
 
