@@ -20,9 +20,8 @@ std::unique_ptr<la_weá::expression> la_weá::interpreter::parse_code(const std:
 	std::unique_ptr<expression> program;
 
 	try {
-		[[likely]]
 		program = (code_parser (code)).parse();
-	} catch (exception &e) {
+	} catch (const exception &e) {
 		exit_with_error_message(std::string (e.what()));
 	}
 
@@ -32,15 +31,10 @@ std::unique_ptr<la_weá::expression> la_weá::interpreter::parse_code(const std:
 void la_weá::interpreter::run(const std::unique_ptr<expression> &expression) {
 	std::cout.setf(std::ios::unitbuf);
 
-	context *ctx = new context;
-
 	try {
-		[[likely]]
-		
+		context ctx;
 		expression->interpret(ctx);
-		delete ctx;
-	} catch (exception &e) {
-		delete ctx;
+	} catch (const exception &e) {
 		exit_with_error_message(std::string (e.what()));
 	}
 }

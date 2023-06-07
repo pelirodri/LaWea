@@ -3,24 +3,24 @@
 
 #include <iostream>
 
-void la_weá::pichula_expression::interpret(context *ctx) {
-	if (ctx->get_cell_value() == 0) {
-		ctx->set_expr_idx(tula_idx + 1);
+void la_weá::pichula_expression::interpret(context &ctx) {
+	if (ctx.get_cell_value() == 0) {
+		ctx.set_expr_idx(tula_idx + 1);
 	} else {
-		ctx->increase_expr_idx();
+		ctx.increase_expr_idx();
 	}
 }
 
-void la_weá::tula_expression::interpret(context *ctx) {
-	if (ctx->get_cell_value() != 0) {
-		ctx->set_expr_idx(pichula_idx + 1);
+void la_weá::tula_expression::interpret(context &ctx) {
+	if (ctx.get_cell_value() != 0) {
+		ctx.set_expr_idx(pichula_idx + 1);
 	} else {
-		ctx->increase_expr_idx();
+		ctx.increase_expr_idx();
 	}
 }
 
-void la_weá::ctm_expression::interpret(context *ctx) {
-	int64_t cell_value = ctx->get_cell_value();
+void la_weá::ctm_expression::interpret(context &ctx) {
+	int64_t cell_value = ctx.get_cell_value();
 
 	if (cell_value >= 0x0 && cell_value <= 0x10FFFF) [[likely]] {
 		#if !defined(_WIN64)
@@ -33,20 +33,20 @@ void la_weá::ctm_expression::interpret(context *ctx) {
 		std::cout << "\uFFFD";
 	}
 
-	ctx->increase_expr_idx();
+	ctx.increase_expr_idx();
 }
 
 #if !defined(_WIN64)
-void la_weá::quéweá_expression::interpret(context *ctx) {
+void la_weá::quéweá_expression::interpret(context &ctx) {
 	std::string utf8_input = "";
 	std::getline(std::cin, utf8_input);
 
-	ctx->set_cell_value((int64_t)utf_utils::utf8_char_to_utf32(std::u8string((const char8_t *)utf8_input.data())));
+	ctx.set_cell_value((int64_t)utf_utils::utf8_char_to_utf32(std::u8string((const char8_t *)utf8_input.data())));
 
-	ctx->increase_expr_idx();
+	ctx.increase_expr_idx();
 }
 #else
-void la_weá::quéweá_expression::interpret(context *ctx) {
+void la_weá::quéweá_expression::interpret(context &ctx) {
 	WCHAR utf16_input[5] = {L'\0'};
 
 	ULONG read_char_count;
@@ -54,22 +54,22 @@ void la_weá::quéweá_expression::interpret(context *ctx) {
 
 	if (utf16_input[read_char_count - 1] == L'\n') [[likely]] {
 		utf16_input[wcscspn(utf16_input, L"\r")] = L'\0';
-		ctx->set_cell_value(utf16_char_to_utf32(utf16_input));
+		ctx.set_cell_value(utf16_char_to_utf32(utf16_input));
 	} else {
 		while (getchar() != '\n') {}
-		ctx->reset_cell_value();
+		ctx.reset_cell_value();
 	}
 
-	ctx->increase_expr_idx();
+	ctx.increase_expr_idx();
 }	
 #endif
 
-void la_weá::chúpala_expression::interpret(context *ctx) {
-	std::cout << ctx->get_cell_value();
-	ctx->increase_expr_idx();
+void la_weá::chúpala_expression::interpret(context &ctx) {
+	std::cout << ctx.get_cell_value();
+	ctx.increase_expr_idx();
 }
 
-void la_weá::brígido_expression::interpret(context *ctx) {
+void la_weá::brígido_expression::interpret(context &ctx) {
 	std::string num_input = get_num_input();
 
 	if (!is_valid_num_input(num_input)) [[unlikely]] {
@@ -77,13 +77,12 @@ void la_weá::brígido_expression::interpret(context *ctx) {
 	}
 
     try {
-    	[[likely]]
-    	ctx->set_cell_value((int64_t)std::stoll(num_input, nullptr, 10));
+    	ctx.set_cell_value((int64_t)std::stoll(num_input, nullptr, 10));
     } catch (...) {
-    	ctx->reset_cell_value();
+    	ctx.reset_cell_value();
     }
 
-    ctx->increase_expr_idx();
+    ctx.increase_expr_idx();
 }
 
 std::string la_weá::brígido_expression::get_num_input() const {

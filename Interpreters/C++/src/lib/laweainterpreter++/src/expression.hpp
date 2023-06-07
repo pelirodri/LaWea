@@ -7,7 +7,7 @@ namespace la_weá {
 		public:
 			virtual ~expression() = default;
 
-			virtual void interpret(context *) = 0;
+			virtual void interpret(context &) = 0;
 		protected:
 			expression() = default;
 

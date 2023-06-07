@@ -12,7 +12,7 @@ namespace la_weá {
 			program_expression(std::vector<std::unique_ptr<expression>> expressions) :
 				expressions (std::move(expressions)) {}
 
-			void interpret(context *) override;
+			void interpret(context &) override;
 		private:
 			std::vector<std::unique_ptr<expression>> expressions;
 	};
