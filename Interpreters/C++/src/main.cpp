@@ -22,7 +22,7 @@
 #include <locale>
 #include <cstring>
 
-int main(int argc, char **argv) {
+int main(int argc, char *argv[]) {
 	la_weá::interpreter interpreter;
 
 	#if !defined(__LP64__) && !defined(_WIN64)
