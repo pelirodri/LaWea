@@ -86,7 +86,7 @@ void la_weá::interpreter::file_open_error_exit() const {
 			exit_with_error_message("No tenís permiso pa’ abrir la weá");
 		case ENOENT:
 			exit_with_error_message("No existe la weá, pos, wn");
-		default:
+		[[unlikely]] default:
 			exit_with_error_message("");
 	}
 }
