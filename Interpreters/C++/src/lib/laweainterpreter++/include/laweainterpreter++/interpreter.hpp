@@ -19,7 +19,7 @@
 
 #ifndef INTERPRETER_HPP
 #define INTERPRETER_HPP
-#include <string>
+#include <iostream>
 
 namespace la_weá {
 	class expression;
@@ -66,7 +66,7 @@ namespace la_weá {
 			void file_open_error_exit() const;
 
 			#if !defined(_WIN64)
-			void la_weá::interpreter::print_error_in_red(const std::string &err_msg) const {
+			void print_error_in_red(const std::string &err_msg) const {
 				std::cerr << "\x1b[1;31m" << err_msg << "\x1b[0m\n";
 			}
 			#else

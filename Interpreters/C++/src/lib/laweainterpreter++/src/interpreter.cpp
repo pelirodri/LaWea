@@ -24,7 +24,6 @@
 #include "context.hpp"
 #include "utfutils/utf_utils.hpp"
 
-#include <iostream>
 #include <fstream>
 
 #if defined(_WIN64)
