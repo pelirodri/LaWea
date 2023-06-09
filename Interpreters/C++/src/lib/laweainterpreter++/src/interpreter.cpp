@@ -91,11 +91,7 @@ void la_weá::interpreter::file_open_error_exit() const {
 	}
 }
 
-#if !defined(_WIN64)
-inline void la_weá::interpreter::print_error_in_red(const std::string &err_msg) const {
-	std::cerr << "\x1b[1;31m" << err_msg << "\x1b[0m\n";
-}
-#else
+#if defined(_WIN64)
 void la_weá::interpreter::print_error_in_red(const std::string &err_msg) const {
 	WCHAR utf16_buffer[err_msg.length() + 1];
 
