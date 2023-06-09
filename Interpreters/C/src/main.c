@@ -22,7 +22,7 @@
 #include <locale.h>
 #include <string.h>
 
-int main(int argc, char **argv) {
+int main(int argc, char *argv[]) {
 	#if !defined(__LP64__) && !defined(_WIN64)
 	la_weá_exit_with_error_message("Qué chucha hacís usando todavía un sistema operativo de 32 bits...");
 	#endif
