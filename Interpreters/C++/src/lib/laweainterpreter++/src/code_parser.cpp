@@ -106,10 +106,6 @@ void la_weá::code_parser::handle_loop_balancing(command cmd) {
     }
 }
 
-void la_weá::code_parser::handle_pichula_cmd() {
-	loop_open_commands_count++;
-}
-
 void la_weá::code_parser::handle_tula_cmd() {
 	if (loop_close_commands_count == loop_open_commands_count) [[unlikely]] {
 		throw unmatched_tula_exception (line, col - std::u32string(U"tula").length());

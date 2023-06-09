@@ -53,7 +53,6 @@ namespace la_weá {
 			void handle_potential_cmd();
 			command get_cmd_from_name() const;
 			void handle_loop_balancing(command);
-			void handle_pichula_cmd();
 			void handle_tula_cmd();
 			void handle_pico_cmd() const;
 			void add_char_at_idx_to_cmd_name(long);
@@ -64,6 +63,10 @@ namespace la_weá {
 			void check_loops_balance() const;
 			
 			std::vector<std::unique_ptr<expression>> get_expressions_from_commands() const;
+
+			void handle_pichula_cmd() {
+				loop_open_commands_count++;
+			}
 
 			bool is_cmd_boundary(long code_idx) const {
 				return code_idx == code.length() || isspace(code[code_idx]) || code[code_idx] == U'#';
