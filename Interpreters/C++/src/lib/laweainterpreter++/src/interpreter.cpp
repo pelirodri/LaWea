@@ -31,30 +31,22 @@
 #endif
 
 void la_weá::interpreter::interpret(const std::string &file_path) {
-	run(parse_code(get_code(file_path)));
-}
-
-std::unique_ptr<la_weá::expression> la_weá::interpreter::parse_code(const std::string &code) {
-	std::unique_ptr<expression> program;
-
 	try {
-		program = (code_parser (code)).parse();
+		run(parse_code(get_code(file_path)));
 	} catch (const exception &e) {
 		exit_with_error_message(std::string (e.what()));
 	}
+}
 
-	return program;
+std::unique_ptr<la_weá::expression> la_weá::interpreter::parse_code(const std::string &code) {
+	return (code_parser (code)).parse();
 }
 
 void la_weá::interpreter::run(const std::unique_ptr<expression> &expression) {
 	std::cout.setf(std::ios::unitbuf);
 
-	try {
-		context ctx;
-		expression->interpret(ctx);
-	} catch (const exception &e) {
-		exit_with_error_message(std::string (e.what()));
-	}
+	context ctx;
+	expression->interpret(ctx);
 }
 
 void la_weá::interpreter::exit_with_error_message(const std::string &err_msg) const {
