@@ -64,6 +64,7 @@ namespace la_weá {
 		private:
 			std::string get_code(const std::string &) const;
 			void exit_with_file_open_error() const;
+			long get_file_length_from_stream(std::ifstream &) const;
 
 			#if !defined(_WIN64)
 			void print_error_in_red(const std::string &err_msg) const {

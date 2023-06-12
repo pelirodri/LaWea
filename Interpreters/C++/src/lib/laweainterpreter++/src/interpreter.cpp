@@ -61,14 +61,12 @@ std::string la_weá::interpreter::get_code(const std::string &file_path) const {
 		exit_with_file_open_error();
 	}
 
-	is.seekg(0, is.end);
-	auto utf8_code_len = is.tellg();
-	is.seekg(0, is.beg);
+	long code_len = get_file_length_from_stream(is);
 
-	std::string utf8_code (utf8_code_len, ' ');
-	is.read(&utf8_code[0], utf8_code_len);
+	std::string code (code_len, ' ');
+	is.read(&code[0], code_len);
 
-	return std::string (utf8_code.data());
+	return std::string (code.data());
 }
 
 void la_weá::interpreter::exit_with_file_open_error() const {
@@ -80,6 +78,14 @@ void la_weá::interpreter::exit_with_file_open_error() const {
 		[[unlikely]] default:
 			exit_with_error_message("");
 	}
+}
+
+long la_weá::interpreter::get_file_length_from_stream(std::ifstream &is) const {
+	is.seekg(0, is.end);
+	long code_len = is.tellg();
+	is.seekg(0, is.beg);
+
+	return code_len;
 }
 
 #if defined(_WIN64)
