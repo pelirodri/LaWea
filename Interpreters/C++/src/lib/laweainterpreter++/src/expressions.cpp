@@ -61,7 +61,6 @@ void la_weá::quéweá_expression::interpret(context &ctx) {
 	std::getline(std::cin, utf8_input);
 
 	ctx.set_cell_value((int64_t)utf_utils::utf8_char_to_utf32(std::u8string((const char8_t *)utf8_input.data())));
-
 	ctx.increase_expr_idx();
 }
 #else
@@ -89,7 +88,7 @@ void la_weá::chúpala_expression::interpret(context &ctx) {
 }
 
 void la_weá::brígido_expression::interpret(context &ctx) {
-	std::string num_input = get_num_input();
+	auto num_input = get_num_input();
 
 	if (!is_valid_num_input(num_input)) [[unlikely]] {
 		num_input.clear();

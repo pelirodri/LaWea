@@ -62,7 +62,7 @@ std::string la_weá::interpreter::get_code(const std::string &file_path) const {
 	}
 
 	is.seekg(0, is.end);
-	std::streampos utf8_code_len = is.tellg();
+	auto utf8_code_len = is.tellg();
 	is.seekg(0, is.beg);
 
 	std::string utf8_code (utf8_code_len, ' ');
@@ -97,7 +97,7 @@ void la_weá::interpreter::print_error_in_red(const std::string &err_msg) const 
 
 	utf16_buffer[utf16_buffer_len] = L'\n';
 
-	HANDLE error_handle = GetStdHandle(STD_ERROR_HANDLE);
+	auto error_handle = GetStdHandle(STD_ERROR_HANDLE);
 
 	CONSOLE_SCREEN_BUFFER_INFO console_info;
 	GetConsoleScreenBufferInfo(error_handle, &console_info);

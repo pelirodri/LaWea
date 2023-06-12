@@ -73,7 +73,7 @@ void la_weá::code_parser::parse_char_at_idx(long code_idx) {
 
 void la_weá::code_parser::handle_potential_cmd() {
 	if (!cmd_name_buffer.empty()) {
-		command cmd = get_cmd_from_name();
+		auto cmd = get_cmd_from_name();
 
 		handle_loop_balancing(cmd);
 		commands.push_back(cmd);
