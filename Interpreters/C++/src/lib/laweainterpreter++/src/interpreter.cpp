@@ -68,7 +68,7 @@ std::string la_weá::interpreter::get_code(const std::string &file_path) const {
 	std::string utf8_code (utf8_code_len, ' ');
 	is.read(&utf8_code[0], utf8_code_len);
 
-	return std::string(utf8_code.data());
+	return std::string (utf8_code.data());
 }
 
 void la_weá::interpreter::file_open_error_exit() const {
