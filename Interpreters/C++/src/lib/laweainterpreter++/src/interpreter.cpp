@@ -58,7 +58,7 @@ std::string la_weá::interpreter::get_code(const std::string &file_path) const {
 	std::ifstream is (file_path);
 
 	if (!is) [[unlikely]] {
-		file_open_error_exit();
+		exit_with_file_open_error();
 	}
 
 	is.seekg(0, is.end);
@@ -71,7 +71,7 @@ std::string la_weá::interpreter::get_code(const std::string &file_path) const {
 	return std::string (utf8_code.data());
 }
 
-void la_weá::interpreter::file_open_error_exit() const {
+void la_weá::interpreter::exit_with_file_open_error() const {
 	switch (errno) {
 		case EACCES:
 			exit_with_error_message("No tenís permiso pa’ abrir la weá");

@@ -63,7 +63,7 @@ namespace la_weá {
 			void exit_with_error_message(const std::string &err_msg) const;
 		private:
 			std::string get_code(const std::string &) const;
-			void file_open_error_exit() const;
+			void exit_with_file_open_error() const;
 
 			#if !defined(_WIN64)
 			void print_error_in_red(const std::string &err_msg) const {
