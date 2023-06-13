@@ -21,30 +21,29 @@
 #define LA_WEÁ_INTERPRETER_H
 #include "la_weá_command_t.h"
 
-#include <stdint.h>
-
 /**
  * The entry point for interpreting the code.
  * @param file_path the path to the file with the code
- * @note The file must have the .lw extension.
+ * @note The file must have the '.lw' extension.
  */
 void la_weá_interpret(const char *file_path);
 
 /**
  * Retrieves the commands from the code.
  * @param code the code to parse
+ * @return A sequence with the commands that were parsed
  */
-la_weá_command_t *la_weá_parse_code(const char *code);
+const la_weá_commands_sequence_t *la_weá_parse_code(const char *code);
 
 /**
  * Interprets commands.
- * @param commands to interpret
+ * @param cmd_sequence sequence of commands to interpret
  */
-void la_weá_run(la_weá_command_t *commands);
+void la_weá_run(const la_weá_commands_sequence_t *cmd_sequence);
 
 /**
  * A utility function that prints an error message and exits the program abnormally.
- * @param err_msg the error message to print
+ * @param error_msg the error message to print
  */
-void la_weá_exit_with_error_message(const char *err_msg);
+void la_weá_exit_with_error_message(const char *error_msg);
 #endif

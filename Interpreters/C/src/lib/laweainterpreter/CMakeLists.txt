@@ -3,7 +3,7 @@ add_subdirectory(lib/utfutils)
 set(
 	LA_WEA_INTERPRETER_SRC
 	src/la_weá_interpreter.c
-	src/get_code.c
+	src/la_weá_result_t.c
 	src/parse_code.c
 	src/interpret_commands.c
 )

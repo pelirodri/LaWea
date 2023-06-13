@@ -19,6 +19,8 @@
 
 #ifndef LA_WEÁ_COMMAND_T_H
 #define LA_WEÁ_COMMAND_T_H
+#include <stddef.h>
+
 /// All the valid commands.
 typedef enum la_weá_command_t {
 	/// Decrements current cell value by 1.
@@ -54,4 +56,15 @@ typedef enum la_weá_command_t {
 	/// Terminates program.
 	mierda
 } la_weá_command_t;
+
+/// Sequence of commands.
+typedef struct la_weá_commands_sequence_t {
+	/// Array of commands in the sequence.
+	la_weá_command_t *commands;
+
+	/// Size in bytes of the commands array.
+	size_t commands_size;
+	/// Amount of commands in the array.
+	size_t commands_count;
+} la_weá_commands_sequence_t;
 #endif

@@ -18,38 +18,41 @@
 //
 
 #include "parse_code.h"
-#include "la_weá_command_t.h"
-#include "utfutils/utf_utils.h"
 
 #include <stdio.h>
 #include <string.h>
 #include <ctype.h>
 #include <stdbool.h>
 
-extern void la_weá_exit_with_error_message(const char *);
+static const la_weá_error_t *parse_code_char(char32_t, la_weá_commands_sequence_t *);
+static bool is_cmd_boundary(char32_t);
 
-static bool is_cmd_boundary(uint_least32_t);
-static void handle_potential_cmd(uint_least32_t *, long *);
-static void parse_cmd(const uint_least32_t *);
-static la_weá_command_t get_cmd_from_name(const uint_least32_t *);
-static void found_invalid_cmd_exit(const uint_least32_t *);
-static void handle_loop_balancing(la_weá_command_t);
+static const la_weá_error_t *handle_potential_cmd(
+    char32_t *restrict,
+    long *restrict,
+    la_weá_commands_sequence_t *restrict
+);
+
+static const la_weá_error_t *parse_cmd(const char32_t *restrict, la_weá_commands_sequence_t *restrict);
+static la_weá_command_t get_cmd_from_name(const char32_t *);
+static const la_weá_error_t *handle_loop_balancing(la_weá_command_t);
 static void handle_pichula_cmd();
-static void handle_tula_cmd();
-static void handle_pico_cmd();
-static void double_commands_size();
-static void add_char_to_cmd_name(uint_least32_t *restrict, long *restrict, uint_least32_t);
-static void validate_cmd_char(uint_least32_t);
-static void validate_cmd_name_length(const uint_least32_t *, size_t);
-static void parsed_code_char(uint_least32_t, bool *);
+static const la_weá_error_t *handle_tula_cmd();
+static const la_weá_error_t *handle_pico_cmd();
+static const la_weá_error_t *add_char_to_cmd_name(char32_t *restrict, long *restrict, char32_t);
+static const la_weá_error_t *validate_cmd_char(char32_t);
+static const la_weá_error_t *validate_cmd_name_length(const char32_t *, size_t);
+static void parsed_code_char(char32_t, bool *);
 
-extern la_weá_command_t *commands;
-extern size_t commands_size, commands_count;
+static const la_weá_error_t *check_loops_balance();
 
-static long line = 1, col = 1;
-static long loop_open_commands_count, loop_close_commands_count;
+static long line = 1;
+static long col = 1;
 
-static const uint_least32_t cmd_names[][8 * sizeof(uint_least32_t)] = { 
+static long loop_open_commands_count;
+static long loop_close_commands_count;
+
+static const char32_t cmd_names[][8 * sizeof(char32_t)] = { 
     U"maricón",
     U"maraco",
     U"weón",
@@ -68,62 +71,99 @@ static const uint_least32_t cmd_names[][8 * sizeof(uint_least32_t)] = {
     U"mierda"
 };
 
-void parse_code_char(uint_least32_t code_char) {
+const la_weá_result_t *parse_code(const char32_t *restrict code, la_weá_commands_sequence_t *restrict cmd_sequence) {
+    const la_weá_error_t *error = NULL;
+
+    for (long i = 0, code_len = utf32_strlen(code); i <= code_len; i++) {
+        if ((error = parse_code_char(code[i], cmd_sequence))) {
+            return create_failure_result(error);
+        }
+    }
+
+    if ((error = check_loops_balance())) {
+        return create_failure_result(error);
+    }
+
+    return create_success_result();
+}
+
+const la_weá_error_t *parse_code_char(char32_t code_char, la_weá_commands_sequence_t *cmd_sequence) {
     static bool is_mid_comment;
 
     if (code_char == U'#') {
         is_mid_comment = true;
     }
 
-    static uint_least32_t cmd_name[8 * sizeof(uint_least32_t)];
+    static char32_t cmd_name[8 * sizeof(char32_t)];
     static long cmd_name_idx;
 
+    const la_weá_error_t *error = NULL;
+
     if (is_cmd_boundary(code_char)) {
-        handle_potential_cmd(cmd_name, &cmd_name_idx);
+        if ((error = handle_potential_cmd(cmd_name, &cmd_name_idx, cmd_sequence))) {
+            return error;
+        }
     } else if (!is_mid_comment) {
-        add_char_to_cmd_name(cmd_name, &cmd_name_idx, code_char);
+        if ((error = add_char_to_cmd_name(cmd_name, &cmd_name_idx, code_char))) {
+            return error;
+        }
     }
 
     parsed_code_char(code_char, &is_mid_comment);
+
+    return NULL;
 }
 
-void check_loops_balance() {
-    if (loop_open_commands_count != loop_close_commands_count) {
-        free(commands);
-        la_weá_exit_with_error_message("O te sobran pichulas o te faltan tulas");
-    }
-}
-
-inline bool is_cmd_boundary(uint_least32_t code_char) {
+inline bool is_cmd_boundary(char32_t code_char) {
     return isspace(code_char) || code_char == U'#' || code_char == U'\0';
 }
 
-void handle_potential_cmd(uint_least32_t *cmd_name, long *cmd_name_idx) {
-    if (*cmd_name_idx > 0) {      
-        parse_cmd(cmd_name);
+const la_weá_error_t *handle_potential_cmd(
+	char32_t *restrict cmd_name,
+	long *restrict cmd_name_idx,
+	la_weá_commands_sequence_t *restrict cmd_sequence
+) {
+    if (*cmd_name_idx > 0) {   
+        const la_weá_error_t *error = parse_cmd(cmd_name, cmd_sequence);
 
-        memset(cmd_name, U'\0', 7 * sizeof(uint_least32_t));
+        if (error) {
+            return error;
+        }
+
+        memset(cmd_name, U'\0', 7 * sizeof(char32_t));
         *cmd_name_idx = 0;
     }
+
+    return NULL;
 }
 
-void parse_cmd(const uint_least32_t *cmd_name) {
+const la_weá_error_t *parse_cmd(const char32_t *restrict cmd_name, la_weá_commands_sequence_t *restrict cmd_sequence) {
     la_weá_command_t cmd = get_cmd_from_name(cmd_name);
 
     if ((int)cmd == -1) {
-        found_invalid_cmd_exit(cmd_name);
+        return create_invalid_command_error(cmd_name, line, col - (long)utf32_strlen(cmd_name));
     }
 
-    handle_loop_balancing(cmd);
+    const la_weá_error_t *error = handle_loop_balancing(cmd);
 
-    if ((commands_count * sizeof(la_weá_command_t)) == commands_size) {
-        double_commands_size();
+    if (error) {
+        return error;
     }
 
-    commands[commands_count++] = cmd;
+    if ((cmd_sequence->commands_count * sizeof(la_weá_command_t)) == cmd_sequence->commands_size) {
+        cmd_sequence->commands = realloc(cmd_sequence->commands, (cmd_sequence->commands_size *= 2));
+
+        if (!cmd_sequence->commands) {
+            return create_internal_error();
+        }
+    }
+
+    cmd_sequence->commands[cmd_sequence->commands_count++] = cmd;
+
+    return NULL;
 }
 
-la_weá_command_t get_cmd_from_name(const uint_least32_t *cmd_name) {
+la_weá_command_t get_cmd_from_name(const char32_t *cmd_name) {
     size_t cmd_names_len = sizeof(cmd_names) / sizeof(*cmd_names);
 
     for (int cmd = 0; cmd < cmd_names_len; cmd++) {
@@ -135,133 +175,73 @@ la_weá_command_t get_cmd_from_name(const uint_least32_t *cmd_name) {
     return (la_weá_command_t)-1;
 }
 
-void found_invalid_cmd_exit(const uint_least32_t *cmd_name) {
-    free(commands);
-
-    int line_len = snprintf(NULL, 0, "%ld", line);
-    int col_len = snprintf(NULL, 0, "%ld", col - (long)utf32_strlen(cmd_name));
-
-    const char msg_template[] = "'%s' no es un comando válido, pos, saco de weas (línea: %ld, columna: %ld)";
-    char msg[sizeof(msg_template) + (long)utf32_strlen(cmd_name) + line_len + col_len];
-
-    unsigned char *utf8_cmd_name = utf32_str_to_utf8(cmd_name);
-
-    if (!utf8_cmd_name) {
-        la_weá_exit_with_error_message(NULL);
-    }
-
-    sprintf(msg, msg_template, utf8_cmd_name, line, col - (long)utf32_strlen(cmd_name));
-
-    free(utf8_cmd_name);
-    la_weá_exit_with_error_message(msg);
-}
-
-void handle_loop_balancing(la_weá_command_t cmd) {
+const la_weá_error_t *handle_loop_balancing(la_weá_command_t cmd) {
     if (cmd == pichula) {
         handle_pichula_cmd();  
     } else if (cmd == tula) {
-        handle_tula_cmd();
+        return handle_tula_cmd();
     } else if (cmd == pico) {
-        handle_pico_cmd();
+        return handle_pico_cmd();
     }
+
+    return NULL;
 }
 
 inline void handle_pichula_cmd() {
     loop_open_commands_count++;
 }
 
-void handle_tula_cmd() {
+const la_weá_error_t *handle_tula_cmd() {
     if (loop_close_commands_count == loop_open_commands_count) {
-        free(commands);
-
-        int line_len = snprintf(NULL, 0, "%ld", line);
-        int col_len = snprintf(NULL, 0, "%ld", col - (long)utf32_strlen(U"tula"));
-
-        const char msg_template[] = "Se encontró una tula sin su respectiva pichula en la línea %ld, columna %ld";
-        char msg[sizeof(msg_template) + line_len + col_len];
-
-        sprintf(msg, msg_template, line, col - (long)utf32_strlen(U"tula"));
-
-        la_weá_exit_with_error_message(msg);
+        return create_unmatched_tula_error(line, col - (long)utf32_strlen(U"tula"));
     }
 
     loop_close_commands_count++;
+
+    return NULL;
 }
 
-void handle_pico_cmd() {
+const la_weá_error_t *handle_pico_cmd() {
     if (loop_open_commands_count == loop_close_commands_count) {
-        free(commands);
-        
-        int line_len = snprintf(NULL, 0, "%ld", line);
-        int col_len = snprintf(NULL, 0, "%ld", col - (long)utf32_strlen(U"pico"));
-
-        const char msg_template[] = "No debiste meter ese pico en la línea %ld, columna %ld";
-        char msg[sizeof(msg_template) + line_len + col_len];
-
-        sprintf(msg, msg_template, line, col - (long)utf32_strlen(U"pico"));
-
-        la_weá_exit_with_error_message(msg);
-    }
-}
-
-void double_commands_size() {
-    la_weá_command_t *tmp = (la_weá_command_t *)realloc(commands, (commands_size *= 2));
-
-    if (!tmp) {
-        free(commands);
-        la_weá_exit_with_error_message(NULL);
+        return create_misplaced_pico_error(line, col - (long)utf32_strlen(U"pico"));
     }
 
-    commands = tmp;
+    return NULL;
 }
 
-void add_char_to_cmd_name(uint_least32_t *restrict cmd_name, long *restrict cmd_name_idx, uint_least32_t code_char) {
-    validate_cmd_char(code_char);
-    validate_cmd_name_length(cmd_name, *cmd_name_idx + 1);
+const la_weá_error_t *add_char_to_cmd_name(
+    char32_t *restrict cmd_name,
+    long *restrict cmd_name_idx,
+    char32_t code_char
+) {
+    const la_weá_error_t *error = NULL;
+
+    if ((error = validate_cmd_char(code_char)) || (error = validate_cmd_name_length(cmd_name, *cmd_name_idx + 1))) {
+        return error;
+    }
 
     cmd_name[(*cmd_name_idx)++] = code_char;
+
+    return NULL;
 }
 
-void validate_cmd_char(uint_least32_t cmd_char) {
+const la_weá_error_t *validate_cmd_char(char32_t cmd_char) {
     if (!utf32_strchr(U"abcdeghiklmnopqrtuwáéíóú", cmd_char)) {
-        free(commands);
-
-        int line_len = snprintf(NULL, 0, "%ld", line), col_len = snprintf(NULL, 0, "%ld", col);
-
-        const char msg_template[] = "'%s' no es parte de La Weá, tonto qlo (línea: %ld, columna: %ld)";
-        char msg[sizeof(msg_template) + sizeof(uint_least32_t) + line_len + col_len];
-
-        unsigned char *utf8_char = utf32_char_to_utf8(cmd_char);
-
-        if (!utf8_char) {
-            la_weá_exit_with_error_message(NULL);
-        }
-
-        sprintf(msg,msg_template, utf8_char,line, col);
-
-        free(utf8_char);
-        la_weá_exit_with_error_message(msg);
+        return create_invalid_character_error(cmd_char, line, col);
     }
+
+    return NULL;
 }
 
-void validate_cmd_name_length(const uint_least32_t *cmd_name, size_t cmd_name_len) {
+const la_weá_error_t *validate_cmd_name_length(const char32_t *cmd_name, size_t cmd_name_len) {
     if (cmd_name_len >= 8) {
-        free(commands);
-
-        int line_len = snprintf(NULL, 0, "%ld", line);
-        int col_len = snprintf(NULL, 0, "%ld", col - (long)utf32_strlen(cmd_name));
-
-        const char msg_template[] = 
-            "¿Vos creís que yo soy weón, CTM? Te gustan largos, parece (línea: %ld, columna: %ld)";
-        char msg[sizeof(msg_template) + line_len + col_len];
-
-        sprintf(msg, msg_template, line, col - (long)utf32_strlen(cmd_name));
-
-        la_weá_exit_with_error_message(msg);
+        return create_too_long_command_error(line, col - (long)utf32_strlen(cmd_name));
     }
+
+    return NULL;
 }
 
-void parsed_code_char(uint_least32_t code_char, bool *is_mid_comment) {
+void parsed_code_char(char32_t code_char, bool *is_mid_comment) {
     if (code_char == U'\n') {
         line++;
         col = 1;
@@ -270,4 +250,12 @@ void parsed_code_char(uint_least32_t code_char, bool *is_mid_comment) {
     } else {
         col++;
     }
+}
+
+const la_weá_error_t *check_loops_balance() {
+    if (loop_open_commands_count != loop_close_commands_count) {
+        return create_unmatched_pichulas_error();
+    }
+
+    return NULL;
 }

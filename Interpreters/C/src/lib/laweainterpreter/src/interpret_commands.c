@@ -31,59 +31,71 @@
 #include <windows.h>
 #endif
 
-extern void la_weá_exit_with_error_message(const char *);
+static const la_weá_error_t *interpret_cmd_at_idx(long *restrict, const la_weá_commands_sequence_t *restrict);
 
-static void interpret_cmd_at_idx(const la_weá_command_t *, long *);
 static void interpret_maricón();
 static void interpret_maraco();
 static void interpret_weón();
 static void interpret_aweonao();
 static void interpret_maraca();
-static void interpret_chucha();
-static void interpret_puta();
-static void double_cells_size();
-static void interpret_pichula(const la_weá_command_t *, long *);
-static long find_loop_end(const la_weá_command_t *, long);
-static void interpret_tula(const la_weá_command_t *, long *);
-static long find_loop_start(const la_weá_command_t *, long);
-static void interpret_pico(const la_weá_command_t *, long *);
+static const la_weá_error_t *interpret_chucha();
+static const la_weá_error_t *interpret_puta();
+static void interpret_pichula(const la_weá_commands_sequence_t *restrict, long *restrict);
+static void interpret_tula(const la_weá_commands_sequence_t *restrict, long *restrict);
+static void interpret_pico(const la_weá_commands_sequence_t *restrict, long *restrict);
 static void interpret_ctm();
-static bool is_value_in_unicode_range(int64_t);
-static void print_char();
 static void interpret_quéweá();
-static void read_char();
-static void handle_partial_line_input();
 static void interpret_chúpala();
 static void interpret_brígido();
-static void handle_full_line_num(char *);
-static bool is_valid_num_input(const char *);
 static void interpret_perkin();
 static void interpret_mierda();
 
-extern size_t commands_count;
+static long find_loop_end(const la_weá_commands_sequence_t *, long);
+static long find_loop_start(const la_weá_commands_sequence_t *, long);
+
+static void print_char();
+static void read_char();
+
+static void handle_partial_line_input();
+static void handle_full_line_num(char *);
+
+static bool is_value_in_unicode_range(int64_t);
+static bool is_valid_num_input(const char *);
 
 static size_t cells_size = 8 * sizeof(int64_t);
 static int64_t *cells;
 static long cur_cell;
 
-void interpret_commands(la_weá_command_t *commands) {
+const la_weá_result_t *interpret_commands(const la_weá_commands_sequence_t *cmd_sequence) {
     setvbuf(stdout, NULL, _IONBF, 0);
     
-    cells = (int64_t *)calloc(8, sizeof(int64_t));    
+    cells = calloc(8, sizeof(int64_t));    
 
     if (!cells) {
-        la_weá_exit_with_error_message(NULL);
+        return create_failure_result(NULL);
     }
 
-    for (long i = 0; i < commands_count; i++) {
-        interpret_cmd_at_idx(commands, &i);
+    const la_weá_error_t *error = NULL;  
+
+    for (long i = 0; i < cmd_sequence->commands_count; i++) {  
+        if ((error = interpret_cmd_at_idx(&i, cmd_sequence))) {
+            free(cells);
+            return create_failure_result(error);
+        }
     }
 
     free(cells);
+
+    return create_success_result();
 }
 
-void interpret_cmd_at_idx(const la_weá_command_t *commands, long *cmd_idx) {
-	switch (commands[*cmd_idx]) {
+const la_weá_error_t *interpret_cmd_at_idx(
+    long *restrict cmd_idx,
+    const la_weá_commands_sequence_t *restrict cmd_sequence
+) {
+    const la_weá_error_t *error = NULL;
+
+	switch (cmd_sequence->commands[*cmd_idx]) {
         case maricón:
             interpret_maricón();
             break;
@@ -100,19 +112,19 @@ void interpret_cmd_at_idx(const la_weá_command_t *commands, long *cmd_idx) {
             interpret_maraca();
             break;
         case chucha:
-            interpret_chucha();
+            error = interpret_chucha();
             break;
         case puta:
-            interpret_puta();
+            error = interpret_puta();
             break;
         case pichula:
-            interpret_pichula(commands, cmd_idx);
+            interpret_pichula(cmd_sequence, cmd_idx);
             break;
         case tula:
-            interpret_tula(commands, cmd_idx);
+            interpret_tula(cmd_sequence, cmd_idx);
             break;
         case pico:
-            interpret_pico(commands, cmd_idx);
+            interpret_pico(cmd_sequence, cmd_idx);
             break;
         case ctm:
             interpret_ctm();
@@ -133,6 +145,8 @@ void interpret_cmd_at_idx(const la_weá_command_t *commands, long *cmd_idx) {
             interpret_mierda();
             break;
     }
+
+    return error;
 }
 
 inline void interpret_maricón() {
@@ -155,81 +169,50 @@ inline void interpret_maraca() {
 	cells[cur_cell] = 0;
 }
 
-void interpret_chucha() {
+const la_weá_error_t *interpret_chucha() {
 	if (cur_cell == 0) {
-        free(cells);
-        la_weá_exit_with_error_message("Te saliste pa’ la izquierda, aweona’o");
+        return create_out_of_bounds_error();
     }
 
     cur_cell--;
+
+    return NULL;
 }
 
-void interpret_puta() {
+const la_weá_error_t *interpret_puta() {
 	if (cur_cell == (cells_size / sizeof(int64_t)) - 1) {
-        double_cells_size();
+        cells = realloc(cells, (cells_size *= 2));
+
+        if (!cells) {
+            return create_internal_error();
+        }
+
         memset(cells + (cur_cell + 1), 0, cells_size / 2);
     }
 
     cur_cell++;
+
+    return NULL;
 }
 
-void double_cells_size() {
-	int64_t *tmp = (int64_t *)realloc(cells, (cells_size *= 2));
-
-    if (!tmp) {
-        free(cells);
-        la_weá_exit_with_error_message(NULL);
-    }
-
-    cells = tmp;
-}
-
-void interpret_pichula(const la_weá_command_t *commands, long *cmd_idx) {
+void interpret_pichula(const la_weá_commands_sequence_t *cmd_sequence, long *cmd_idx) {
 	if (cells[cur_cell] == 0) {
-        *cmd_idx = find_loop_end(commands, *cmd_idx);
+        *cmd_idx = find_loop_end(cmd_sequence, *cmd_idx);
     }
 }
 
-long find_loop_end(const la_weá_command_t *commands, long cmd_idx) {
-    for (long i = cmd_idx + 1, loop_level = 1; i < commands_count; i++) {
-        if (commands[i] == pichula) {
-            loop_level++;
-        } else if (commands[i] == tula) {
-            loop_level--;
-        }
-
-        if (loop_level == 0) {
-            return i;
-        }
-    }
-
-    return -1;
-}
-
-void interpret_tula(const la_weá_command_t *commands, long *cmd_idx) {
+void interpret_tula(const la_weá_commands_sequence_t *cmd_sequence, long *cmd_idx) {
 	if (cells[cur_cell] != 0) {
-        *cmd_idx = find_loop_start(commands, *cmd_idx);
+        *cmd_idx = find_loop_start(cmd_sequence, *cmd_idx);
     }
 }
 
-long find_loop_start(const la_weá_command_t *commands, long cmd_idx) {
-    for (long i = cmd_idx - 1, loop_level = 1; i >= 0; i--) {
-        if (commands[i] == tula) {
-            loop_level++;
-        } else if (commands[i] == pichula) {
-            loop_level--;
-        }
-
-        if (loop_level == 0) {
-            return i;
-        }
-    }
-
-    return -1;
+void interpret_pico(const la_weá_commands_sequence_t *cmd_sequence, long *cmd_idx) {
+	*cmd_idx = find_loop_end(cmd_sequence, *cmd_idx);
 }
 
-inline void interpret_pico(const la_weá_command_t *commands, long *cmd_idx) {
-	*cmd_idx = find_loop_end(commands, *cmd_idx);
+void interpret_quéweá() {
+	read_char();
 }
 
 void interpret_ctm() {
@@ -240,26 +223,83 @@ void interpret_ctm() {
     }
 }
 
-inline bool is_value_in_unicode_range(int64_t value) {
-	return value >= 0 && value <= 0x10FFFF;
+inline void interpret_chúpala() {
+	printf("%" PRId64, cells[cur_cell]);
+}
+
+void interpret_brígido() {
+	char num_input[23] = {0};
+
+    if (fgets(num_input, 23, stdin)[strlen(num_input) - 1] == '\n') {
+        handle_full_line_num(num_input);
+    } else {
+        handle_partial_line_input();
+    }
+}
+
+void interpret_perkin() {
+	static bool is_copy_set = false;
+    static int64_t cell_value_copy;
+
+	if (is_copy_set) {
+        cells[cur_cell] = cell_value_copy;
+        is_copy_set = false;
+    } else {
+        cell_value_copy = cells[cur_cell];
+        is_copy_set = true;
+    }
+}
+
+void interpret_mierda() {
+	free(cells);
+    exit(EXIT_SUCCESS);
+}
+
+long find_loop_end(const la_weá_commands_sequence_t *cmd_sequence, long cmd_idx) {
+    for (long i = cmd_idx + 1, loop_level = 1; i < cmd_sequence->commands_count; i++) {
+        if (cmd_sequence->commands[i] == pichula) {
+            loop_level++;
+        } else if (cmd_sequence->commands[i] == tula) {
+            loop_level--;
+        }
+
+        if (loop_level == 0) {
+            return i;
+        }
+    }
+
+    return -1;
+}
+
+long find_loop_start(const la_weá_commands_sequence_t *cmd_sequence, long cmd_idx) {
+    for (long i = cmd_idx - 1, loop_level = 1; i >= 0; i--) {
+        if (cmd_sequence->commands[i] == tula) {
+            loop_level++;
+        } else if (cmd_sequence->commands[i] == pichula) {
+            loop_level--;
+        }
+
+        if (loop_level == 0) {
+            return i;
+        }
+    }
+
+    return -1;
 }
 
 #if !defined(_WIN64)
 void print_char() {
-    unsigned char *utf8_output = utf32_char_to_utf8(cells[cur_cell]);
+    const char8_t *utf8_output = utf32_char_to_utf8(cells[cur_cell]);
     printf("%s", (const char *)utf8_output);
-    free(utf8_output);
+    free((char8_t *)utf8_output);
 }
 #else
 void print_char() {
-    const uint_least16_t *utf16_char = utf32_char_to_utf16(cells[cur_cell]);
+    const char16_t *utf16_char = utf32_char_to_utf16(cells[cur_cell]);
     WriteConsoleW(GetStdHandle(STD_OUTPUT_HANDLE), utf16_char, utf16_strlen(utf16_char), NULL, NULL);
+    free((char16_t *)utf16_char);
 }
 #endif
-
-void interpret_quéweá() {
-	read_char();
-}
 
 #if !defined(_WIN64)
 void read_char() {
@@ -267,7 +307,7 @@ void read_char() {
 
     if (fgets(utf8_input, sizeof(utf8_input), stdin)[strlen(utf8_input) - 1] == '\n') {
         utf8_input[strcspn(utf8_input, "\n")] = '\0';
-        cells[cur_cell] = utf8_char_to_utf32((unsigned char *)utf8_input);
+        cells[cur_cell] = utf8_char_to_utf32((char8_t *)utf8_input);
     } else {
         handle_partial_line_input();
     }
@@ -293,20 +333,6 @@ void handle_partial_line_input() {
     cells[cur_cell] = 0;
 }
 
-inline void interpret_chúpala() {
-	printf("%" PRId64, cells[cur_cell]);
-}
-
-void interpret_brígido() {
-	char num_input[23] = {0};
-
-    if (fgets(num_input, 23, stdin)[strlen(num_input) - 1] == '\n') {
-        handle_full_line_num(num_input);
-    } else {
-        handle_partial_line_input();
-    }
-}
-
 void handle_full_line_num(char *num_input) {
 	if (!is_valid_num_input(num_input)) {
     	num_input[0] = '\0';
@@ -319,6 +345,10 @@ void handle_full_line_num(char *num_input) {
     }
 }
 
+inline bool is_value_in_unicode_range(int64_t value) {
+	return value >= 0 && value <= 0x10FFFF;
+}
+
 bool is_valid_num_input(const char *num_input) {
 	for (int i = 0; i < strlen(num_input) - 1; i++) {
         if (!isdigit(num_input[i]) && !(i == 0 && num_input[i] == '-')) {
@@ -327,22 +357,4 @@ bool is_valid_num_input(const char *num_input) {
     }
 
     return true;
-}
-
-void interpret_perkin() {
-	static bool is_copy_set = false;
-    static int64_t cell_value_copy;
-
-	if (is_copy_set) {
-        cells[cur_cell] = cell_value_copy;
-        is_copy_set = false;
-    } else {
-        cell_value_copy = cells[cur_cell];
-        is_copy_set = true;
-    }
-}
-
-void interpret_mierda() {
-	free(cells);
-    exit(EXIT_SUCCESS);
 }

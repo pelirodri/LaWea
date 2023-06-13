@@ -19,8 +19,9 @@
 
 #ifndef PARSE_CODE_H
 #define PARSE_CODE_H
-#include <stdint.h>
+#include "la_weá_result_t.h"
+#include "la_weá_command_t.h"
+#include "utfutils/utf_utils.h"
 
-void parse_code_char(uint_least32_t);
-void check_loops_balance();
+const la_weá_result_t *parse_code(const char32_t *restrict, la_weá_commands_sequence_t *restrict);
 #endif

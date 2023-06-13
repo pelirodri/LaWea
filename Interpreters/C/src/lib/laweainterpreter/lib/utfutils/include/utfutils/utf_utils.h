@@ -22,42 +22,46 @@
 #include <stdlib.h>
 #include <stdint.h>
 
-size_t utf8_byte_utf8_code_point_len(unsigned char);
-size_t utf16_surrogate_utf16_code_point_len(uint_least16_t);
+typedef unsigned char char8_t;
+typedef uint_least16_t char16_t;
+typedef uint_least32_t char32_t;
 
-size_t utf8_char_utf16_code_point_len(const unsigned char *);
-size_t utf16_char_utf8_code_point_len(const uint_least16_t *);
-size_t utf32_char_utf8_code_point_len(uint_least32_t);
-size_t utf32_char_utf16_code_point_len(uint_least32_t);
+size_t utf8_byte_utf8_code_point_len(char8_t);
+size_t utf16_surrogate_utf16_code_point_len(char16_t);
 
-size_t utf8_str_utf16_size(const unsigned char *);
-size_t utf16_str_utf8_size(const uint_least16_t *);
-size_t utf32_str_utf8_size(const uint_least32_t *);
-size_t utf32_str_utf16_size(const uint_least32_t *);
+size_t utf8_char_utf16_code_point_len(const char8_t *);
+size_t utf16_char_utf8_code_point_len(const char16_t *);
+size_t utf32_char_utf8_code_point_len(char32_t);
+size_t utf32_char_utf16_code_point_len(char32_t);
 
-size_t utf8_strlen(const unsigned char *);
-size_t utf16_strlen(const uint_least16_t *);
-size_t utf32_strlen(const uint_least32_t *);
+size_t utf8_str_utf16_size(const char8_t *restrict);
+size_t utf16_str_utf8_size(const char16_t *restrict);
+size_t utf32_str_utf8_size(const char32_t *);
+size_t utf32_str_utf16_size(const char32_t *);
 
-int utf8_strcmp(const unsigned char *, const unsigned char *);
-int utf16_strcmp(const uint_least16_t *, const uint_least16_t *);
-int utf32_strcmp(const uint_least32_t *, const uint_least32_t *);
+size_t utf8_strlen(const char8_t *);
+size_t utf16_strlen(const char16_t *);
+size_t utf32_strlen(const char32_t *);
 
-unsigned char *utf8_strchr(const unsigned char *, const unsigned char *);
-uint_least16_t *utf16_strchr(const uint_least16_t *, const uint_least16_t *);
-uint_least32_t *utf32_strchr(const uint_least32_t *, uint_least32_t);
+int utf8_strcmp(const char8_t *restrict, const char8_t *restrict);
+int utf16_strcmp(const char16_t *restrict, const char16_t *restrict);
+int utf32_strcmp(const char32_t *restrict, const char32_t *restrict);
 
-uint_least16_t *utf8_char_to_utf16(const unsigned char *);
-uint_least32_t utf8_char_to_utf32(const unsigned char *);
-unsigned char *utf16_char_to_utf8(const uint_least16_t *);
-uint_least32_t utf16_char_to_utf32(const uint_least16_t *);
-unsigned char *utf32_char_to_utf8(uint_least32_t);
-uint_least16_t *utf32_char_to_utf16(uint_least32_t);
+char8_t *utf8_strchr(const char8_t *restrict, const char8_t *restrict);
+char16_t *utf16_strchr(const char16_t *restrict, const char16_t *restrict);
+char32_t *utf32_strchr(const char32_t *, char32_t);
 
-uint_least16_t *utf8_str_to_utf16(const unsigned char *);
-uint_least32_t *utf8_str_to_utf32(const unsigned char *);
-unsigned char *utf16_str_to_utf8(const uint_least16_t *);
-uint_least32_t *utf16_str_to_utf32(const uint_least16_t *);
-unsigned char *utf32_str_to_utf8(const uint_least32_t *);
-uint_least16_t *utf32_str_to_utf16(const uint_least32_t *);
+char16_t *utf8_char_to_utf16(const char8_t *);
+char32_t utf8_char_to_utf32(const char8_t *);
+char8_t *utf16_char_to_utf8(const char16_t *);
+char32_t utf16_char_to_utf32(const char16_t *);
+char8_t *utf32_char_to_utf8(char32_t);
+char16_t *utf32_char_to_utf16(char32_t);
+
+char16_t *utf8_str_to_utf16(const char8_t *restrict);
+char32_t *utf8_str_to_utf32(const char8_t *restrict);
+char8_t *utf16_str_to_utf8(const char16_t *restrict);
+char32_t *utf16_str_to_utf32(const char16_t *restrict);
+char8_t *utf32_str_to_utf8(const char32_t *restrict);
+char16_t *utf32_str_to_utf16(const char32_t *restrict);
 #endif
