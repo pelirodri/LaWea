@@ -39,14 +39,14 @@ void la_weá::tula_expression::interpret(context &ctx) {
 }
 
 void la_weá::ctm_expression::interpret(context &ctx) {
-	int64_t cell_value = ctx.get_cell_value();
+	auto cell_value = ctx.get_cell_value();
 
 	if (cell_value >= 0x0 && cell_value <= 0x10FFFF) [[likely]] {
 		#if !defined(_WIN64)
 		std::cout << (const char *)utf_utils::utf32_str_to_utf8(std::u32string (1, cell_value)).c_str();
 		#else
-		const uint_least16_t *utf16_char = utf32_char_to_utf16(cell_value);
-		WriteConsoleW(GetStdHandle(STD_OUTPUT_HANDLE), utf16_char, utf16_strlen(utf16_char), NULL, NULL);
+		auto utf16_char = utf_utils::utf32_char_to_utf16(cell_value);
+		WriteConsoleW(GetStdHandle(STD_OUTPUT_HANDLE), utf16_char, utf_utils::utf16_strlen(utf16_char), NULL, NULL);
 		#endif
 	} else {
 		std::cout << "\uFFFD";
@@ -60,7 +60,7 @@ void la_weá::quéweá_expression::interpret(context &ctx) {
 	std::string utf8_input = "";
 	std::getline(std::cin, utf8_input);
 
-	ctx.set_cell_value((int64_t)utf_utils::utf8_char_to_utf32(std::u8string((const char8_t *)utf8_input.data())));
+	ctx.set_cell_value((int64_t)utf_utils::utf8_char_to_utf32(std::u8string((const char8_t *)utf8_input.c_str())));
 	ctx.increase_expr_idx();
 }
 #else
@@ -72,7 +72,7 @@ void la_weá::quéweá_expression::interpret(context &ctx) {
 
 	if (utf16_input[read_char_count - 1] == L'\n') [[likely]] {
 		utf16_input[wcscspn(utf16_input, L"\r")] = L'\0';
-		ctx.set_cell_value(utf16_char_to_utf32(utf16_input));
+		ctx.set_cell_value(utf_utils::utf16_char_to_utf32(utf16_input));
 	} else {
 		while (getchar() != '\n') {}
 		ctx.reset_cell_value();

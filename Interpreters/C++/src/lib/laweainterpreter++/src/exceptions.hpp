@@ -77,7 +77,7 @@ namespace la_weá {
 			std::string get_err_msg(char32_t cmd_char, long line, long col) {
 				return std::string (
 					"'" +
-					std::string ((const char *)utf_utils::utf32_char_to_utf8(cmd_char).data()) +
+					std::string ((const char *)utf_utils::utf32_char_to_utf8(cmd_char).c_str()) +
 					"' no es parte de La Weá, tonto qlo (línea: " +
 					std::to_string(line) +
 					", columna: " +

@@ -22,7 +22,6 @@
 #include "code_parser.hpp"
 #include "exception.hpp"
 #include "context.hpp"
-#include "utfutils/utf_utils.hpp"
 
 #include <fstream>
 
@@ -61,12 +60,12 @@ std::string la_weá::interpreter::get_code(const std::string &file_path) const {
 		exit_with_file_open_error();
 	}
 
-	long code_len = get_file_length_from_stream(is);
+	auto code_len = get_file_length_from_stream(is);
 
 	std::string code (code_len, ' ');
 	is.read(&code[0], code_len);
 
-	return std::string (code.data());
+	return std::string (code.c_str());
 }
 
 void la_weá::interpreter::exit_with_file_open_error() const {
@@ -92,7 +91,7 @@ long la_weá::interpreter::get_file_length_from_stream(std::ifstream &is) const 
 void la_weá::interpreter::print_error_in_red(const std::string &err_msg) const {
 	WCHAR utf16_buffer[err_msg.length() + 1];
 
-	short utf16_buffer_len = MultiByteToWideChar(
+	auto utf16_buffer_len = MultiByteToWideChar(
 		CP_UTF8,
 		0,
 		err_msg.c_str(),
@@ -108,7 +107,7 @@ void la_weá::interpreter::print_error_in_red(const std::string &err_msg) const 
 	CONSOLE_SCREEN_BUFFER_INFO console_info;
 	GetConsoleScreenBufferInfo(error_handle, &console_info);
 
-	WORD saved_attributes = console_info.wAttributes;
+	auto saved_attributes = console_info.wAttributes;
 
 	SetConsoleTextAttribute(error_handle, FOREGROUND_INTENSITY | FOREGROUND_RED);
 	WriteConsoleW(error_handle, utf16_buffer, utf16_buffer_len + 1, NULL, NULL);

@@ -90,7 +90,7 @@ la_weá::command la_weá::code_parser::get_cmd_from_name() const {
     }
 
     throw invalid_command_exception(
-    	std::string((const char *)utf_utils::utf32_str_to_utf8(cmd_name_buffer).data()),
+    	std::string((const char *)utf_utils::utf32_str_to_utf8(cmd_name_buffer).c_str()),
     	line,
     	col - cmd_name_buffer.length()
     );
