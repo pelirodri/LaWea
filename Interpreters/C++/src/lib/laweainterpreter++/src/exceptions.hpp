@@ -26,9 +26,9 @@ namespace la_weá {
 	class invalid_command_exception: public exception {
 		public:
 			invalid_command_exception(const std::string &cmd_name, long line, long col)
-				: exception (get_err_msg(cmd_name, line, col)) {}
+				: exception (get_error_msg(cmd_name, line, col)) {}
 		private:
-			std::string get_err_msg(const std::string &cmd_name, long line, long col) {
+			std::string get_error_msg(const std::string &cmd_name, long line, long col) {
 				return std::string (
 					"'" +
 					cmd_name +
@@ -43,9 +43,9 @@ namespace la_weá {
 
 	class unmatched_tula_exception: public exception {
 		public:
-			unmatched_tula_exception(long line, long col) : exception (get_err_msg(line, col)) {}
+			unmatched_tula_exception(long line, long col) : exception (get_error_msg(line, col)) {}
 		private:
-			std::string get_err_msg(long line, long col) {
+			std::string get_error_msg(long line, long col) {
 				return std::string (
 					"Se encontró una tula sin su respectiva pichula en la línea " +
 					std::to_string(line) +
@@ -57,9 +57,9 @@ namespace la_weá {
 
 	class misplaced_pico_exception: public exception {
 		public:
-			misplaced_pico_exception(long line, long col) : exception (get_err_msg(line, col)) {}
+			misplaced_pico_exception(long line, long col) : exception (get_error_msg(line, col)) {}
 		private:
-			std::string get_err_msg(long line, long col) {
+			std::string get_error_msg(long line, long col) {
 				return std::string (
 					"No debiste meter ese pico en la línea " +
 					std::to_string(line) +
@@ -72,9 +72,9 @@ namespace la_weá {
 	class invalid_character_exception: public exception {
 		public:
 			invalid_character_exception(char32_t cmd_char, long line, long col)
-				: exception (get_err_msg(cmd_char, line, col)) {}
+				: exception (get_error_msg(cmd_char, line, col)) {}
 		private:
-			std::string get_err_msg(char32_t cmd_char, long line, long col) {
+			std::string get_error_msg(char32_t cmd_char, long line, long col) {
 				return std::string (
 					"'" +
 					std::string ((const char *)utf_utils::utf32_char_to_utf8(cmd_char).c_str()) +
@@ -89,9 +89,9 @@ namespace la_weá {
 
 	class too_long_command_exception: public exception {
 		public:
-			too_long_command_exception(long line, long col) : exception (get_err_msg(line, col)) {};
+			too_long_command_exception(long line, long col) : exception (get_error_msg(line, col)) {};
 		private:
-			std::string get_err_msg(long line, long col) {
+			std::string get_error_msg(long line, long col) {
 				return std::string (
 					"¿Vos creís que yo soy weón, CTM? Te gustan largos, parece (línea: " +
 					std::to_string(line) +

@@ -19,12 +19,9 @@
 
 #include "code_parser.hpp"
 #include "expression.hpp"
-#include "program_expression.hpp"
 #include "expression_factory.hpp"
 #include "exceptions.hpp"
 #include "utfutils/utf_utils.hpp"
-
-#include <experimental/memory_resource>
 
 const std::vector<std::u32string> la_weá::code_parser::cmd_names = {
 	U"maricón",
@@ -45,11 +42,11 @@ const std::vector<std::u32string> la_weá::code_parser::cmd_names = {
 	U"mierda"
 };
 
-std::unique_ptr<la_weá::expression> la_weá::code_parser::parse() {	
+std::vector<std::unique_ptr<la_weá::expression>> la_weá::code_parser::parse() {	
 	parse_code();
 	check_loops_balance();
 
-	return std::make_unique<program_expression>(get_expressions_from_commands());
+	return get_expressions_from_commands();
 }
 
 void la_weá::code_parser::parse_code() {

@@ -146,7 +146,7 @@ std::u8string utf_utils::utf16_char_to_utf8(const std::u16string &utf16_char) {
 
 char32_t utf_utils::utf16_char_to_utf32(const std::u16string &utf16_char) {
 	if (utf16_strlen(utf16_char) != 1) [[unlikely]] {
-		return 0;
+		return U'\0';
 	}
 
 	switch (utf16_surrogate_utf16_code_point_len(utf16_char[0])) {

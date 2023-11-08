@@ -5,7 +5,6 @@ set(
 	src/interpreter.cpp
 	src/code_parser.cpp
 	src/context.cpp
-	src/program_expression.cpp
 	src/expressions.cpp
 	src/expression_factory.cpp
 )

@@ -22,6 +22,10 @@
 
 #include <iostream>
 
+#if defined(_WIN64)
+#include <windows.h>
+#endif
+
 void la_weá::pichula_expression::interpret(context &ctx) {
 	if (ctx.get_cell_value() == 0) {
 		ctx.set_expr_idx(tula_idx + 1);
@@ -45,8 +49,8 @@ void la_weá::ctm_expression::interpret(context &ctx) {
 		#if !defined(_WIN64)
 		std::cout << (const char *)utf_utils::utf32_str_to_utf8(std::u32string (1, cell_value)).c_str();
 		#else
-		auto utf16_char = utf_utils::utf32_char_to_utf16(cell_value);
-		WriteConsoleW(GetStdHandle(STD_OUTPUT_HANDLE), utf16_char, utf_utils::utf16_strlen(utf16_char), NULL, NULL);
+		std::u16string utf16_char = utf_utils::utf32_char_to_utf16(cell_value);
+		WriteConsoleW(GetStdHandle(STD_OUTPUT_HANDLE), utf16_char.c_str(), 1, NULL, NULL);
 		#endif
 	} else {
 		std::cout << "\uFFFD";
@@ -65,14 +69,21 @@ void la_weá::quéweá_expression::interpret(context &ctx) {
 }
 #else
 void la_weá::quéweá_expression::interpret(context &ctx) {
-	WCHAR utf16_input[5] = {L'\0'};
+	char16_t utf16_input_buffer[5] = {u'\0'};
 
 	ULONG read_char_count;
-	ReadConsoleW(GetStdHandle(STD_INPUT_HANDLE), utf16_input, sizeof(utf16_input) / 2, &read_char_count, NULL);
 
-	if (utf16_input[read_char_count - 1] == L'\n') [[likely]] {
-		utf16_input[wcscspn(utf16_input, L"\r")] = L'\0';
-		ctx.set_cell_value(utf_utils::utf16_char_to_utf32(utf16_input));
+	ReadConsoleW(
+		GetStdHandle(STD_INPUT_HANDLE),
+		utf16_input_buffer,
+		sizeof(utf16_input_buffer) / sizeof(utf16_input_buffer[0]),
+		&read_char_count,
+		NULL
+	);
+
+	if (utf16_input_buffer[read_char_count - 1] == u'\n') [[likely]] {
+		utf16_input_buffer[std::u16string(utf16_input_buffer).find(u'\r')] = u'\0';
+		ctx.set_cell_value(utf_utils::utf16_char_to_utf32(utf16_input_buffer));
 	} else {
 		while (getchar() != '\n') {}
 		ctx.reset_cell_value();

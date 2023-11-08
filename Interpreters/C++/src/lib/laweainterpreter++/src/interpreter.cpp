@@ -22,34 +22,38 @@
 #include "code_parser.hpp"
 #include "exception.hpp"
 #include "context.hpp"
+#include "utfutils/utf_utils.hpp"
 
 #include <fstream>
 
 #if defined(_WIN64)
-#include <windows>
+#include <windows.h>
 #endif
 
 void la_weá::interpreter::interpret(const std::string &file_path) {
 	try {
-		run(parse_code(get_code(file_path)));
+		run_expressions(parse_code(get_code(file_path)));
 	} catch (const exception &e) {
 		exit_with_error_message(std::string (e.what()));
 	}
 }
 
-std::unique_ptr<la_weá::expression> la_weá::interpreter::parse_code(const std::string &code) {
+std::vector<std::unique_ptr<la_weá::expression>> la_weá::interpreter::parse_code(const std::string &code) {
 	return (code_parser (code)).parse();
 }
 
-void la_weá::interpreter::run(const std::unique_ptr<expression> &expression) {
+void la_weá::interpreter::run_expressions(const std::vector<std::unique_ptr<expression>> &expressions) {
 	std::cout.setf(std::ios::unitbuf);
 
 	context ctx;
-	expression->interpret(ctx);
+
+	for (long i = 0; i < expressions.size(); i = ctx.get_expr_idx()) [[likely]] {
+		expressions[i]->interpret(ctx);
+	}
 }
 
-void la_weá::interpreter::exit_with_error_message(const std::string &err_msg) const {
-	print_error_in_red(err_msg.length() != 0 ? err_msg : "Error interno");
+void la_weá::interpreter::exit_with_error_message(const std::string &error_msg) const {
+	print_error_in_red(error_msg.length() != 0 ? error_msg : "Error interno");
 	std::exit(EXIT_FAILURE);
 }
 
@@ -88,29 +92,26 @@ long la_weá::interpreter::get_file_length_from_stream(std::ifstream &is) const 
 }
 
 #if defined(_WIN64)
-void la_weá::interpreter::print_error_in_red(const std::string &err_msg) const {
-	WCHAR utf16_buffer[err_msg.length() + 1];
+void la_weá::interpreter::print_error_in_red(const std::string &error_msg) const {
+	HANDLE error_handle = GetStdHandle(STD_ERROR_HANDLE);
 
-	auto utf16_buffer_len = MultiByteToWideChar(
-		CP_UTF8,
-		0,
-		err_msg.c_str(),
-		err_msg.length(),
-		utf16_buffer,
-		sizeof(utf16_buffer)
+    CONSOLE_SCREEN_BUFFER_INFO console_info;
+    GetConsoleScreenBufferInfo(error_handle, &console_info);
+
+    WORD saved_attributes = console_info.wAttributes;
+
+    SetConsoleTextAttribute(error_handle, FOREGROUND_INTENSITY | FOREGROUND_RED);
+
+    std::u16string utf16_error_msg = utf_utils::utf8_str_to_utf16(std::u8string ((const char8_t *)error_msg.c_str()));
+
+    WriteConsoleW(
+		error_handle,
+		(utf16_error_msg + u'\n').c_str(),
+		utf_utils::utf16_strlen(utf16_error_msg) + 1,
+		NULL,
+		NULL
 	);
 
-	utf16_buffer[utf16_buffer_len] = L'\n';
-
-	auto error_handle = GetStdHandle(STD_ERROR_HANDLE);
-
-	CONSOLE_SCREEN_BUFFER_INFO console_info;
-	GetConsoleScreenBufferInfo(error_handle, &console_info);
-
-	auto saved_attributes = console_info.wAttributes;
-
-	SetConsoleTextAttribute(error_handle, FOREGROUND_INTENSITY | FOREGROUND_RED);
-	WriteConsoleW(error_handle, utf16_buffer, utf16_buffer_len + 1, NULL, NULL);
-	SetConsoleTextAttribute(error_handle, saved_attributes);
+    SetConsoleTextAttribute(error_handle, saved_attributes);
 }
 #endif

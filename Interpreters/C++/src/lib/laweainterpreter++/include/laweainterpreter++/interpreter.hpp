@@ -46,29 +46,29 @@ namespace la_weá {
 			/**
 			 * Retrieves the interpretable expressions made from the code.
 			 * @param code the code to parse
-			 * @return A composite expression
+			 * @return A vector of expressions
 			 */
-			std::unique_ptr<expression> parse_code(const std::string &code);
+			std::vector<std::unique_ptr<expression>> parse_code(const std::string &code);
 
 			/**
 			 * Interprets an expression.
-			 * @param the expression to run
+			 * @param the expressions to run
 			 */
-			void run(const std::unique_ptr<expression> &expression);
+			void run_expressions(const std::vector<std::unique_ptr<expression>> &expressions);
 
 			/**
 			 * A utility function that prints an error message and exits the program abnormally.
-			 * @param err_msg the error message to print
+			 * @param error_msg the error message to print
 			 */
-			void exit_with_error_message(const std::string &err_msg) const;
+			void exit_with_error_message(const std::string &error_msg) const;
 		private:
 			std::string get_code(const std::string &) const;
 			void exit_with_file_open_error() const;
 			long get_file_length_from_stream(std::ifstream &) const;
 
 			#if !defined(_WIN64)
-			void print_error_in_red(const std::string &err_msg) const {
-				std::cerr << "\x1b[1;31m" << err_msg << "\x1b[0m\n";
+			void print_error_in_red(const std::string &error_msg) const {
+				std::cerr << "\x1b[1;31m" << error_msg << "\x1b[0m\n";
 			}
 			#else
 			void print_error_in_red(const std::string &) const;

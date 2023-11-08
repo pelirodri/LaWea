@@ -23,6 +23,7 @@
 #include "utfutils/utf_utils.hpp"
 
 #include <string>
+#include <vector>
 
 namespace la_weá {
 	class expression;
@@ -32,7 +33,7 @@ namespace la_weá {
 			code_parser(const std::string &code) :
 				code (utf_utils::utf8_str_to_utf32(std::u8string ((const char8_t *)code.c_str()))) {}
 
-			std::unique_ptr<expression> parse();
+			std::vector<std::unique_ptr<expression>> parse();
 		private:
 			std::u32string code;
 			std::vector<command> commands;
