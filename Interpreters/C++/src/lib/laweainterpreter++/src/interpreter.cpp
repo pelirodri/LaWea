@@ -30,7 +30,7 @@
 #include <windows.h>
 #endif
 
-void la_weá::interpreter::interpret(const std::string &file_path) {
+void la_weá::interpreter::interpret(std::string_view file_path) {
 	try {
 		run_expressions(parse_code(get_code(file_path)));
 	} catch (const exception &e) {
@@ -38,7 +38,7 @@ void la_weá::interpreter::interpret(const std::string &file_path) {
 	}
 }
 
-std::vector<std::unique_ptr<la_weá::expression>> la_weá::interpreter::parse_code(const std::string &code) {
+std::vector<std::unique_ptr<la_weá::expression>> la_weá::interpreter::parse_code(std::string_view code) {
 	return (code_parser (code)).parse();
 }
 
@@ -52,12 +52,12 @@ void la_weá::interpreter::run_expressions(const std::vector<std::unique_ptr<exp
 	}
 }
 
-void la_weá::interpreter::exit_with_error_message(const std::string &error_msg) const {
+void la_weá::interpreter::exit_with_error_message(std::string_view error_msg) const {
 	print_error_in_red(error_msg.length() != 0 ? error_msg : "Error interno");
 	std::exit(EXIT_FAILURE);
 }
 
-std::string la_weá::interpreter::get_code(const std::string &file_path) const {
+std::string la_weá::interpreter::get_code(std::string_view file_path) const {
 	std::ifstream is (file_path);
 
 	if (!is) [[unlikely]] {
@@ -92,7 +92,7 @@ long la_weá::interpreter::get_file_length_from_stream(std::ifstream &is) const 
 }
 
 #if defined(_WIN64)
-void la_weá::interpreter::print_error_in_red(const std::string &error_msg) const {
+void la_weá::interpreter::print_error_in_red(std::string_view error_msg) const {
 	HANDLE error_handle = GetStdHandle(STD_ERROR_HANDLE);
 
     CONSOLE_SCREEN_BUFFER_INFO console_info;

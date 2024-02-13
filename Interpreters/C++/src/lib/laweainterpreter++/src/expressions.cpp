@@ -125,7 +125,7 @@ std::string la_weá::brígido_expression::get_num_input() const {
 	return num_input;
 }
 
-bool la_weá::brígido_expression::is_valid_num_input(const std::string &num_input) const {
+bool la_weá::brígido_expression::is_valid_num_input(std::string_view num_input) const {
 	if (num_input.length() > 20) [[unlikely]] {
 		return false;
 	}

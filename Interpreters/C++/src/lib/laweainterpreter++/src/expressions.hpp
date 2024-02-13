@@ -132,7 +132,7 @@ namespace la_weá {
 			void interpret(context &) override;
 		private:
 			std::string get_num_input() const;
-			bool is_valid_num_input(const std::string &) const;
+			bool is_valid_num_input(std::string_view ) const;
 	};
 
 	class perkin_expression: public expression {

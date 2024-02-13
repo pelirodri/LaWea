@@ -30,8 +30,8 @@ namespace la_weá {
 
 	class code_parser {
 		public:
-			code_parser(const std::string &code) :
-				code (utf_utils::utf8_str_to_utf32(std::u8string ((const char8_t *)code.c_str()))) {}
+			code_parser(std::string_view code) :
+				code (utf_utils::utf8_str_to_utf32(std::u8string ((const char8_t *)code.data()))) {}
 
 			std::vector<std::unique_ptr<expression>> parse();
 		private:

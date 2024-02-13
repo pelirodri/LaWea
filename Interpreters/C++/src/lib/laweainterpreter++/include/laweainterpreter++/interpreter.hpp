@@ -41,14 +41,14 @@ namespace la_weá {
 			 * @param file_path the path to the file with the code
 			 * @note The file must have the '.lw' extension.
 			 */
-			void interpret(const std::string &file_path);
+			void interpret(std::string_view file_path);
 
 			/**
 			 * Retrieves the interpretable expressions made from the code.
 			 * @param code the code to parse
 			 * @return A vector of expressions
 			 */
-			std::vector<std::unique_ptr<expression>> parse_code(const std::string &code);
+			std::vector<std::unique_ptr<expression>> parse_code(std::string_view code);
 
 			/**
 			 * Interprets an expression.
@@ -60,18 +60,18 @@ namespace la_weá {
 			 * A utility function that prints an error message and exits the program abnormally.
 			 * @param error_msg the error message to print
 			 */
-			void exit_with_error_message(const std::string &error_msg) const;
+			void exit_with_error_message(std::string_view error_msg) const;
 		private:
-			std::string get_code(const std::string &) const;
+			std::string get_code(std::string_view ) const;
 			void exit_with_file_open_error() const;
 			long get_file_length_from_stream(std::ifstream &) const;
 
 			#if !defined(_WIN64)
-			void print_error_in_red(const std::string &error_msg) const {
+			void print_error_in_red(std::string_view error_msg) const {
 				std::cerr << "\x1b[1;31m" << error_msg << "\x1b[0m\n";
 			}
 			#else
-			void print_error_in_red(const std::string &) const;
+			void print_error_in_red(std::string_view ) const;
 			#endif
 	};
 }

@@ -37,7 +37,7 @@ int main(int argc, char *argv[]) {
 		interpreter.exit_with_error_message("El archivo qlo tiene que tener la extensión .lw");
 	}
 
-	interpreter.interpret(std::string (argv[1]));
+	interpreter.interpret(argv[1]);
 
 	return 0;
 }
