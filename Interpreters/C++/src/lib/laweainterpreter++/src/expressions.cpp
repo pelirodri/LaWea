@@ -21,6 +21,7 @@
 #include "utfutils/utf_utils.hpp"
 
 #include <iostream>
+#include <charconv>
 
 #if defined(_WIN64)
 #include <windows.h>
@@ -105,11 +106,13 @@ void la_weá::brígido_expression::interpret(context &ctx) {
 		num_input.clear();
 	}
 
-    try {
-    	ctx.set_cell_value((int64_t)std::stoll(num_input, nullptr, 10));
-    } catch (...) {
-    	ctx.reset_cell_value();
-    }
+	int64_t converted_num_input;
+
+	if (std::from_chars(num_input.data(), num_input.data() + num_input.size(), converted_num_input).ec == std::errc()) {
+		ctx.set_cell_value(converted_num_input);
+	} else {
+		ctx.reset_cell_value();
+	}
 
     ctx.increase_expr_idx();
 }
