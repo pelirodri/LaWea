@@ -83,7 +83,7 @@ size_t utf_utils::utf8_strlen(const std::u8string &utf8_str) {
 	size_t str_len = 0;
 
 	for (long i = 0; utf8_str[i];) [[likely]] {
-		auto utf8_code_point_len = utf8_byte_utf8_code_point_len(utf8_str[i]);
+		size_t utf8_code_point_len = utf8_byte_utf8_code_point_len(utf8_str[i]);
 
 		if (utf8_code_point_len == 0) [[unlikely]] {
 			return 0;
@@ -100,7 +100,7 @@ size_t utf_utils::utf16_strlen(const std::u16string &utf16_str) {
 	size_t str_len = 0;
 
 	for (long i = 0; utf16_str[i];) [[likely]] {
-		auto utf16_code_point_len = utf16_surrogate_utf16_code_point_len(utf16_str[i]);
+		size_t utf16_code_point_len = utf16_surrogate_utf16_code_point_len(utf16_str[i]);
 
 		if (utf16_code_point_len == 0) [[unlikely]] {
 			return 0;
@@ -153,7 +153,7 @@ char32_t utf_utils::utf16_char_to_utf32(const std::u16string &utf16_char) {
 		case 1:
 			return utf16_char[0];
 		case 2: {
-			auto tmp_char = utf16_char;
+			std::u16string tmp_char = utf16_char;
 
 			tmp_char[0] = (tmp_char[0] - 0xD800) * 0x400;
             tmp_char[1] -= 0xDC00;
@@ -227,7 +227,7 @@ std::u32string utf_utils::utf8_str_to_utf32(const std::u8string &utf8_str) {
 	std::u32string utf32_str;
 
 	for (long i = 0; utf8_str[i];) [[likely]] {
-		auto utf8_code_point_len = utf8_byte_utf8_code_point_len(utf8_str[i]);
+		size_t utf8_code_point_len = utf8_byte_utf8_code_point_len(utf8_str[i]);
 
 		if (!utf8_code_point_len) [[unlikely]] {
 			return U"";
@@ -248,7 +248,7 @@ std::u32string utf_utils::utf16_str_to_utf32(const std::u16string &utf16_str) {
 	std::u32string utf32_str;
 
 	for (long i = 0; utf16_str[i];) [[likely]] {
-		auto utf16_code_point_len = utf16_surrogate_utf16_code_point_len(utf16_str[i]);
+		size_t utf16_code_point_len = utf16_surrogate_utf16_code_point_len(utf16_str[i]);
 
 		if (utf16_code_point_len == 0) [[unlikely]] {
 			return U"";

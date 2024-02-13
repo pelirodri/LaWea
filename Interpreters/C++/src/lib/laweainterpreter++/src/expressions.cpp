@@ -43,7 +43,7 @@ void la_weá::tula_expression::interpret(context &ctx) {
 }
 
 void la_weá::ctm_expression::interpret(context &ctx) {
-	auto cell_value = ctx.get_cell_value();
+	int64_t cell_value = ctx.get_cell_value();
 
 	if (cell_value >= 0x0 && cell_value <= 0x10FFFF) [[likely]] {
 		#if !defined(_WIN64)
@@ -99,7 +99,7 @@ void la_weá::chúpala_expression::interpret(context &ctx) {
 }
 
 void la_weá::brígido_expression::interpret(context &ctx) {
-	auto num_input = get_num_input();
+	std::string num_input = get_num_input();
 
 	if (!is_valid_num_input(num_input)) [[unlikely]] {
 		num_input.clear();

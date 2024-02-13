@@ -64,7 +64,7 @@ std::string la_weá::interpreter::get_code(const std::string &file_path) const {
 		exit_with_file_open_error();
 	}
 
-	auto code_len = get_file_length_from_stream(is);
+	long code_len = get_file_length_from_stream(is);
 
 	std::string code (code_len, ' ');
 	is.read(&code[0], code_len);
