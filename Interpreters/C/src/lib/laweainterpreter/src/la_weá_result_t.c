@@ -137,14 +137,12 @@ const la_weá_error_t *create_error(
 }
 
 const char *get_message_from_invalid_command_error(const la_weá_error_t *error) {
-	int cmd_name_len = utf32_strlen(error->cmd_name);
 	int line_len = snprintf(NULL, 0, "%ld", error->line);
-    int col_len = snprintf(NULL, 0, "%ld", error->col - cmd_name_len);
+    int col_len = snprintf(NULL, 0, "%ld", error->col);
 
-    const char error_msg_template[] = "'%s' no es un comando válido, pos, saco de weas (línea: %ld, columna: %ld)";
-    char *error_msg = malloc(sizeof(error_msg_template) + (long)cmd_name_len + line_len + col_len);
-
-    const char8_t *utf8_cmd_name = utf32_str_to_utf8(error->cmd_name);
+    char error_msg_template[] = "'%s' no es un comando válido, pos, saco de weas (línea: %ld, columna: %ld)";
+	const char8_t *utf8_cmd_name = utf32_str_to_utf8(error->cmd_name);
+    char *error_msg = malloc((sizeof(error_msg_template) - 2 - (2 * 3)) + sizeof(utf8_cmd_name) + line_len + col_len);
 
     if (!utf8_cmd_name) {
         return NULL;
@@ -161,7 +159,7 @@ const char *get_message_from_unmatched_tula_error(const la_weá_error_t *error) 
 	int col_len = snprintf(NULL, 0, "%ld", error->col);
 
 	char error_msg_template[] = "Se encontró una tula sin su respectiva pichula en la línea %ld, columna %ld";
-	char *error_msg = malloc(sizeof(error_msg_template) + line_len + col_len);
+	char *error_msg = malloc((sizeof(error_msg_template) - (2 * 3)) + line_len + col_len);
 
 	sprintf(error_msg, error_msg_template, error->line, error->col);
 
@@ -173,7 +171,7 @@ const char *get_message_from_misplaced_pico_error(const la_weá_error_t *error) 
 	int col_len = snprintf(NULL, 0, "%ld", error->col);
 
 	char error_msg_template[] = "No debiste meter ese pico en la línea %ld, columna %ld";
-	char *error_msg = malloc(sizeof(error_msg_template) + line_len + col_len);
+	char *error_msg = malloc((sizeof(error_msg_template) - (2 * 3)) + line_len + col_len);
 
 	sprintf(error_msg, error_msg_template, error->line, error->col);
 
@@ -185,7 +183,7 @@ const char *get_message_from_invalid_character_error(const la_weá_error_t *erro
 	int col_len = snprintf(NULL, 0, "%ld", error->col);
 
 	char error_msg_template[] = "'%s' no es parte de La Weá, tonto qlo (línea: %ld, columna: %ld)";
-	char *error_msg = malloc(sizeof(error_msg_template) + sizeof(char32_t) + line_len + col_len);
+	char *error_msg = malloc((sizeof(error_msg_template) - 2 - (2 * 3)) + sizeof(char32_t) + line_len + col_len);
 
 	char8_t *utf8_char = utf32_char_to_utf8(error->cmd_char);
 
@@ -204,7 +202,7 @@ const char *get_message_from_too_long_command_error(const la_weá_error_t *error
 	int col_len = snprintf(NULL, 0, "%ld", error->col);
 
 	char error_msg_template[] =  "¿Vos creís que yo soy weón, CTM? Te gustan largos, parece (línea: %ld, columna: %ld)";
-	char *error_msg = malloc(sizeof(error_msg_template) + line_len + col_len);
+	char *error_msg = malloc((sizeof(error_msg_template) - (2 * 3)) + line_len + col_len);
 
 	sprintf(error_msg, error_msg_template, error->line, error->col);
 

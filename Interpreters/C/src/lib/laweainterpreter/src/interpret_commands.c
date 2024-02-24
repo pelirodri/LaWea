@@ -53,13 +53,12 @@ static void interpret_mierda();
 static long find_loop_end(const la_weá_commands_sequence_t *, long);
 static long find_loop_start(const la_weá_commands_sequence_t *, long);
 
+static bool is_value_in_unicode_range(int64_t);
 static void print_char();
 static void read_char();
 
 static void handle_partial_line_input();
 static void handle_full_line_num(char *);
-
-static bool is_value_in_unicode_range(int64_t);
 static bool is_valid_num_input(const char *);
 
 static size_t cells_size = 8 * sizeof(int64_t);
@@ -215,6 +214,10 @@ void interpret_quéweá() {
 	read_char();
 }
 
+inline bool is_value_in_unicode_range(int64_t value) {
+	return value >= 0 && value <= 0x10FFFF;
+}
+
 void interpret_ctm() {
 	if (is_value_in_unicode_range(cells[cur_cell])) {
         print_char();
@@ -228,7 +231,7 @@ inline void interpret_chúpala() {
 }
 
 void interpret_brígido() {
-	char num_input[23] = {0};
+	char num_input[23] = {'\0'};
 
     if (fgets(num_input, 23, stdin)[strlen(num_input) - 1] == '\n') {
         handle_full_line_num(num_input);
@@ -314,13 +317,13 @@ void read_char() {
 }
 #else
 void read_char() {
-    WCHAR utf16_input[5] = {L'\0'};
+    char16_t utf16_input[5] = {u'\0'};
 
     ULONG read_char_count;
-    ReadConsoleW(GetStdHandle(STD_INPUT_HANDLE), utf16_input, sizeof(utf16_input) / 2, &read_char_count, NULL);
+    ReadConsoleW(GetStdHandle(STD_INPUT_HANDLE), utf16_input, 5, &read_char_count, NULL);
 
-    if (utf16_input[read_char_count - 1] == L'\n') {
-        utf16_input[wcscspn(utf16_input, L"\r")] = L'\0';
+    if (utf16_input[read_char_count - 1] == u'\n') {
+        utf16_input[(int)(utf16_strchr(utf16_input, u"\r") - utf16_input)] = u'\0';
         cells[cur_cell] = utf16_char_to_utf32(utf16_input);
     } else {
         handle_partial_line_input();
@@ -343,10 +346,6 @@ void handle_full_line_num(char *num_input) {
     if (errno == ERANGE) {
         cells[cur_cell] = 0;
     }
-}
-
-inline bool is_value_in_unicode_range(int64_t value) {
-	return value >= 0 && value <= 0x10FFFF;
 }
 
 bool is_valid_num_input(const char *num_input) {

@@ -38,17 +38,8 @@ static long get_file_length_from_file_pointer(FILE *);
 
 static la_weá_commands_sequence_t *build_commands_sequence_from_code(const char32_t *);
 
+static void handle_error(const la_weá_error_t *);
 static void print_error_in_red(const char *);
-
-void handle_error(const la_weá_error_t *error) {
-    const char *error_msg = get_message_from_error(error);
-
-    if (error) {
-        free((la_weá_error_t *)error);
-    }
-
-	la_weá_exit_with_error_message(error_msg);
-}
 
 void la_weá_interpret(const char *file_path) {
     const char *code = get_code(file_path);
@@ -56,14 +47,14 @@ void la_weá_interpret(const char *file_path) {
     const la_weá_commands_sequence_t *cmd_sequence = la_weá_parse_code(code);
     free((char *)code);
 
-    la_weá_run(cmd_sequence);
+    la_weá_run_commands_sequence(cmd_sequence);
 
     free(cmd_sequence->commands);
 	free((la_weá_commands_sequence_t *)cmd_sequence);
 }
 
-const la_weá_commands_sequence_t *la_weá_parse_code(const char *code) {
-    const char32_t *utf32_code = utf8_str_to_utf32((char8_t *)code);
+const la_weá_commands_sequence_t *la_weá_parse_code(const char *code) {    
+    const char32_t *utf32_code = utf8_str_to_utf32((const char8_t *)code);
 
     if (!utf32_code) {
         handle_error(NULL);
@@ -84,7 +75,7 @@ const la_weá_commands_sequence_t *la_weá_parse_code(const char *code) {
     return cmd_sequence;
 }
 
-void la_weá_run(const la_weá_commands_sequence_t *cmd_sequence) {
+void la_weá_run_commands_sequence(const la_weá_commands_sequence_t *cmd_sequence) {
     const la_weá_result_t *result = interpret_commands(cmd_sequence);
 
     if (result->status == failure) {
@@ -98,15 +89,10 @@ void la_weá_exit_with_error_message(const char *error_msg) {
 }
 
 const char *get_code(const char *file_path) {
-    #if !defined(_WIN64)
     FILE *fp = fopen(file_path, "r");
-    #else
-    FILE *fp;
-    errno = fopen_s(&fp, file_path, "r");
-    #endif
 
     if (!fp) {
-        exit_with_file_open_error();
+        la_weá_exit_with_error_message(NULL);
     }
 
     long code_len = get_file_length_from_file_pointer(fp);
@@ -167,25 +153,22 @@ la_weá_commands_sequence_t *build_commands_sequence_from_code(const char32_t *c
     return cmd_sequence;
 }
 
+void handle_error(const la_weá_error_t *error) {
+    const char *error_msg = get_message_from_error(error);
+
+    if (error) {
+        free((la_weá_error_t *)error);
+    }
+
+	la_weá_exit_with_error_message(error_msg);
+}
+
 #if !defined(_WIN64)
 inline void print_error_in_red(const char *error_msg) {
     fprintf(stderr, "\x1b[1;31m%s\x1b[0m\n", error_msg);
 }
 #else
 void print_error_in_red(const char *error_msg) {
-    WCHAR utf16_buffer[(utf8_strlen((const char8_t *)error_msg) + 1)];
-
-    int utf16_buffer_len = MultiByteToWideChar(
-        CP_UTF8,
-        0,
-        error_msg,
-        strlen(error_msg),
-        utf16_buffer,
-        sizeof(utf16_buffer)
-    );
-
-    utf16_buffer[utf16_buffer_len] = L'\n';
-
     HANDLE error_handle = GetStdHandle(STD_ERROR_HANDLE);
 
     CONSOLE_SCREEN_BUFFER_INFO console_info;
@@ -194,7 +177,11 @@ void print_error_in_red(const char *error_msg) {
     WORD saved_attributes = console_info.wAttributes;
 
     SetConsoleTextAttribute(error_handle, FOREGROUND_INTENSITY | FOREGROUND_RED);
-    WriteConsoleW(error_handle, utf16_buffer, utf16_buffer_len + 1, NULL, NULL);
+
+    const char16_t *utf16_error_msg = utf8_str_to_utf16((const char8_t *)error_msg);
+    WriteConsoleW(error_handle, utf16_error_msg, utf16_strlen(utf16_error_msg), NULL, NULL);
+    free((char16_t *)utf16_error_msg);
+
     SetConsoleTextAttribute(error_handle, saved_attributes);
 }
 #endif

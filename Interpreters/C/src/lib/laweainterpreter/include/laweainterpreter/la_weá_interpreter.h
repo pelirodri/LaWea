@@ -39,7 +39,7 @@ const la_weá_commands_sequence_t *la_weá_parse_code(const char *code);
  * Interprets commands.
  * @param cmd_sequence sequence of commands to interpret
  */
-void la_weá_run(const la_weá_commands_sequence_t *cmd_sequence);
+void la_weá_run_commands_sequence(const la_weá_commands_sequence_t *cmd_sequence);
 
 /**
  * A utility function that prints an error message and exits the program abnormally.

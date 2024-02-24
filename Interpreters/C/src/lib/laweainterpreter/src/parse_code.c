@@ -164,9 +164,9 @@ const la_weá_error_t *parse_cmd(const char32_t *restrict cmd_name, la_weá_comm
 }
 
 la_weá_command_t get_cmd_from_name(const char32_t *cmd_name) {
-    size_t cmd_names_len = sizeof(cmd_names) / sizeof(*cmd_names);
+    size_t cmd_names_count = sizeof(cmd_names) / sizeof(*cmd_names);
 
-    for (int cmd = 0; cmd < cmd_names_len; cmd++) {
+    for (int cmd = 0; cmd < cmd_names_count; cmd++) {
         if (utf32_strcmp(cmd_name, cmd_names[cmd]) == 0) {
             return (la_weá_command_t)cmd;
         }
