@@ -29,7 +29,7 @@ static bool is_cmd_boundary(char32_t);
 
 static const la_weá_error_t *handle_potential_cmd(
     char32_t *restrict,
-    long *restrict,
+    size_t *restrict,
     la_weá_commands_sequence_t *restrict
 );
 
@@ -39,18 +39,18 @@ static const la_weá_error_t *handle_loop_balancing(la_weá_command_t);
 static void handle_pichula_cmd();
 static const la_weá_error_t *handle_tula_cmd();
 static const la_weá_error_t *handle_pico_cmd();
-static const la_weá_error_t *add_char_to_cmd_name(char32_t *restrict, long *restrict, char32_t);
+static const la_weá_error_t *add_char_to_cmd_name(char32_t *restrict, size_t *restrict, char32_t);
 static const la_weá_error_t *validate_cmd_char(char32_t);
 static const la_weá_error_t *validate_cmd_name_length(const char32_t *, size_t);
 static void parsed_code_char(char32_t, bool *);
 
 static const la_weá_error_t *check_loops_balance();
 
-static long line = 1;
-static long col = 1;
+static size_t line = 1;
+static size_t col = 1;
 
-static long loop_open_commands_count;
-static long loop_close_commands_count;
+static size_t loop_open_commands_count;
+static size_t loop_close_commands_count;
 
 static const char32_t cmd_names[][8 * sizeof(char32_t)] = { 
     U"maricón",
@@ -74,7 +74,7 @@ static const char32_t cmd_names[][8 * sizeof(char32_t)] = {
 const la_weá_result_t *parse_code(const char32_t *restrict code, la_weá_commands_sequence_t *restrict cmd_sequence) {
     const la_weá_error_t *error = NULL;
 
-    for (long i = 0, code_len = utf32_strlen(code); i <= code_len; i++) {
+    for (size_t i = 0, code_len = utf32_strlen(code); i <= code_len; i++) {
         if ((error = parse_code_char(code[i], cmd_sequence))) {
             return create_failure_result(error);
         }
@@ -95,7 +95,7 @@ const la_weá_error_t *parse_code_char(char32_t code_char, la_weá_commands_sequ
     }
 
     static char32_t cmd_name[8 * sizeof(char32_t)];
-    static long cmd_name_idx;
+    static size_t cmd_name_idx;
 
     const la_weá_error_t *error = NULL;
 
@@ -120,7 +120,7 @@ inline bool is_cmd_boundary(char32_t code_char) {
 
 const la_weá_error_t *handle_potential_cmd(
 	char32_t *restrict cmd_name,
-	long *restrict cmd_name_idx,
+	size_t *restrict cmd_name_idx,
 	la_weá_commands_sequence_t *restrict cmd_sequence
 ) {
     if (*cmd_name_idx > 0) {   
@@ -141,7 +141,7 @@ const la_weá_error_t *parse_cmd(const char32_t *restrict cmd_name, la_weá_comm
     la_weá_command_t cmd = get_cmd_from_name(cmd_name);
 
     if ((int)cmd == -1) {
-        return create_invalid_command_error(cmd_name, line, col - (long)utf32_strlen(cmd_name));
+        return create_invalid_command_error(cmd_name, line, col - utf32_strlen(cmd_name));
     }
 
     const la_weá_error_t *error = handle_loop_balancing(cmd);
@@ -166,7 +166,7 @@ const la_weá_error_t *parse_cmd(const char32_t *restrict cmd_name, la_weá_comm
 la_weá_command_t get_cmd_from_name(const char32_t *cmd_name) {
     size_t cmd_names_count = sizeof(cmd_names) / sizeof(*cmd_names);
 
-    for (int cmd = 0; cmd < cmd_names_count; cmd++) {
+    for (size_t cmd = 0; cmd < cmd_names_count; cmd++) {
         if (utf32_strcmp(cmd_name, cmd_names[cmd]) == 0) {
             return (la_weá_command_t)cmd;
         }
@@ -193,7 +193,7 @@ inline void handle_pichula_cmd() {
 
 const la_weá_error_t *handle_tula_cmd() {
     if (loop_close_commands_count == loop_open_commands_count) {
-        return create_unmatched_tula_error(line, col - (long)utf32_strlen(U"tula"));
+        return create_unmatched_tula_error(line, col - utf32_strlen(U"tula"));
     }
 
     loop_close_commands_count++;
@@ -203,7 +203,7 @@ const la_weá_error_t *handle_tula_cmd() {
 
 const la_weá_error_t *handle_pico_cmd() {
     if (loop_open_commands_count == loop_close_commands_count) {
-        return create_misplaced_pico_error(line, col - (long)utf32_strlen(U"pico"));
+        return create_misplaced_pico_error(line, col - utf32_strlen(U"pico"));
     }
 
     return NULL;
@@ -211,7 +211,7 @@ const la_weá_error_t *handle_pico_cmd() {
 
 const la_weá_error_t *add_char_to_cmd_name(
     char32_t *restrict cmd_name,
-    long *restrict cmd_name_idx,
+    size_t *restrict cmd_name_idx,
     char32_t code_char
 ) {
     const la_weá_error_t *error = NULL;
@@ -235,7 +235,7 @@ const la_weá_error_t *validate_cmd_char(char32_t cmd_char) {
 
 const la_weá_error_t *validate_cmd_name_length(const char32_t *cmd_name, size_t cmd_name_len) {
     if (cmd_name_len >= 8) {
-        return create_too_long_command_error(line, col - (long)utf32_strlen(cmd_name));
+        return create_too_long_command_error(line, col - utf32_strlen(cmd_name));
     }
 
     return NULL;

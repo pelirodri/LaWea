@@ -6,23 +6,23 @@
 struct la_weá_error_t {
 	la_weá_error_code_t code;
 
-	long line;
-	long col;
+	size_t line;
+	size_t col;
 
 	const char32_t *cmd_name;
 	char32_t cmd_char;
 };
 
 static const la_weá_result_t *create_result(la_weá_result_status_t, const la_weá_error_t *);
-static const la_weá_error_t *create_error(la_weá_error_code_t, long, long, const char32_t *, char32_t);
+static const la_weá_error_t *create_error(la_weá_error_code_t, size_t, size_t, const char32_t *, char32_t);
 
 static const char *get_message_from_invalid_command_error(const la_weá_error_t *);
 static const char *get_message_from_unmatched_tula_error(const la_weá_error_t *);
 static const char *get_message_from_misplaced_pico_error(const la_weá_error_t *);
 static const char *get_message_from_invalid_character_error(const la_weá_error_t *);
 static const char *get_message_from_too_long_command_error(const la_weá_error_t *);
-static const char *get_message_from_unmatched_pichulas_error(const la_weá_error_t *);
-static const char *get_message_from_out_of_bounds_error(const la_weá_error_t *);
+static const char *get_message_from_unmatched_pichulas_error();
+static const char *get_message_from_out_of_bounds_error();
 
 const la_weá_result_t *create_success_result() {
 	return create_result(success, NULL);
@@ -32,23 +32,23 @@ const la_weá_result_t *create_failure_result(const la_weá_error_t *error) {
 	return create_result(failure, error);
 }
 
-const la_weá_error_t *create_invalid_command_error(const char32_t *cmd_name, long line, long col) {
+const la_weá_error_t *create_invalid_command_error(const char32_t *cmd_name, size_t line, size_t col) {
 	return create_error(invalid_command_error, line, col, cmd_name, U'\0');
 }
 
-const la_weá_error_t *create_unmatched_tula_error(long line, long col) {
+const la_weá_error_t *create_unmatched_tula_error(size_t line, size_t col) {
 	return create_error(unmatched_tula_error, line, col, NULL, U'\0');
 }
 
-const la_weá_error_t *create_misplaced_pico_error(long line, long col) {
+const la_weá_error_t *create_misplaced_pico_error(size_t line, size_t col) {
 	return create_error(misplaced_pico_error, line, col, NULL, U'\0');
 }
 
-const la_weá_error_t *create_invalid_character_error(char32_t cmd_char, long line, long col) {
+const la_weá_error_t *create_invalid_character_error(char32_t cmd_char, size_t line, size_t col) {
 	return create_error(invalid_character_error, line, col, NULL, cmd_char);
 }
 
-const la_weá_error_t *create_too_long_command_error(long line, long col) {
+const la_weá_error_t *create_too_long_command_error(size_t line, size_t col) {
 	return create_error(too_long_command_error, line, col, NULL, U'\0');
 }
 
@@ -81,9 +81,9 @@ const char *get_message_from_error(const la_weá_error_t *error) {
 		case too_long_command_error:
 			return get_message_from_too_long_command_error(error);
 		case unmatched_pichulas_error:
-			return get_message_from_unmatched_pichulas_error(error);
+			return get_message_from_unmatched_pichulas_error();
 		case out_of_bounds_error:
-			return get_message_from_out_of_bounds_error(error);
+			return get_message_from_out_of_bounds_error();
 		default:
 			return NULL;
 	}
@@ -104,8 +104,8 @@ const la_weá_result_t *create_result(la_weá_result_status_t status, const la_w
 
 const la_weá_error_t *create_error(
 	la_weá_error_code_t error_code,
-	long line,
-	long col,
+	size_t line,
+	size_t col,
 	const char32_t *cmd_name,
 	char32_t cmd_char
 ) {
@@ -209,7 +209,7 @@ const char *get_message_from_too_long_command_error(const la_weá_error_t *error
 	return error_msg;
 }
 
-const char *get_message_from_unmatched_pichulas_error(const la_weá_error_t *error) {
+const char *get_message_from_unmatched_pichulas_error() {
 	char msg[] = "O te sobran pichulas o te faltan tulas"; 
 	char *error_msg = malloc(sizeof(msg));
 
@@ -218,7 +218,7 @@ const char *get_message_from_unmatched_pichulas_error(const la_weá_error_t *err
 	return error_msg;
 }
 
-const char *get_message_from_out_of_bounds_error(const la_weá_error_t *error) {
+const char *get_message_from_out_of_bounds_error() {
 	char msg[] = "Te saliste pa’ la izquierda, aweona’o";
 	char *error_msg = malloc(sizeof(msg));
 

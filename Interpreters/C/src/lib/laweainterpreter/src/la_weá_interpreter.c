@@ -34,7 +34,7 @@
 
 static const char *get_code(const char *);
 static void exit_with_file_open_error();
-static long get_file_length_from_file_pointer(FILE *);
+static size_t get_file_length_from_file_pointer(FILE *);
 
 static la_weá_commands_sequence_t *build_commands_sequence_from_code(const char32_t *);
 
@@ -95,7 +95,7 @@ const char *get_code(const char *file_path) {
         la_weá_exit_with_error_message(NULL);
     }
 
-    long code_len = get_file_length_from_file_pointer(fp);
+    size_t code_len = get_file_length_from_file_pointer(fp);
     char *code = calloc(code_len + 1, sizeof(char));
 
     if (!code) {
@@ -120,9 +120,9 @@ void exit_with_file_open_error() {
     }
 }
 
-long get_file_length_from_file_pointer(FILE *fp) {
+size_t get_file_length_from_file_pointer(FILE *fp) {
     fseek(fp, 0, SEEK_END);
-    long code_len = ftell(fp);
+    size_t code_len = ftell(fp);
     fseek(fp, 0, SEEK_SET);
 
     return code_len;

@@ -28,11 +28,11 @@ typedef enum la_weá_error_code_t {
 const la_weá_result_t *create_success_result();
 const la_weá_result_t *create_failure_result(const la_weá_error_t *);
 
-const la_weá_error_t *create_invalid_command_error(const char32_t *, long, long);
-const la_weá_error_t *create_unmatched_tula_error(long, long);
-const la_weá_error_t *create_misplaced_pico_error(long, long);
-const la_weá_error_t *create_invalid_character_error(char32_t, long, long);
-const la_weá_error_t *create_too_long_command_error(long, long);
+const la_weá_error_t *create_invalid_command_error(const char32_t *, size_t, size_t);
+const la_weá_error_t *create_unmatched_tula_error(size_t, size_t);
+const la_weá_error_t *create_misplaced_pico_error(size_t, size_t);
+const la_weá_error_t *create_invalid_character_error(char32_t, size_t, size_t);
+const la_weá_error_t *create_too_long_command_error(size_t, size_t);
 const la_weá_error_t *create_unmatched_pichulas_error();
 const la_weá_error_t *create_out_of_bounds_error();
 const la_weá_error_t *create_internal_error();
