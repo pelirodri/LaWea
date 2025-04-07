@@ -58,7 +58,7 @@ void la_weá::interpreter::exit_with_error_message(std::string_view error_msg) c
 }
 
 std::string la_weá::interpreter::get_code(std::string_view file_path) const {
-	std::ifstream is (file_path);
+	std::ifstream is ((std::string (file_path)));
 
 	if (!is) [[unlikely]] {
 		exit_with_file_open_error();
