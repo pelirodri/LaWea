@@ -133,7 +133,7 @@ bool la_weá::brígido_expression::is_valid_num_input(std::string_view num_input
 		return false;
 	}
 
-	for (int i = 0; i < num_input.length(); i++) [[likely]] {
+	for (size_t i = 0; i < num_input.length(); i++) [[likely]] {
         if (!std::isdigit(num_input[i]) && !(i == 0 && num_input[i] == '-')) [[unlikely]] {
             return false;
         }

@@ -14,7 +14,7 @@
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with this program. If not, see <http://www.gnu.org/licenses/>.
+// asize_t with this program. If not, see <http://www.gnu.org/licenses/>.
 //
 
 #include "utf_utils.hpp"
@@ -82,7 +82,7 @@ size_t utf_utils::utf32_char_utf16_code_point_len(char32_t utf32_char) {
 size_t utf_utils::utf8_strlen(const std::u8string &utf8_str) {
 	size_t str_len = 0;
 
-	for (long i = 0; utf8_str[i];) [[likely]] {
+	for (size_t i = 0; utf8_str[i];) [[likely]] {
 		size_t utf8_code_point_len = utf8_byte_utf8_code_point_len(utf8_str[i]);
 
 		if (utf8_code_point_len == 0) [[unlikely]] {
@@ -99,7 +99,7 @@ size_t utf_utils::utf8_strlen(const std::u8string &utf8_str) {
 size_t utf_utils::utf16_strlen(const std::u16string &utf16_str) {
 	size_t str_len = 0;
 
-	for (long i = 0; utf16_str[i];) [[likely]] {
+	for (size_t i = 0; utf16_str[i];) [[likely]] {
 		size_t utf16_code_point_len = utf16_surrogate_utf16_code_point_len(utf16_str[i]);
 
 		if (utf16_code_point_len == 0) [[unlikely]] {
@@ -226,7 +226,7 @@ std::u16string utf_utils::utf8_str_to_utf16(const std::u8string &utf8_str) {
 std::u32string utf_utils::utf8_str_to_utf32(const std::u8string &utf8_str) {
 	std::u32string utf32_str;
 
-	for (long i = 0; utf8_str[i];) [[likely]] {
+	for (size_t i = 0; utf8_str[i];) [[likely]] {
 		size_t utf8_code_point_len = utf8_byte_utf8_code_point_len(utf8_str[i]);
 
 		if (!utf8_code_point_len) [[unlikely]] {
@@ -247,7 +247,7 @@ std::u8string utf_utils::utf16_str_to_utf8(const std::u16string &utf16_str) {
 std::u32string utf_utils::utf16_str_to_utf32(const std::u16string &utf16_str) {
 	std::u32string utf32_str;
 
-	for (long i = 0; utf16_str[i];) [[likely]] {
+	for (size_t i = 0; utf16_str[i];) [[likely]] {
 		size_t utf16_code_point_len = utf16_surrogate_utf16_code_point_len(utf16_str[i]);
 
 		if (utf16_code_point_len == 0) [[unlikely]] {
@@ -264,7 +264,7 @@ std::u32string utf_utils::utf16_str_to_utf32(const std::u16string &utf16_str) {
 std::u8string utf_utils::utf32_str_to_utf8(const std::u32string &utf32_str) {
 	std::u8string utf8_str;
 
-	for (long i = 0; utf32_str[i]; i++) [[likely]] {
+	for (size_t i = 0; utf32_str[i]; i++) [[likely]] {
 		if (utf32_char_utf8_code_point_len(utf32_str[i]) == 0) [[unlikely]] {
 			return u8"";
 		}
@@ -278,7 +278,7 @@ std::u8string utf_utils::utf32_str_to_utf8(const std::u32string &utf32_str) {
 std::u16string utf_utils::utf32_str_to_utf16(const std::u32string &utf32_str) {
 	std::u16string utf16_str;
 
-	for (long i = 0; utf32_str[i]; i++) [[likely]] {
+	for (size_t i = 0; utf32_str[i]; i++) [[likely]] {
 		if (utf32_char_utf16_code_point_len(utf32_str[i]) == 0) [[unlikely]] {
 			return u"";
 		}

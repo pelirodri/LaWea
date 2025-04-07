@@ -14,7 +14,7 @@
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with this program. If not, see <http://www.gnu.org/licenses/>.
+// asize_t with this program. If not, see <http://www.gnu.org/licenses/>.
 //
 
 #include "expression_factory.hpp"
@@ -22,7 +22,7 @@
 
 std::unique_ptr<la_weá::expression> la_weá::expression_factory::create_expression_from_cmd_at_idx(
 	std::vector<command> commands,
-	long cmd_idx
+	size_t cmd_idx
 ) {
 	switch (commands[cmd_idx]) {
 		case maricón:
@@ -60,8 +60,8 @@ std::unique_ptr<la_weá::expression> la_weá::expression_factory::create_express
 	}
 }
 
-long la_weá::expression_factory::find_loop_start(std::vector<command> commands, long cmd_idx) {
-	for (long i = cmd_idx - 1, loop_level = 1; i >= 0; i--) [[likely]] {
+size_t la_weá::expression_factory::find_loop_start(std::vector<command> commands, size_t cmd_idx) {
+	for (size_t i = cmd_idx - 1, loop_level = 1; i >= 0; i--) [[likely]] {
 		if (commands[i] == tula) {
 			loop_level++;
 		} else if (commands[i] == pichula) {
@@ -76,8 +76,8 @@ long la_weá::expression_factory::find_loop_start(std::vector<command> commands,
 	return -1;
 }
 
-long la_weá::expression_factory::find_loop_end(std::vector<command> commands, long cmd_idx) {
-	for (long i = cmd_idx + 1, loop_level = 1; i < commands.size(); i++) [[likely]] {
+size_t la_weá::expression_factory::find_loop_end(std::vector<command> commands, size_t cmd_idx) {
+	for (size_t i = cmd_idx + 1, loop_level = 1; i < commands.size(); i++) [[likely]] {
 		if (commands[i] == pichula) {
 			loop_level++;
 		} else if (commands[i] == tula) {

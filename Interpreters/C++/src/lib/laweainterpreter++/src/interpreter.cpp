@@ -14,7 +14,7 @@
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with this program. If not, see <http://www.gnu.org/licenses/>.
+// asize_t with this program. If not, see <http://www.gnu.org/licenses/>.
 //
 
 #include "interpreter.hpp"
@@ -47,7 +47,7 @@ void la_weá::interpreter::run_expressions(const std::vector<std::unique_ptr<exp
 
 	context ctx;
 
-	for (long i = 0; i < expressions.size(); i = ctx.get_expr_idx()) [[likely]] {
+	for (size_t i = 0; i < expressions.size(); i = ctx.get_expr_idx()) [[likely]] {
 		expressions[i]->interpret(ctx);
 	}
 }
@@ -64,7 +64,7 @@ std::string la_weá::interpreter::get_code(std::string_view file_path) const {
 		exit_with_file_open_error();
 	}
 
-	long code_len = get_file_length_from_stream(is);
+	size_t code_len = get_file_length_from_stream(is);
 
 	std::string code (code_len, ' ');
 	is.read(&code[0], code_len);
@@ -83,9 +83,9 @@ void la_weá::interpreter::exit_with_file_open_error() const {
 	}
 }
 
-long la_weá::interpreter::get_file_length_from_stream(std::ifstream &is) const {
+size_t la_weá::interpreter::get_file_length_from_stream(std::ifstream &is) const {
 	is.seekg(0, is.end);
-	long code_len = is.tellg();
+	size_t code_len = is.tellg();
 	is.seekg(0, is.beg);
 
 	return code_len;

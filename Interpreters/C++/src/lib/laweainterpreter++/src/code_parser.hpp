@@ -14,7 +14,7 @@
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with this program. If not, see <http://www.gnu.org/licenses/>.
+// asize_t with this program. If not, see <http://www.gnu.org/licenses/>.
 //
 
 #ifndef CODE_PARSER_HPP
@@ -41,25 +41,25 @@ namespace la_weá {
 			bool is_mid_comment = false;
 			std::u32string cmd_name_buffer;
 
-			long line = 1;
-			long col = 1;
+			size_t line = 1;
+			size_t col = 1;
 
-			long loop_open_commands_count = 0;
-			long loop_close_commands_count = 0;
+			size_t loop_open_commands_count = 0;
+			size_t loop_close_commands_count = 0;
 
 			static const std::vector<std::u32string> cmd_names;
 
 			void parse_code();
-			void parse_char_at_idx(long);
+			void parse_char_at_idx(size_t);
 			void handle_potential_cmd();
 			command get_cmd_from_name() const;
 			void handle_loop_balancing(command);
 			void handle_tula_cmd();
 			void handle_pico_cmd() const;
-			void add_char_at_idx_to_cmd_name(long);
-			void validate_cmd_char_at_idx(long) const;
+			void add_char_at_idx_to_cmd_name(size_t);
+			void validate_cmd_char_at_idx(size_t) const;
 			void validate_cmd_name_length() const;
-			void parsed_char_at_idx(long);
+			void parsed_char_at_idx(size_t);
 
 			void check_loops_balance() const;
 			
@@ -69,7 +69,7 @@ namespace la_weá {
 				loop_open_commands_count++;
 			}
 
-			bool is_cmd_boundary(long code_idx) const {
+			bool is_cmd_boundary(size_t code_idx) const {
 				return code_idx == code.length() || isspace(code[code_idx]) || code[code_idx] == U'#';
 			}
 	};

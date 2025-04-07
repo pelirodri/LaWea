@@ -14,13 +14,13 @@
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with this program. If not, see <http://www.gnu.org/licenses/>.
+// asize_t with this program. If not, see <http://www.gnu.org/licenses/>.
 //
 
 #include "context.hpp"
 #include "exceptions.hpp"
 
-void la_weá::context::set_expr_idx(long new_expr_idx) {
+void la_weá::context::set_expr_idx(size_t new_expr_idx) {
 	if (new_expr_idx < 0) [[unlikely]] {
 		throw std::logic_error ("expr_idx cannot be lower than 0");
 	}
@@ -29,14 +29,14 @@ void la_weá::context::set_expr_idx(long new_expr_idx) {
 }
 
 void la_weá::context::increase_expr_idx() {
-	if (expr_idx == std::numeric_limits<long>::max()) [[unlikely]] {
+	if (expr_idx == std::numeric_limits<size_t>::max()) [[unlikely]] {
 		throw std::logic_error ("expr_idx is about to overflow");
 	}
 
 	expr_idx++;
 }
 
-void la_weá::context::shift_cell_left(long shift_amount) {
+void la_weá::context::shift_cell_left(size_t shift_amount) {
 	if (cur_cell == 0) [[unlikely]] {
 		throw out_of_bounds_exception ();
 	}
@@ -44,7 +44,7 @@ void la_weá::context::shift_cell_left(long shift_amount) {
 	cur_cell -= shift_amount;
 }
 
-void la_weá::context::shift_cell_right(long shift_amount) {
+void la_weá::context::shift_cell_right(size_t shift_amount) {
 	if (cur_cell == cells.size() - 1) [[unlikely]] {
 		cells.resize(cells.capacity() * 2);
 	}

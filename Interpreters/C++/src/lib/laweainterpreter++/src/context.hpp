@@ -14,7 +14,7 @@
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with this program. If not, see <http://www.gnu.org/licenses/>.
+// asize_t with this program. If not, see <http://www.gnu.org/licenses/>.
 //
 
 #ifndef CONTEXT_HPP
@@ -24,15 +24,15 @@
 namespace la_weá {
 	class context {
 		public:
-			void set_expr_idx(long);
+			void set_expr_idx(size_t);
 			void increase_expr_idx();
 
-			void shift_cell_left(long = 1);
-			void shift_cell_right(long = 1);
+			void shift_cell_left(size_t = 1);
+			void shift_cell_right(size_t = 1);
 
 			void copy_cell_value();
 
-			long get_expr_idx() const {
+			size_t get_expr_idx() const {
 				return expr_idx;
 			}
 
@@ -56,10 +56,10 @@ namespace la_weá {
 				cells[cur_cell] = 0;
 			}
 		private:
-			long expr_idx = 0;
+			size_t expr_idx = 0;
 
 			std::vector<int64_t> cells = std::vector<int64_t> (8);
-			long cur_cell = 0;
+			size_t cur_cell = 0;
 
 			bool is_copy_set = false;
 			int64_t cell_value_copy;

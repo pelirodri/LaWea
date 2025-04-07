@@ -14,7 +14,7 @@
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with this program. If not, see <http://www.gnu.org/licenses/>.
+// asize_t with this program. If not, see <http://www.gnu.org/licenses/>.
 //
 
 #ifndef EXPRESSIONS_HPP
@@ -85,31 +85,31 @@ namespace la_weá {
 
 	class pichula_expression: public expression {
 		public:
-			pichula_expression(long tula_idx) : tula_idx (tula_idx) {}
+			pichula_expression(size_t tula_idx) : tula_idx (tula_idx) {}
 
 			void interpret(context &) override;
 		private:
-			long tula_idx;
+			size_t tula_idx;
 	};
 
 	class tula_expression: public expression {
 		public:
-			tula_expression(long pichula_idx) : pichula_idx (pichula_idx) {}
+			tula_expression(size_t pichula_idx) : pichula_idx (pichula_idx) {}
 
 			void interpret(context &) override;
 		private:
-			long pichula_idx;
+			size_t pichula_idx;
 	};
 
 	class pico_expression: public expression {
 		public:
-			pico_expression(long tula_idx) : tula_idx(tula_idx) {}
+			pico_expression(size_t tula_idx) : tula_idx(tula_idx) {}
 
 			void interpret(context &ctx) override {
 				ctx.set_expr_idx(tula_idx + 1);
 			}
 		private:
-			long tula_idx;
+			size_t tula_idx;
 	};
 
 	class ctm_expression: public expression {

@@ -14,7 +14,7 @@
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with this program. If not, see <http://www.gnu.org/licenses/>.
+// asize_t with this program. If not, see <http://www.gnu.org/licenses/>.
 //
 
 #ifndef EXPRESSION_FACTORY_HPP
@@ -32,11 +32,11 @@ namespace la_weá {
 			
 			static std::unique_ptr<expression> create_expression_from_cmd_at_idx(
 				std::vector<command>,
-				long = -1
+				size_t = -1
 			);
 		private:
-			static long find_loop_start(std::vector<command>, long);
-			static long find_loop_end(std::vector<command>, long);
+			static size_t find_loop_start(std::vector<command>, size_t);
+			static size_t find_loop_end(std::vector<command>, size_t);
 	};
 }
 #endif
